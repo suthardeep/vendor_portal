@@ -1,6 +1,6 @@
 import type { AppRouter } from "@/AuthInitializer";
 import { toast } from "@/components/compound/Sonner";
-import type { BaseApiErrorResponse } from "@/types/baseApi.types";
+import type { BaseApiErrorResponse } from "@/types/baseApi";
 import type { ClassValue } from "clsx";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";

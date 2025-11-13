@@ -1,6 +1,6 @@
 import { LocalStorageUtil } from "./localStorageUtil";
 
-const TOKEN_KEY = "fb-admin-token";
+const TOKEN_KEY = "aavak-vendor-token";
 
 export const TokenUtil = {
   setToken(token: string): void {

@@ -1,0 +1,16 @@
+.pac-container {
+  @apply dark:bg-nd-700 dark:border-nd-500 border-nl-200 rounded-md border bg-white shadow-md;
+}
+
+.pac-item {
+  @apply border-t-nl-200 dark:border-t-nd-500 text-nl-500 dark:text-nd-300 hover:bg-nl-100 hover:dark:bg-nl-800 hover:cursor-pointer;
+}
+
+.pac-item-query,
+.pac-item-query * {
+  @apply text-nl-700 dark:text-nd-50 !font-semibold;
+}
+
+.pac-matched {
+  @apply font-normal;
+}

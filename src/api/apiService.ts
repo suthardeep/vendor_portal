@@ -14,8 +14,6 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://api.example.co
 const createApiInstance = (): AxiosInstance => {
   const api = axios.create({
     baseURL: API_BASE_URL,
-    withCredentials: true,
-    headers: { "Content-Type": "application/json" },
   });
 
   /**

@@ -4,7 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 // import AppLoader from "./components/empty-states/AppLoader";
 import AppShimmer from "./components/empty-states/AppShimmer";
 import GlobalNotFound from "./components/empty-states/GlobalNotFound";
-// import { routeTree } from "./routeTree.gen";
+import { routeTree } from "./routeTree.gen";
 // import { useAuthStore } from "./store/useAuthStore";
 // import { TokenUtil } from "./utils/tokenUtil";
 import { queryClient } from "./lib/queryClient";

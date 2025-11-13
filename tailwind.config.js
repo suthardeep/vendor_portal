@@ -102,7 +102,7 @@ module.exports = {
         "shimmer-diagonal": "200% 200%", // Added proper background size for diagonal shimmer
       },
       colors: {
-        "a-primary": "#ED1C24",
+        "a-primary": "#794DFF",
       },
       backdropBlur: {
         xs: "2px",

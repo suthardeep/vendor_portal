@@ -1,4 +1,4 @@
-import type { PaginationMeta } from "@/types/baseApi.types";
+import type { PaginationMeta } from "@/types/baseApi";
 import { cn, prettyNumber } from "@/utils/helpers";
 import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
