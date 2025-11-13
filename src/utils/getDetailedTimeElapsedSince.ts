@@ -1,4 +1,4 @@
-export const getDetailedTimeElapsed = (dateString: string): string => {
+export const getDetailedTimeElapsedSince = (dateString: string): string => {
   const now = new Date();
   const past = new Date(dateString);
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
