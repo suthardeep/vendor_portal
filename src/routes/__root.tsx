@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 import '../styles/index.css'
+import MediaDialog from "@/components/compound/MediaDialog";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
@@ -31,6 +32,7 @@ function Root() {
       <Toaster visibleToasts={6} />
       <Outlet />
       <ImageZoomDialog />
+      <MediaDialog/>
       {/* <TanStackRouterDevtools />
       <ReactQueryDevtools initialIsOpen={false} /> */}
     </div>

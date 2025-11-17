@@ -1,6 +1,24 @@
 // Icon.tsx
 import { cn } from "@/utils/helpers";
-import { Save, Search, Menu, X, LucideIcon, Monitor, Check } from "lucide-react";
+import {
+  Save,
+  Search,
+  Menu,
+  X,
+  LucideIcon,
+  Monitor,
+  Check,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Image,
+  File,
+  FileText,
+  Music,
+  Archive,
+  Upload,
+} from "lucide-react";
 
 const iconRegistry = {
   Save,
@@ -8,7 +26,17 @@ const iconRegistry = {
   Menu,
   X,
   Monitor,
-  Check
+  Check,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Image,
+  File,
+  FileText,
+  Music,
+  Archive,
+  Upload,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof iconRegistry;
@@ -29,11 +57,11 @@ const getIconSize = (size: Size) => {
     xl: 22,
   };
   return sizeMap[size] || sizeMap["md"];
-}
+};
 
 export default function Icon({ name, className, size }: IconProps) {
   const Component = iconRegistry[name];
   const iconSize = typeof size === "string" ? getIconSize(size) : size;
 
-  return <Component className={cn("text-primary-content",className)} size={iconSize} />;
+  return <Component className={cn("text-primary-content", className)} size={iconSize} />;
 }
