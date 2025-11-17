@@ -28,12 +28,12 @@ const Tooltip: React.FC<TooltipProps> = ({
             side={side}
             align={align}
             className={cn(
-              "TooltipContent animate-in fade-in-0 zoom-in-95 dark:bg-nd-500 bg-nl-100 text-nl-700 dark:text-nd-100 z-50 rounded-lg px-2.5 py-1 text-sm shadow-xs",
+              "TooltipContent animate-in fade-in-0 zoom-in-95 dark:bg-base-3 bg-neutral-content text-base-3 dark:text-neutral-content z-50 rounded-lg px-2.5 py-1 text-sm shadow-xs",
               className,
             )}
           >
             {content}
-            <RadixTooltip.Arrow className="dark:fill-nd-500 fill-nl-100" />
+            <RadixTooltip.Arrow className="dark:fill-base-3 fill-neutral-content" />
           </RadixTooltip.Content>
         </RadixTooltip.Portal>
       </RadixTooltip.Root>

@@ -21,9 +21,9 @@ interface WriteProps extends BaseProps {
 
 type ActiveIndicatorProps = ReadProps | WriteProps;
 
-const baseClass = `bg-nl-50 dark:bg-nd-800 border transition-colors font-medium`;
+const baseClass = `bg-neutral-content dark:bg-neutral border transition-colors font-medium`;
 const commonClass = `px-3 py-2`;
-const baseTextClass = `text-nl-700 dark:text-nd-100 border border-transparent duration-300`;
+const baseTextClass = `text-base-3 dark:text-neutral-content border border-transparent duration-300`;
 
 const activeClass = {
   true: "text-green-700 dark:text-green-500 bg-green-100 dark:bg-green-950/50 border-green-600 dark:border-green-500",
@@ -69,7 +69,7 @@ const ActiveIndicator: React.FC<ActiveIndicatorProps> = (props) => {
             readonly ? "cursor-not-allowed" : "cursor-pointer",
             !readonly &&
               !isActive &&
-              "hover:border-nl-200 hover:dark:border-nd-500",
+              "hover:border-neutral-content hover:dark:border-base-3",
           )}
         >
           <p>{activeLabelName || "True"}</p>
@@ -86,7 +86,7 @@ const ActiveIndicator: React.FC<ActiveIndicatorProps> = (props) => {
             readonly ? "cursor-not-allowed" : "cursor-pointer",
             !readonly &&
               isActive &&
-              "hover:border-nl-200 hover:dark:border-nd-500",
+              "hover:border-neutral-content hover:dark:border-base-3",
           )}
         >
           <p>{inactiveLabelName || "False"}</p>

@@ -41,13 +41,13 @@ const InfoItem: React.FC<InfoItemProps> = (props) => {
     >
       {Icon && (
         <Icon
-          className="text-nl-500 dark:text-nd-400 mt-0.5 size-5"
+          className="text-base-3 dark:text-base-2 mt-0.5 size-5"
           strokeWidth={1.5}
         />
       )}
       <div className="flex flex-1 flex-col gap-y-1.5">
         <div className="flex items-center justify-between">
-          <p className={cn("text-nl-500 dark:text-nd-300", labelClassName)}>
+          <p className={cn("text-base-3 dark:text-base-2", labelClassName)}>
             {" "}
             {label}{" "}
           </p>
@@ -56,7 +56,7 @@ const InfoItem: React.FC<InfoItemProps> = (props) => {
         {typeof value === "string" || typeof value === "number" ? (
           <p
             className={cn(
-              "text-nl-700 dark:text-nd-100 font-medium",
+              "text-base-3 dark:text-neutral-content font-medium",
               valueClassName,
             )}
           >

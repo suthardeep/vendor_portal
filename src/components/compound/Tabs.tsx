@@ -51,14 +51,14 @@ const Tabs: React.FC<TabProps> = (props) => {
   return (
     <div
       className={cn(
-        "border-nl-200 dark:border-nd-500 relative flex items-center gap-x-1 rounded-lg border p-1",
+        "border-neutral-content dark:border-base-3 relative flex items-center gap-x-1 rounded-lg border p-1",
         fullWidth ? "w-full" : "",
         containerClassname,
       )}
       ref={containerRef}
     >
       <span
-        className="bg-pl-50 dark:bg-pd-600/50 absolute top-1 bottom-1 rounded-md transition-all duration-300 ease-in-out"
+        className="bg-primary-50 dark:bg-primary-600/50 absolute top-1 bottom-1 rounded-md transition-all duration-300 ease-in-out"
         style={{
           left: highlightStyle.left,
           width: highlightStyle.width,
@@ -124,7 +124,7 @@ const TabButton = React.forwardRef<HTMLButtonElement, TabButtonProps>(
   },
 );
 
-const activeButtonClass = `text-pl-500 dark:text-pd-50`;
-const notActiveButtonClass = `text-nl-400 dark:text-nd-300 bg-transparent hover:bg-nl-50 hover:dark:bg-nd-700`;
+const activeButtonClass = `text-primary-500 dark:text-primary-50`;
+const notActiveButtonClass = `text-base-2 dark:text-base-2 bg-transparent hover:bg-neutral-content hover:dark:bg-base-3`;
 
 export default Tabs;

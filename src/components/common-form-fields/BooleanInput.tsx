@@ -98,11 +98,11 @@ const BooleanInput: React.FC<BooleanInputProps> = (props) => {
       {!label && renderControl()}
 
       {description && !hasError && (
-        <p className="text-nl-500 dark:text-nd-400 text-xs">{description}</p>
+        <p className="text-base-3 dark:text-base-2 text-xs">{description}</p>
       )}
 
       {helperText && !hasError && (
-        <p className="text-nl-600 dark:text-nd-300 text-xs">{helperText}</p>
+        <p className="text-base-3 dark:text-base-2 text-xs">{helperText}</p>
       )}
 
       {hasError && <ErrorText>{error}</ErrorText>}

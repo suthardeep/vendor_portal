@@ -44,7 +44,7 @@ const NavBlocker: React.FC<NavBlockerProps> = (props) => {
       title="Are you sure you want to leave?"
     >
       <div className="mt-2 space-y-4">
-        <p className="text-nl-600 dark:text-nd-100">
+        <p className="text-base-3 dark:text-neutral-content">
           You might lose unsaved data if you proceed to leave
         </p>
         <div className="flex justify-end gap-2">

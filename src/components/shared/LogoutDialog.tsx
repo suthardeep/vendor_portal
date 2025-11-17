@@ -40,7 +40,7 @@ const LogoutDialog: React.FC<LogoutProps> = (props) => {
         },
       }}
     >
-      <h6 className="text-nl-500 dark:text-nd-200">
+      <h6 className="text-base-3 dark:text-neutral-content">
         Are you sure you want to logout?
       </h6>
     </Dialog>

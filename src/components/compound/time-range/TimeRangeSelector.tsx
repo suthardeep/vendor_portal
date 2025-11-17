@@ -42,9 +42,9 @@ export const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   return (
     <div className="flex flex-col gap-4">
       {currentRange && (
-        <div className="dark:bg-nd-700 bg-nl-50/60 flex items-center gap-2 rounded-lg px-3 py-2">
+        <div className="dark:bg-base-3 bg-neutral-content/60 flex items-center gap-2 rounded-lg px-3 py-2">
           <Calendar className="text-text-secondary h-4 w-4" />
-          <p className="text-nl-600 dark:text-nd-200 font-medium">
+          <p className="text-base-3 dark:text-neutral-content font-medium">
             {currentRange}
           </p>
         </div>
@@ -59,7 +59,7 @@ export const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
               className={cn(`p-4`)}
               key={i}
             >
-              <p className="text-nl-700 dark:text-nd-100">{option.label}</p>
+              <p className="text-base-3 dark:text-neutral-content">{option.label}</p>
             </SelectionCard>
           );
         })}
@@ -67,7 +67,7 @@ export const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
 
       {preset === PresetRange.CUSTOM && (
         <div className="mt-6">
-          <h6 className="text-nl-700 dark:text-nd-100">Custom Date Range</h6>
+          <h6 className="text-base-3 dark:text-neutral-content">Custom Date Range</h6>
           <div className="mt-4 flex gap-4">
             <DatePickerInput
               label="Start Date"

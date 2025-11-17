@@ -35,8 +35,8 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
     <div
       className={cn(
         selected
-          ? "text-nl-900 dark:text-nd-50 bg-pl-100/30 dark:bg-pd-500/20"
-          : "hover:bg-nl-100/70 hover:dark:bg-nd-500/70 text-nl-700 dark:text-nd-100",
+          ? "text-neutral dark:text-neutral-content bg-primary-100/30 dark:bg-primary-500/20"
+          : "hover:bg-neutral-content/70 hover:dark:bg-base-3/70 text-base-3 dark:text-neutral-content",
         "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left !text-xs transition-colors",
         classname,
       )}
@@ -58,6 +58,6 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
   );
 };
 
-const iconClassName = `dark:text-nd-100 text-nl-600 h-4 w-4 shrink-0 stroke-2`;
+const iconClassName = `dark:text-neutral-content text-base-3 h-4 w-4 shrink-0 stroke-2`;
 
 export default MenuItem;

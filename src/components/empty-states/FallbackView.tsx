@@ -17,12 +17,12 @@ const FallbackView: React.FC<FallbackViewProps> = (props) => {
   return (
     <div
       className={cn(
-        "fall bg-nl-50 dark:bg-nd-700 flex w-full flex-col gap-4 rounded-xl p-8",
+        "fall bg-neutral-content dark:bg-base-3 flex w-full flex-col gap-4 rounded-xl p-8",
         classname,
       )}
     >
       {Icon && <Icon size={48} strokeWidth={1.5} />}
-      <p className="text-nl-600 dark:text-nd-200 text-center">
+      <p className="text-base-3 dark:text-neutral-content text-center">
         {title || "No data found"}
       </p>
       {footer && footer}

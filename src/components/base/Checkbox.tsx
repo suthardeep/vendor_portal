@@ -35,33 +35,33 @@ const sizeClasses = {
 
 const checkboxBaseClasses = cn(
   "relative flex items-center justify-center border-[1.5px] transition-all duration-200 cursor-pointer",
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pl-500 focus-visible:ring-offset-2",
-  "focus-visible:ring-offset-white dark:focus-visible:ring-offset-nd-800",
-  "border-nl-300 dark:border-nd-500 bg-white dark:bg-nd-700",
-  "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-nl-300 dark:disabled:hover:border-nd-500",
-  "disabled:hover:bg-white dark:disabled:hover:bg-nd-700",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2",
+  "focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral",
+  "border-base-2 dark:border-base-3 bg-white dark:bg-base-3",
+  "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-base-2 dark:disabled:hover:border-base-3",
+  "disabled:hover:bg-white dark:disabled:hover:bg-base-3",
 );
 
 const baseHoverClass =
-  "hover:border-pl-400 dark:hover:border-pd-600 hover:bg-pl-50 dark:hover:bg-pd-500/40";
+  "hover:border-primary-400 dark:hover:border-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/40";
 
 const checkedClasses = cn(
-  "!border-[transparent] bg-pl-500 dark:bg-pd-500",
-  "disabled:border-pl-300 dark:disabled:border-pd-300 disabled:bg-pl-300 dark:disabled:bg-pd-300",
+  "!border-[transparent] bg-primary-500 dark:bg-primary-500",
+  "disabled:border-primary-300 dark:disabled:border-primary-300 disabled:bg-primary-300 dark:disabled:bg-primary-300",
 );
 
 const checkedHoverClass =
-  "hover:border-[transparent] hover:bg-pl-600 dark:hover:bg-pd-600";
+  "hover:border-[transparent] hover:bg-primary-600 dark:hover:bg-primary-600";
 
 const errorClasses = cn(
-  "border-dl-500 dark:border-dd-500",
-  "hover:border-dl-600 dark:hover:border-dd-600",
-  "focus-visible:ring-dl-500 dark:focus-visible:ring-dd-500",
+  "border-base-3 dark:border-neutral-500",
+  "hover:border-base-3 dark:hover:border-neutral-600",
+  "focus-visible:ring-base-3 dark:focus-visible:ring-neutral-500",
 );
 
 const errorCheckedClasses = cn(
-  "border-dl-500 dark:border-dd-500 bg-dl-500 dark:bg-dd-500",
-  "hover:border-dl-600 dark:hover:border-dd-600 hover:bg-dl-600 dark:hover:bg-dd-600",
+  "border-base-3 dark:border-neutral-500 bg-base-3 dark:bg-neutral-500",
+  "hover:border-base-3 dark:hover:border-neutral-600 hover:bg-base-3 dark:hover:bg-neutral-600",
 );
 
 export interface CheckboxProps
@@ -149,12 +149,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           >
             {indeterminate ? (
               <Minus
-                className={cn("text-nl-50 dark:text-white", sizeClass.icon)}
+                className={cn("text-neutral-content dark:text-white", sizeClass.icon)}
                 strokeWidth={3}
               />
             ) : (
               <Check
-                className={cn("text-nl-50 dark:text-white", sizeClass.icon)}
+                className={cn("text-neutral-content dark:text-white", sizeClass.icon)}
                 strokeWidth={3}
               />
             )}
@@ -190,8 +190,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {text && (
             <p
               className={cn(
-                "text-nl-600 dark:text-nd-300",
-                hasError && "text-dl-500 dark:text-dd-500",
+                "text-base-3 dark:text-base-2",
+                hasError && "text-base-3 dark:text-neutral-500",
                 sizeClass.helper,
                 helperClassName,
               )}
@@ -200,7 +200,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             </p>
           )}
           {description && (
-            <p className={cn("text-nl-500 dark:text-nd-400", sizeClass.helper)}>
+            <p className={cn("text-base-3 dark:text-base-2", sizeClass.helper)}>
               {description}
             </p>
           )}

@@ -12,7 +12,7 @@ const Label: React.FC<LabelProps> = (props) => {
     <div className="flex items-center justify-between">
       <label
         className={cn(
-          "text-nl-700 dark:text-nd-300 text-sm font-normal",
+          "text-base-content dark:text-base-2 text-sm font-normal",
           className,
         )}
         {...rest}

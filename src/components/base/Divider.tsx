@@ -10,7 +10,7 @@ const Divider: React.FC<DividerProps> = (props) => {
   return (
     <div
       className={cn(
-        "dark:bg-nd-500 bg-nl-200 h-px w-full",
+        "dark:bg-base-3 bg-neutral-content h-px w-full",
         vertical ? "h-full w-px" : "h-px w-full",
         className,
       )}

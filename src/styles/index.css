@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@config "../../tailwind.config.js";
 @custom-variant dark (&:where(.dark, .dark *));
 @import "./datePicker.css";
 @import "./google.css";
@@ -30,10 +31,10 @@ body {
 
 @layer base {
   .lucide {
-    color: var(--nl-600);
+    color: var(--primary-content-600);
   }
   .dark .lucide {
-    color: var(--nd-200);
+    color: var(--secondary-200);
   }
   h1 {
     @apply text-4xl;
@@ -59,12 +60,6 @@ body {
   span {
     @apply text-xs;
   }
-  .card {
-    @apply border-nl-200 dark:bg-nd-700 dark:border-nd-500 rounded-xl border bg-white;
-  }
-  .card--soft {
-    @apply border-nl-100 dark:bg-nd-800 dark:border-nd-700 rounded-xl border bg-white;
-  }
 }
 
 .fall {
@@ -76,11 +71,11 @@ body {
 }
 
 .input-icon-container {
-  @apply bg-nl-50 dark:bg-nd-600 flex h-9 w-10 items-center justify-center pr-0;
+  @apply bg-primary-content-50 dark:bg-secondary-700 flex h-9 w-10 items-center justify-center pr-0;
 }
 
 .filters-wrapper {
-  @apply border-nl-200 dark:bg-nd-700 dark:border-nd-500 flex items-center rounded-lg border bg-white px-3 py-0.5;
+  @apply border-primary-content-200 dark:bg-secondary-800 dark:border-secondary-600 flex items-center rounded-lg border bg-white px-3 py-0.5;
 }
 
 ::view-transition-new(root) {
@@ -256,28 +251,28 @@ input[type="number"]::-webkit-outer-spin-button {
 /* USER SELECT */
 
 ::selection {
-  background: var(--pl-400);
-  color: var(--nl-50);
+  background: var(--primary-400);
+  color: var(--primary-content-50);
   text-shadow: none;
 }
 
 ::-moz-selection {
-  background: var(--pl-400);
-  color: var(--nl-50);
+  background: var(--primary-400);
+  color: var(--primary-content-50);
   text-shadow: none;
 }
 
-.dark ::selection {
-  background: var(--pd-700);
-  color: var(--nd-50);
+/* .dark ::selection {
+  background: var(--primary-700);
+  color: var(--secondary-50);
   text-shadow: none;
 }
 
 .dark ::-moz-selection {
-  background: var(--pd-700);
-  color: var(--nd-50);
+  background: var(--primary-700);
+  color: var(--secondary-50);
   text-shadow: none;
-}
+} */
 
 /* Shimmer Animation */
 
@@ -297,7 +292,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .shimmer {
-  background: var(--nl-100);
+  background: var(--primary-content-100);
   position: relative;
   overflow: hidden;
   border-radius: 8px;
@@ -313,24 +308,24 @@ input[type="number"]::-webkit-outer-spin-button {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--nl-200),
+    var(--primary-content-200),
     transparent 100%
   );
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-.dark .shimmer {
-  background: var(--nd-700);
+/* .dark .shimmer {
+  background: var(--secondary-800);
 }
 
 .dark .shimmer::before {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--nd-600),
+    var(--secondary-700),
     transparent 100%
   );
-}
+} */
 
 input[type="time"]::-webkit-calendar-picker-indicator {
   display: none;
@@ -339,77 +334,111 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 /* Shimmer Animation */
 
 input:-webkit-autofill {
-  background-color: theme("colors.white") !important;
-  -webkit-box-shadow: 0 0 0px 1000px theme("colors.white") inset !important;
-  -webkit-text-fill-color: theme("colors.nl.800") !important;
-}
-
-.dark input:-webkit-autofill {
-  background-color: theme("colors.nd.800") !important;
-  -webkit-box-shadow: 0 0 0px 1000px theme("colors.nd.800") inset !important;
-  -webkit-text-fill-color: theme("colors.nd.100") !important;
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  -webkit-text-fill-color: var(--base-content) !important;
 }
 
 :root {
-  --pl-50: #f3e9fd;
-  --pl-100: #e3cdfb;
-  --pl-200: #d4b1fa;
-  --pl-300: #be88f7;
-  --pl-400: #a05eec;
-  --pl-500: #670fc4;
-  --pl-600: #580da8;
-  --pl-700: #3e097a;
-  --pl-800: #1f0452;
-  --pl-900: #020203;
 
-  --nl-50: #f6f6f6;
-  --nl-100: #eeeeee;
-  --nl-200: #e2e2e2;
-  --nl-300: #cccccc;
-  --nl-400: #999999;
-  --nl-500: #8d8d8d;
-  --nl-600: #666666;
-  --nl-700: #404040;
-  --nl-800: #202020;
-  --nl-900: #111111;
+  /*------------------ SEMANTIC COLORS ------------------ */
+  /* Primary - Violet */
+  --primary-50: #F3F2FF;
+  --primary-100: #EAE7FF;
+  --primary-200: #D7D2FF;
+  --primary-300: #BAAEFF;
+  --primary-400: #9880FF;
+  --primary-500: #794DFF;
+  --primary-600: #7033FF;
+  --primary-700: #5A16EB;
+  --primary-800: #4C12C5;
+  --primary-900: #3F11A1;
 
-  --dl-400: #d83838;
-  --dl-500: #c62828;
-  --dl-600: #ae2626;
+  /* Primary-Content - Indigo */
+  --primary-content-50: #EEF2FF;
+  --primary-content-100: #E0E7FF;
+  --primary-content-200: #C7D2FE;  
+  --primary-content-300: #A5B4FC;
+  --primary-content-400: #818CF8;
+  --primary-content-500: #6366F1;
+  --primary-content-600: #4F46E5;
+  --primary-content-700: #4338CA;
+  --primary-content-800: #3730A3;
+  --primary-content-900: #312E81;  
 
-  --sl-400: #5fd679;
-  --sl-500: #41c95f;
-  --sl-600: #32b04e;
+  /* Secondary & Secondary-Content - Neutral */
+  --secondary-50: #f7f7f8;
+  --secondary-100: #efeef0;
+  --secondary-200: #dbd9de;
+  --secondary-300: #bbb8c1;
+  --secondary-400: #97929e;
+  --secondary-500: #76717f;
+  --secondary-600: #635e6b;
+  --secondary-700: #504d57;
+  --secondary-800: #45424a;
+  --secondary-900: #3c3a40;
 
-  --pd-50: #f3e9fd;
-  --pd-100: #e6d7fb;
-  --pd-200: #d6bbf9;
-  --pd-300: #c494f7;
-  --pd-400: #9c5aee;
-  --pd-500: #670fc4;
-  --pd-600: #580da8;
-  --pd-700: #3e097a;
-  --pd-800: #1f0452;
-  --pd-900: #030853;
+  /* Accent & Accent-Content - Blue */
+  --a-50: #eff6ff;
+  --a-100: #dbeafe;
+  --a-200: #bfdbfe;
+  --a-300: #93c5fd;
+  --a-400: #60a5fa;
+  --a-500: #3b82f6;
+  --a-600: #2563eb;
+  --a-700: #1d4ed8;
+  --a-800: #1e40af;
+  --a-900: #1e3a8a;
 
-  --nd-900: #0c0c0c;
-  --nd-800: #121212;
-  --nd-700: #181818;
-  --nd-600: #1f1f1f;
-  --nd-500: #2b2b2b;
-  --nd-400: #4d4d4d;
-  --nd-300: #808080;
-  --nd-200: #aeaeae;
-  --nd-100: #d4d4d4;
-  --nd-50: #e8e8e8;
+  /* ------------------ BASE-COLORS ------------------ */
+  --neutral : #474857;
+  --neutral-content : ##F7F7F8;
+  --base-100: #FFFFFF;
+  --base-200: #F8F7FB;
+  --base-300: rgba(64, 63, 67, 0.06);
+  --base-content: #3F404D;
+  --body-content: rgba(63, 64, 77, 0.8);
+  --disabled-content: rgba(63, 64, 77, 0.5);
+  
+  /* ------------------ STATUS-COLORS ------------------ */
+  --info: #06B6D4;
+  --info-content: ##ECFEFF;
+  --success: #02CA4B;
+  --success-content: #F0FCF8;
+  --warning: #FCAA1D;
+  --warning-content: #FFFDF5;
+  --error: #FB4141;
+  --error-content: #FFFAF5; 
 
-  --dd-400: #e9505c;
-  --dd-500: #ce2d38;
-  --dd-600: #da1e2c;
+  /* --primary-50: #f3e9fd;
+  --primary-100: #e6d7fb;
+  --primary-200: #d6bbf9;
+  --primary-300: #c494f7;
+  --primary-400: #9c5aee;
+  --primary-500: #670fc4;
+  --primary-600: #580da8;
+  --primary-700: #3e097a;
+  --primary-800: #1f0452;
+  --primary-900: #030853; */
 
-  --sd-400: #29ce60;
-  --sd-500: #1fa54c;
-  --sd-600: #1b863f;
+  /* --neutral: #0c0c0c;
+  --neutral: #121212;
+  --base-3: #181818;
+  --base-3: #1f1f1f;
+  --base-3: #2b2b2b;
+  --base-2: #4d4d4d;
+  --base-2: #808080;
+  --neutral-content: #aeaeae;
+  --neutral-content: #d4d4d4;
+  --neutral-content: #e8e8e8; */
+
+  /* --neutral-400: #e9505c;
+  --neutral-500: #ce2d38;
+  --neutral-600: #da1e2c; */
+
+  /* --secondary-400: #29ce60;
+  --secondary-500: #1fa54c;
+  --secondary-600: #1b863f; */
 
   --t-violet: #9972ff;
   --t-blue: #76caff;
@@ -425,65 +454,75 @@ input:-webkit-autofill {
 }
 
 @theme inline {
-  --color-pl-900: var(--pl-900);
-  --color-pl-800: var(--pl-800);
-  --color-pl-700: var(--pl-700);
-  --color-pl-600: var(--pl-600);
-  --color-pl-500: var(--pl-500);
-  --color-pl-400: var(--pl-400);
-  --color-pl-300: var(--pl-300);
-  --color-pl-200: var(--pl-200);
-  --color-pl-100: var(--pl-100);
-  --color-pl-50: var(--pl-50);
+  --color-primary-900: var(--primary-900);
+  --color-primary-800: var(--primary-800);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-500: var(--primary-500);
+  --color-primary-400: var(--primary-400);
+  --color-primary-300: var(--primary-300);
+  --color-primary-200: var(--primary-200);
+  --color-primary-100: var(--primary-100);
+  --color-primary-50: var(--primary-50);
 
-  --color-nl-900: var(--nl-900);
-  --color-nl-800: var(--nl-800);
-  --color-nl-700: var(--nl-700);
-  --color-nl-600: var(--nl-600);
-  --color-nl-500: var(--nl-500);
-  --color-nl-400: var(--nl-400);
-  --color-nl-300: var(--nl-300);
-  --color-nl-200: var(--nl-200);
-  --color-nl-100: var(--nl-100);
-  --color-nl-50: var(--nl-50);
+  --color-primary-content-900: var(--primary-content-900);
+  --color-primary-content-800: var(--primary-content-800);
+  --color-primary-content-700: var(--primary-content-700);
+  --color-primary-content-600: var(--primary-content-600);
+  --color-primary-content-500: var(--primary-content-500);
+  --color-primary-content-400: var(--primary-content-400);
+  --color-primary-content-300: var(--primary-content-300);
+  --color-primary-content-200: var(--primary-content-200);
+  --color-primary-content-100: var(--primary-content-100);
+  --color-primary-content-50: var(--primary-content-50);
 
-  --color-dl-400: var(--dl-400);
-  --color-dl-500: var(--dl-500);
-  --color-dl-600: var(--dl-600);
+  --color-secondary-900: var(--secondary-900);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-50: var(--secondary-50);
 
-  --color-sl-400: var(--sl-400);
-  --color-sl-500: var(--sl-500);
-  --color-sl-600: var(--sl-600);
+  --color-accent-900: var(--a-900);
+  --color-accent-800: var(--a-800);
+  --color-accent-700: var(--a-700);
+  --color-accent-600: var(--a-600);
+  --color-accent-500: var(--a-500);
+  --color-accent-400: var(--a-400);
+  --color-accent-300: var(--a-300);
+  --color-accent-200: var(--a-200);
+  --color-accent-100: var(--a-100);
+  --color-accent-50: var(--a-50);
 
-  --color-pd-900: var(--pd-900);
-  --color-pd-800: var(--pd-800);
-  --color-pd-700: var(--pd-700);
-  --color-pd-600: var(--pd-600);
-  --color-pd-500: var(--pd-500);
-  --color-pd-400: var(--pd-400);
-  --color-pd-300: var(--pd-300);
-  --color-pd-200: var(--pd-200);
-  --color-pd-100: var(--pd-100);
-  --color-pd-50: var(--pd-50);
+  /* Main-theme colors */
+  --color-primary: var(--primary-500);
+  --color-primary-content: var(--primary-content-100);
+  --color-secondary: var(--secondary-500);
+  --color-secondary-content: var(--secondary-100);
+  --color-accent: var(--a-500);
+  --color-accent-content: var(--a-100);
 
-  --color-nd-900: var(--nd-900);
-  --color-nd-800: var(--nd-800);
-  --color-nd-700: var(--nd-700);
-  --color-nd-600: var(--nd-600);
-  --color-nd-500: var(--nd-500);
-  --color-nd-400: var(--nd-400);
-  --color-nd-300: var(--nd-300);
-  --color-nd-200: var(--nd-200);
-  --color-nd-100: var(--nd-100);
-  --color-nd-50: var(--nd-50);
+  --color-neutral: var(--neutral);
+  --color-neutral-content: var(--neutral-content);
+  --color-base-1: var(--base-100);
+  --color-base-2: var(--base-200);
+  --color-base-3: var(--base-300);
+  --color-base-content: var(--base-content);
+  --color-body-content: var(--body-content);
+  --color-disabled-content: var(--disabled-content);
 
-  --color-dd-400: var(--dd-400);
-  --color-dd-500: var(--dd-500);
-  --color-dd-600: var(--dd-600);
-
-  --color-sd-400: var(--sd-400);
-  --color-sd-500: var(--sd-500);
-  --color-sd-600: var(--sd-600);
+  --color-info: var(--info);
+  --color-info-content: var(--info-content);
+  --color-success: var(--success);
+  --color-success-content: var(--success-content);
+  --color-warning: var(--warning);
+  --color-warning-content: var(--warning-content);
+  --color-error: var(--error);
+  --color-error-content: var(--error-content);
 
   --color-t-violet: var(--t-violet);
   --color-t-blue: var(--t-blue);

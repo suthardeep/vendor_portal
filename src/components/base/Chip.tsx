@@ -26,7 +26,7 @@ interface ChipProps extends React.HTMLAttributes<HTMLDivElement> {
 const colorMap: Record<ChipColor, { bg: string; text: string }> = {
   gray: {
     bg: "bg-gray-100 dark:bg-neutral-800",
-    text: "text-gray-600 dark:text-nd-100",
+    text: "text-gray-600 dark:text-neutral-content",
   },
   blue: {
     bg: "bg-blue-100 dark:bg-blue-950",

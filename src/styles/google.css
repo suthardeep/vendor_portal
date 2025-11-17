@@ -1,14 +1,15 @@
 .pac-container {
-  @apply dark:bg-nd-700 dark:border-nd-500 border-nl-200 rounded-md border bg-white shadow-md;
+  /* map neutral light/dark -> secondary (s-*) */
+  @apply dark:bg-secondary-800 dark:border-secondary-600 border-secondary-200 rounded-md border bg-white shadow-md;
 }
 
 .pac-item {
-  @apply border-t-nl-200 dark:border-t-nd-500 text-nl-500 dark:text-nd-300 hover:bg-nl-100 hover:dark:bg-nl-800 hover:cursor-pointer;
+  @apply border-t-secondary-200 dark:border-t-secondary-500 text-secondary-500 dark:text-secondary-300 hover:bg-secondary-100 hover:dark:bg-secondary-800 hover:cursor-pointer;
 }
 
 .pac-item-query,
 .pac-item-query * {
-  @apply text-nl-700 dark:text-nd-50 !font-semibold;
+  @apply text-secondary-700 dark:text-secondary-50 !font-semibold;
 }
 
 .pac-matched {

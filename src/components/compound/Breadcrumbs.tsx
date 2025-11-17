@@ -21,13 +21,13 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = (props) => {
           <li key={index} className="flex items-center">
             {index > 0 && (
               <ChevronRightIcon
-                className="text-nl-400 dark:text-nd-300 mr-0.5"
+                className="text-base-2 dark:text-base-2 mr-0.5"
                 size={14}
               />
             )}
             <Link
               to={breadcrumb.to}
-              className={`truncate text-sm transition-colors ${breadcrumbs.length === index + 1 ? "text-nl-700 dark:text-nd-100 font-medium" : "text-nl-400 hover:text-nl-600 dark:text-nd-300 hover:dark:text-nd-200"}`}
+              className={`truncate text-sm transition-colors ${breadcrumbs.length === index + 1 ? "text-base-3 dark:text-neutral-content font-medium" : "text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"}`}
             >
               {breadcrumb.label}
             </Link>

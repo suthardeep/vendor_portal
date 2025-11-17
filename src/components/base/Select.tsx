@@ -143,8 +143,8 @@ function CustomSelectInner<T = string>(
         <ErrorText
           className={
             error
-              ? "text-dl-500 dark:text-dd-500"
-              : "text-nl-500 dark:text-nd-300"
+              ? "text-base-3 dark:text-neutral-500"
+              : "text-base-3 dark:text-base-2"
           }
         >
           {error || helperText}
@@ -155,29 +155,29 @@ function CustomSelectInner<T = string>(
 }
 
 const controlClasses = {
-  base: "border border-nl-200 dark:border-nd-500 bg-white dark:bg-nd-800 rounded-lg py-2 px-3 text-sm",
-  focus: "focus-within:border-nl-400 dark:focus-within:border-nd-300",
+  base: "border border-neutral-content dark:border-base-3 bg-white dark:bg-neutral rounded-lg py-2 px-3 text-sm",
+  focus: "focus-within:border-base-2 dark:focus-within:border-base-2",
 };
 
 const minimalControlClasses = {
   base: "bg-transparent border-0 shadow-none p-0 m-0 !min-h-8 h-auto text-sm",
 };
 
-const noOptionsStyles = `text-nl-600 dark:text-nd-200 text-sm p-1.5`;
+const noOptionsStyles = `text-base-3 dark:text-neutral-content text-sm p-1.5`;
 const menuStyles =
-  "p-1.5 my-1.5 border border-nl-200 dark:border-nd-500 bg-white dark:bg-nd-700 rounded-lg shadow-xs min-w-fit";
-const placeholderStyles = "text-nl-600 dark:text-nd-300";
+  "p-1.5 my-1.5 border border-neutral-content dark:border-base-3 bg-white dark:bg-base-3 rounded-lg shadow-xs min-w-fit";
+const placeholderStyles = "text-base-3 dark:text-base-2";
 const optionStyles = {
-  base: "py-2 px-3 [&>*]:!text-sm text-nl-600 dark:text-nd-200 font-medium rounded text-nowrap mt-0.5",
-  focus: "bg-nl-50 dark:bg-nd-500 !active:bg-nl-200",
-  selected: "!text-nl-900 dark:!text-nd-50 bg-pl-100/30 dark:bg-pd-500/20",
+  base: "py-2 px-3 [&>*]:!text-sm text-base-3 dark:text-neutral-content font-medium rounded text-nowrap mt-0.5",
+  focus: "bg-neutral-content dark:bg-base-3 !active:bg-neutral-content",
+  selected: "!text-neutral dark:!text-neutral-content bg-primary-100/30 dark:bg-primary-500/20",
 };
-const singleValueStyles = "text-nl-800 dark:text-nd-100";
+const singleValueStyles = "text-neutral dark:text-neutral-content";
 const multiValueLabelStyles = "text-xs";
 const multiValueRemoveStyles =
-  "text-nl-500 hover:text-red-800 hover:border-red-300 rounded-md";
+  "text-base-3 hover:text-red-800 hover:border-red-300 rounded-md";
 const inputStyles =
-  "text-sm text-nl-800 dark:text-nd-100 placeholder:text-gray-400";
+  "text-sm text-neutral dark:text-neutral-content placeholder:text-gray-400";
 
 export const Select = React.forwardRef(CustomSelectInner) as <
   T = string,
@@ -197,7 +197,7 @@ const ValueContainer = (props: CustomValueContainerProps) => {
     return (
       <components.ValueContainer {...props} className={cn("m-0 p-0")}>
         {displayValue && (
-          <div className="text-nl-800 dark:text-nd-100 truncate px-1 text-sm">
+          <div className="text-neutral dark:text-neutral-content truncate px-1 text-sm">
             {displayValue}
           </div>
         )}
@@ -216,7 +216,7 @@ const Option = (props: any) => {
   return (
     <components.Option
       {...props}
-      className="!flex items-center justify-between"
+      className="flex! items-center justify-between"
     >
       <span className="flex-1">{label}</span>
       {isMulti ? (
@@ -236,7 +236,7 @@ const Option = (props: any) => {
 const DropdownIndicator = (props: any) => (
   <components.DropdownIndicator {...props}>
     <ChevronDown
-      className="text-nl-400 hover:text-nl-600 dark:text-nd-300 hover:dark:text-nd-200"
+      className="text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"
       size={20}
     />
   </components.DropdownIndicator>
@@ -245,7 +245,7 @@ const DropdownIndicator = (props: any) => (
 const ClearIndicator = (props: any) => (
   <components.ClearIndicator {...props}>
     <X
-      className="text-nl-400 hover:text-nl-600 dark:text-nd-300 hover:dark:text-nd-200"
+      className="text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"
       size={16}
     />
   </components.ClearIndicator>

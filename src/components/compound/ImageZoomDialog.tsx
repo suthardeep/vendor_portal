@@ -9,7 +9,7 @@ const ImageZoomDialog = () => {
   return ReactDOM.createPortal(
     <div
       onClick={() => setZoomedImageSrc(null)}
-      className="fall bg-nl-100/95 dark:bg-nd-900/95 fixed inset-0 z-[10000] cursor-zoom-out"
+      className="fall bg-neutral-content/95 dark:bg-neutral/95 fixed inset-0 z-10000 cursor-zoom-out"
     >
       <img
         src={zoomedImageSrc || ""}

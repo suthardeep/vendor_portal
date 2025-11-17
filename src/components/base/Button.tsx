@@ -139,7 +139,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </div>
 
             <div className={cn("fall", contentHeight)}>
-              <Spinner className="stroke-nl-600 dark:stroke-nd-200" />
+              <Spinner className="stroke-base-3 dark:stroke-neutral-content" />
             </div>
           </div>
         </div>

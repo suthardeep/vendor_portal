@@ -18,17 +18,17 @@ const UploadImagePlaceholder: React.FC<UploadImagePlaceholderProps> = (
     <div
       onClick={onClick}
       className={cn(
-        "border-nl-200 dark:border-nd-500 hover:bg-nl-50/50 dark:hover:bg-nd-600 flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-y-2 rounded-lg border-2 border-dashed transition-all",
+        "border-neutral-content dark:border-base-3 hover:bg-neutral-content/50 dark:hover:bg-base-3 flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-y-2 rounded-lg border-2 border-dashed transition-all",
         classname,
       )}
     >
       {customIcon ? (
         customIcon
       ) : (
-        <ImageIcon className="text-nl-500 dark:text-nd-400" />
+        <ImageIcon className="text-base-3 dark:text-base-2" />
       )}
       {placeholder && (
-        <p className="text-nl-600 dark:text-nd-300 max-w-3/4 text-center">
+        <p className="text-base-3 dark:text-base-2 max-w-3/4 text-center">
           {placeholder || ""}
         </p>
       )}

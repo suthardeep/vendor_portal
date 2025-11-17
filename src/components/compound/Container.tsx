@@ -71,7 +71,7 @@ const Container: React.FC<ContainerProps> = (props) => {
         )}
         onClick={handleOnCollapse}
       >
-        <p className="dark:text-nd-200 text-nl-600 mr-auto font-medium">
+        <p className="dark:text-neutral-content text-base-3 mr-auto font-medium">
           {title || "Card Title"}
         </p>
         <div onClick={(e) => e.stopPropagation()}>

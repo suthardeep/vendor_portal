@@ -26,10 +26,10 @@ const Unauthorized: React.FC<UnauthorizedProps> = ({ hideIcon, hideCta }) => {
           </div>
         </div>
       )}
-      <h4 className="text-nl-700 dark:text-nd-100 text-center font-medium">
+      <h4 className="text-base-3 dark:text-neutral-content text-center font-medium">
         Unauthorized
       </h4>
-      <p className="text-nl-600 dark:text-nd-300 text-center">
+      <p className="text-base-3 dark:text-base-2 text-center">
         You are not allowed to access this page. Please contact admin to grant
         permissions.
       </p>

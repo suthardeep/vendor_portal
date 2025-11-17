@@ -8,7 +8,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
-import '../styles/App.css'
+import '../styles/index.css'
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
@@ -27,7 +27,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function Root() {
 
   return (
-    <div className="dark:bg-nd-900 h-screen w-screen bg-[#FAFAFA]">
+    <div className="dark:bg-neutral h-screen w-screen bg-[#FAFAFA]">
       <Toaster visibleToasts={6} />
       <Outlet />
       <ImageZoomDialog />

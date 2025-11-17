@@ -28,17 +28,17 @@ const QuantityControl: React.FC<QuantityControlProps> = (props) => {
   return (
     <div className={cn("flex items-center gap-2", className)}>
       {showLabel && (
-        <span className="text-nl-600 dark:text-nd-300 text-sm">Quantity:</span>
+        <span className="text-base-3 dark:text-base-2 text-sm">Quantity:</span>
       )}
       <IconButton
         icon={Minus}
         size={size}
         onClick={(e) => onDecrement(e)}
-        className="text-nl-600 dark:text-nd-300 hover:bg-nl-100 dark:hover:bg-nd-700"
+        className="text-base-3 dark:text-base-2 hover:bg-neutral-content dark:hover:bg-base-3"
       />
       <span
         className={cn(
-          "text-nl-900 dark:text-nd-50 min-w-8 text-center font-semibold",
+          "text-neutral dark:text-neutral-content min-w-8 text-center font-semibold",
           size === "xs" && "min-w-3 text-sm",
           size === "sm" && "min-w-3 text-sm",
           size === "md" && "min-w-3 text-base",
@@ -53,7 +53,7 @@ const QuantityControl: React.FC<QuantityControlProps> = (props) => {
         onClick={(e) => onIncrement(e)}
         disabled={isMaxReached}
         className={cn(
-          "text-nl-600 dark:text-nd-300 hover:bg-nl-100 dark:hover:bg-nd-700",
+          "text-base-3 dark:text-base-2 hover:bg-neutral-content dark:hover:bg-base-3",
           "disabled:cursor-not-allowed disabled:opacity-50",
         )}
       />

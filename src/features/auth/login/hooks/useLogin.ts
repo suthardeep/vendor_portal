@@ -3,10 +3,10 @@ import z from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../api/queryHooks";
-import { redirect } from "@tanstack/react-router";
-import { ROUTES } from "@/constants/routes";
-import { showErrorToasts } from "@/utils/helpers";
-import { LoginResponse } from "../types/login";
+// import { redirect } from "@tanstack/react-router";
+// import { ROUTES } from "@/constants/routes";
+// import { showErrorToasts } from "@/utils/helpers";
+// import { LoginResponse } from "../types/login";
 
 export const useLogin = ()=>{
 
@@ -28,17 +28,18 @@ export const useLogin = ()=>{
 
 
         const onSubmit = async(data:LoginFormFields)=>{
-            const res = mutation.mutate(data , {
-                onSuccess:(data:LoginResponse)=>{
-                    redirect({
-                        to:ROUTES.DASHBOARD
-                    })
-                },
-                onError:(error)=>{
-                    showErrorToasts(error)
-                }
+            console.log("Login data: ",data);
+            // const res = mutation.mutate(data , {
+            //     onSuccess:(data:LoginResponse)=>{
+            //         redirect({
+            //             to:ROUTES.DASHBOARD
+            //         })
+            //     },
+            //     onError:(error)=>{
+            //         showErrorToasts(error)
+            //     }
 
-            } )
+            // } )
          
 
         }

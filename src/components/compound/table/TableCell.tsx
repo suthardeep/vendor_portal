@@ -8,7 +8,7 @@ const paddingMap = {
 };
 
 const tableBodyCellClassName =
-  "text-nl-600 dark:text-nd-200 text-sm font-normal whitespace-nowrap";
+  "text-base-3 dark:text-neutral-content text-sm font-normal whitespace-nowrap";
 
 interface TableCellProps {
   children: React.ReactNode;

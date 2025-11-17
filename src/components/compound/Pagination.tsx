@@ -55,7 +55,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
         className,
       )}
     >
-      <p className="text-nl-500">
+      <p className="text-base-3">
         {selectedIds && selectedIds?.length > 0 && (
           <>
             {" "}
@@ -82,7 +82,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
             page === "..." ? (
               <span
                 key={index}
-                className="fall dark:text-nd-200 text-nl-600 size-7 select-none"
+                className="fall dark:text-neutral-content text-base-3 size-7 select-none"
               >
                 ...
               </span>
@@ -117,9 +117,9 @@ const Pagination: React.FC<PaginationProps> = (props) => {
 };
 
 const basClasses = `fall h-7 min-w-7 cursor-pointer rounded-lg border px-1 text-sm transition-all`;
-const buttonColorClasses = `text-nl-400 dark:text-nd-300 hover:text-nl-600 hover:dark:text-nd-200 hover:bg-nl-50 hover:dark:bg-nd-600 border-transparent`;
+const buttonColorClasses = `text-base-2 dark:text-base-2 hover:text-base-3 hover:dark:text-neutral-content hover:bg-neutral-content hover:dark:bg-base-3 border-transparent`;
 const activeButtonColorClasses =
-  "text-nl-600 dark:bg-nd-700 border-nl-200 dark:border-nd-400/50 dark:text-nd-50 bg-white";
+  "text-base-3 dark:bg-base-3 border-neutral-content dark:border-base-2/50 dark:text-neutral-content bg-white";
 
 export default Pagination;
 

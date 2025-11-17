@@ -10,8 +10,6 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
   const [isVisible, setIsVisible] = useState(isLoading);
   const [isExiting, setIsExiting] = useState(false);
 
-  const foodEmojis = ["🍕", "🍔", "🥗", "🛒", "🥖", "🍎"];
-
   // Precompute all streak data once
   const streakData = useMemo(() => {
     const left = Array.from({ length: 4 }, () => ({
@@ -45,11 +43,11 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
 
   return (
     <div
-      className={`bg-nl-50 dark:bg-nd-900 fixed inset-0 z-50 flex items-center justify-center transition-all duration-800 ease-in-out ${
+      className={`bg-neutral-content dark:bg-neutral fixed inset-0 z-50 flex items-center justify-center transition-all duration-800 ease-in-out ${
         isExiting ? "scale-95 opacity-0" : "scale-100 opacity-100"
       }`}
     >
-      <div className="via-nl-100 dark:via-nd-900 absolute inset-0 bg-gradient-to-b from-purple-100/60 to-purple-100/60 dark:from-purple-900/20 dark:to-purple-900/20" />
+      <div className="via-neutral-content dark:via-neutral absolute inset-0 bg-gradient-to-b from-purple-100/60 to-purple-100/60 dark:from-purple-900/20 dark:to-purple-900/20" />
 
       <div className="relative flex flex-col items-center space-y-8">
         {/* Speed lines and bike */}
@@ -81,7 +79,7 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
           {/* Bike */}
           <div className="relative z-10">
             <Bike
-              className="text-pl-600 dark:text-pl-400 h-16 w-16"
+              className="text-primary-600 dark:text-primary-400 h-16 w-16"
               style={{
                 filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.6))",
                 animation: "bike-bounce 1.5s ease-in-out infinite",
@@ -121,7 +119,7 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
 
         {/* Brand text */}
         <div className="space-y-2 text-center">
-          <h1 className="text-nl-700 dark:text-nd-50 text-4xl font-bold tracking-wide">
+          <h1 className="text-base-3 dark:text-neutral-content text-4xl font-bold tracking-wide">
             Foodboss
           </h1>
           <p className="text-lg font-medium text-gray-400">
@@ -129,21 +127,6 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
           </p>
         </div>
 
-        {/* Emojis */}
-        <div className="flex space-x-4">
-          {foodEmojis.map((emoji, index) => (
-            <div
-              key={index}
-              className="text-2xl"
-              style={{
-                animation: `smooth-wave 2.5s ease-in-out infinite`,
-                animationDelay: `${index * 0.3}s`,
-              }}
-            >
-              {emoji}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

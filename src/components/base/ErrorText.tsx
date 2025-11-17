@@ -10,7 +10,7 @@ const ErrorText: React.FC<ErrorTextProps> = (props) => {
   const { className, children } = props;
 
   return (
-    <p className={cn("text-dl-500 dark:text-dd-500", className)}>{children}</p>
+    <p className={cn("text-base-3 dark:text-neutral-500", className)}>{children}</p>
   );
 };
 

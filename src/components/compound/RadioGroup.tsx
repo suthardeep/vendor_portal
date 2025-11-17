@@ -128,11 +128,11 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                     "flex items-center justify-center rounded-full border transition-all duration-200 ease-in-out",
                     config.radio,
                     isChecked
-                      ? "border-pl-500 dark:border-pd-600"
-                      : "border-nl-300 dark:border-nd-500",
+                      ? "border-primary-500 dark:border-primary-600"
+                      : "border-base-2 dark:border-base-3",
                     !isDisabled && "hover:border-opacity-80",
                     "focus-within:ring-2 focus-within:ring-offset-2 focus-within:outline-none",
-                    "focus-visible:ring-pl-500 dark:focus-visible:ring-pd-400",
+                    "focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400",
                   )}
                   tabIndex={isDisabled ? -1 : 0}
                   role="radio"
@@ -145,7 +145,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                       className={cn(
                         "rounded-full transition-all duration-200 ease-in-out",
                         config.indicator,
-                        "bg-pl-500 dark:bg-pd-400",
+                        "bg-primary-500 dark:bg-primary-400",
                       )}
                     />
                   )}
@@ -157,13 +157,13 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                   className={cn(
                     "leading-tight font-medium",
                     config.text,
-                    "text-nl-700 dark:text-nd-100",
+                    "text-base-3 dark:text-neutral-content",
                   )}
                 >
                   {option.label}
                 </p>
                 {option.helperText && (
-                  <p className="text-nl-600 dark:text-nd-300 mt-1 text-sm leading-tight">
+                  <p className="text-base-3 dark:text-base-2 mt-1 text-sm leading-tight">
                     {option.helperText}
                   </p>
                 )}

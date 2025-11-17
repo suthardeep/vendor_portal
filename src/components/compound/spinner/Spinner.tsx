@@ -13,7 +13,7 @@ const Spinner: React.FC<SpinnerProps> = (props) => {
   return (
     <svg
       className={cn(
-        `${styles.spinner} stroke-nl-600 dark:stroke-nd-300`,
+        `${styles.spinner} stroke-base-3 dark:stroke-base-2`,
         className,
       )}
       viewBox="0 0 50 50"

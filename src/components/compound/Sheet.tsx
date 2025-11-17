@@ -80,7 +80,7 @@ const Sheet: React.FC<SheetProps> = (props) => {
       >
         <div
           className={cn(
-            `dark:bg-nd-800 flex h-[98dvh] w-full flex-col rounded-[10px] border border-b bg-white`,
+            `dark:bg-neutral flex h-[98dvh] w-full flex-col rounded-[10px] border border-b bg-white`,
             borderColorClass,
           )}
         >
@@ -96,19 +96,19 @@ const Sheet: React.FC<SheetProps> = (props) => {
                 >
                   <div className="flex flex-col">
                     {title && (
-                      <h6 className="text-nl-700 dark:text-nd-50 font-medium">
+                      <h6 className="text-base-3 dark:text-neutral-content font-medium">
                         {title}
                       </h6>
                     )}
                     {subTitle && (
-                      <p className="text-nl-400 dark:text-nd-300">{subTitle}</p>
+                      <p className="text-base-2 dark:text-base-2">{subTitle}</p>
                     )}
                   </div>
                   <IconButton
                     icon={X}
                     size={"xs"}
                     onClick={close}
-                    iconClassName="text-nl-700 dark:text-nd-200"
+                    iconClassName="text-base-3 dark:text-neutral-content"
                   />
                 </div>
               )}
@@ -161,7 +161,7 @@ const Sheet: React.FC<SheetProps> = (props) => {
   );
 };
 
-const borderColorClass = `border-nl-200 dark:border-nd-500`;
+const borderColorClass = `border-neutral-content dark:border-base-3`;
 const paddingClass = `px-4.5 py-3.5`;
 
 export default Sheet;

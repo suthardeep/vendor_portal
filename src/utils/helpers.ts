@@ -1,4 +1,4 @@
-import type { AppRouter } from "@/AuthInitializer";
+import type { AppRouter } from "@/AppInitializer";
 import { toast } from "@/components/compound/Sonner";
 import type { BaseApiErrorResponse } from "@/types/baseApi";
 import type { ClassValue } from "clsx";

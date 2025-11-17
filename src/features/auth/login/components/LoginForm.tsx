@@ -1,16 +1,17 @@
-import React from "react";
 import { useLogin } from "../hooks/useLogin";
 import { Input } from "@/components/base/Input";
-import { Button } from "@/components/base/Button";
+// import { Button } from "@/components/base/Button";
+import ImageMagnifier from "@/components/shared/ImageMagnifier";
+import Button2 from "@/components/base/Button2";
 
 const LoginForm = () => {
   const {
     register,
     handleSubmit,
     errors,
-    isSubmitting,
+    // isSubmitting,
     onSubmit,
-    isPending,
+    // isPending,
   } = useLogin();
 
   return (
@@ -24,6 +25,8 @@ const LoginForm = () => {
           <p className="text-gray-600 mt-2">
             Log in to access your account
           </p>
+
+          <ImageMagnifier/>
           <form
             className="mt-8 grid gap-y-5"
             onSubmit={handleSubmit(onSubmit)}
@@ -51,13 +54,11 @@ const LoginForm = () => {
                 Forgot password?
               </a>
             </div>
-            <Button
-              className="mt-4 w-full"
-              type="submit"
-              isLoading={isPending || isSubmitting}
+            <Button2
+            theme={['primary-500', 'white']}
             >
               Login
-            </Button>
+            </Button2>
           </form>
           <p className="text-sm text-center text-gray-600 mt-6">
             Don't have an account?{" "}

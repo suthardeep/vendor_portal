@@ -58,8 +58,8 @@ const Switch: React.FC<SwitchProps> = (props) => {
           loading
             ? "bg-gray-300 dark:bg-gray-600"
             : checked
-              ? "bg-sl-500 dark:bg-sd-600"
-              : "bg-nl-300 dark:bg-nd-500"
+              ? "bg-secondary-500 dark:bg-secondary-600"
+              : "bg-base-2 dark:bg-base-3"
         } ${
           checked && !loading
             ? "focus-within:shadow-lg focus-within:shadow-green-700/50"
@@ -72,7 +72,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
               ? "bg-gray-100 dark:bg-gray-300"
               : checked
                 ? "bg-white"
-                : "dark:bg-nd-100 bg-white"
+                : "dark:bg-neutral-content bg-white"
           } ${
             loading
               ? checked

@@ -20,7 +20,7 @@ const GlobalNotFound: React.FC<GlobalNotFoundProps> = ({ error }) => {
           <DarkGraphic />
         </div>
       </div>
-      <h6 className="text-nl-600 dark:text-nd-200"> {error?.message || ""} </h6>
+      <h6 className="text-base-3 dark:text-neutral-content"> {error?.message || ""} </h6>
       <Link to={ROUTES.DASHBOARD} className="mt-4">
         <Button>Go to Dashboard</Button>
       </Link>

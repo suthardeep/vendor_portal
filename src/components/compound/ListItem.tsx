@@ -33,14 +33,14 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
       {StartIcon && (
         <StartIcon className={cn(iconClassName)} strokeWidth={1.6} size={16} />
       )}
-      <p className={cn("text-nl-500 dark:text-nd-300", labelClassname)}>
+      <p className={cn("text-base-3 dark:text-base-2", labelClassname)}>
         {" "}
         {label}:{" "}
       </p>
       {typeof value === "string" || typeof value === "number" ? (
         <p
           className={cn(
-            "text-nl-700 dark:text-nd-100 font-medium",
+            "text-base-3 dark:text-neutral-content font-medium",
             valueClassname,
           )}
         >

@@ -11,19 +11,19 @@ const StatCard: React.FC<StatCardProps> = (props) => {
   const Icon = icon ? (LucideIcons[icon] as LucideIcons.LucideIcon) : null;
 
   return (
-    <div className="bg-nl-50/50 border-nl-200 dark:bg-nd-700 dark:border-nd-500 flex justify-between overflow-hidden rounded-2xl border">
+    <div className="bg-neutral-content/50 border-neutral-content dark:bg-base-3 dark:border-base-3 flex justify-between overflow-hidden rounded-2xl border">
       <div className="px-5 py-3.5">
-        <h5 className="text-nl-700 dark:text-pd-100 font-semibold">
+        <h5 className="text-base-3 dark:text-primary-100 font-semibold">
           {" "}
           {title}{" "}
         </h5>
         {subTitle && (
-          <p className="text-nl-400 dark:text-nd-200"> {subTitle} </p>
+          <p className="text-base-2 dark:text-neutral-content"> {subTitle} </p>
         )}
       </div>
       {Icon && (
-        <div className="fall bg-pl-50 dark:bg-pd-600/50 h-full w-20">
-          {<Icon className="text-pl-500 dark:text-pd-200" />}
+        <div className="fall bg-primary-50 dark:bg-primary-600/50 h-full w-20">
+          {<Icon className="text-primary-500 dark:text-primary-200" />}
         </div>
       )}
     </div>

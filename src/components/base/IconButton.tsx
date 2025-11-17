@@ -11,15 +11,15 @@ const sizeVariants = {
 } as const;
 
 const colorVariants = {
-  neutral: "text-nl-700 dark:text-nd-50",
+  neutral: "text-base-3 dark:text-neutral-content",
 } as const;
 
 const bgColorVariants = {
-  neutral: "bg-nl-100/60 dark:bg-nd-600",
+  neutral: "bg-neutral-content/60 dark:bg-base-3",
 } as const;
 
 const hoverBgVariants = {
-  neutral: `hover:bg-nl-100 active:bg-nl-200 dark:hover:bg-nd-500 dark:active:bg-nd-500 dark:hover:[&>svg]:text-nd-100 hover:[&>svg]:text-nl-700`,
+  neutral: `hover:bg-neutral-content active:bg-neutral-content dark:hover:bg-base-3 dark:active:bg-base-3 dark:hover:[&>svg]:text-neutral-content hover:[&>svg]:text-base-3`,
 } as const;
 
 const paddingVariants = {

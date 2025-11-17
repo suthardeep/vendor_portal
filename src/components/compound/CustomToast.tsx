@@ -16,7 +16,7 @@ const bgColorMap = {
   error: "bg-red-50 dark:bg-red-950",
   warning: "bg-orange-50 dark:bg-orange-950",
   info: "bg-blue-50 dark:bg-blue-950",
-  default: "bg-gray-50 dark:bg-nd-700",
+  default: "bg-gray-50 dark:bg-base-3",
 };
 
 const textColorMap = {
@@ -32,7 +32,7 @@ const borderColorMap = {
   error: "border-red-200 dark:border-red-900",
   warning: "border-orange-200 dark:border-orange-900",
   info: "border-blue-200 dark:border-blue-800",
-  default: "border-gray-300 dark:border-nd-400/50",
+  default: "border-gray-300 dark:border-base-2/50",
 };
 
 const iconMap = {
@@ -64,14 +64,14 @@ const CustomToast: React.FC<CustomToastProps> = ({
         <div className="flex-1">
           <p
             className={cn(
-              "text-sm !font-medium md:text-base",
+              "text-sm font-medium! md:text-base",
               textColorMap[type],
             )}
           >
             {message}
           </p>
           {description && (
-            <p className="dark:text-nd-200 text-xs text-gray-600">
+            <p className="dark:text-neutral-content text-xs text-gray-600">
               {description}
             </p>
           )}

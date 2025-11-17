@@ -31,33 +31,33 @@ export interface InputProps extends InputHTMLAttributesWithoutConflicts {
 export type InputRef = HTMLInputElement;
 
 const borderClasses = {
-  default: "border-nl-200 dark:border-nd-500",
-  hover: `hover:border-nl-300 dark:hover:border-nd-400`,
+  default: "border-base-content dark:border-base-3",
+  hover: `hover:border-body-content dark:hover:border-base-2`,
   focus:
-    "focus-within:border-nl-400 dark:focus-within:border-nd-300 hover:focus-within:border-nl-400 dark:hover:focus-within:border-nd-300",
+    "focus-within:border-base-content dark:focus-within:border-base-content hover:focus-within:border-base-content dark:hover:focus-within:border-base-content",
 };
 
 const dangerBorderClasses =
-  "border-dl-500 hover:border-dl-400 dark:border-dd-500 hover:dark:border-dd-400 focus-within:border-danger-500";
+  "border-base-3 hover:border-base-3 dark:border-neutral-500 hover:dark:border-neutral-400 focus-within:border-danger-500";
 
 const textClasses = {
-  primary: "text-nl-800 dark:text-nd-100",
-  secondary: "text-nl-700 dark:text-nd-200",
-  muted: "text-nl-500 dark:text-nd-300",
-  placeholder: "placeholder:text-nl-400 dark:placeholder:text-nd-400",
+  primary: "text-neutral dark:text-neutral-content",
+  secondary: "text-base-3 dark:text-neutral-content",
+  muted: "text-base-3 dark:text-base-2",
+  placeholder: "placeholder:text-base-2 dark:placeholder:text-base-2",
 };
 
 const backgroundClasses = {
-  primary: "bg-white dark:bg-nd-800",
-  secondary: "bg-nl-50 dark:bg-nd-700/50",
+  primary: "bg-white dark:bg-neutral",
+  secondary: "bg-neutral-content dark:bg-base-3/50",
   transparent: "bg-transparent",
 };
 
 const disabledClasses =
-  "disabled:bg-nl-100 dark:disabled:bg-nd-700 disabled:text-nl-400 dark:disabled:text-nd-500 disabled:cursor-not-allowed";
+  "disabled:bg-neutral-content dark:disabled:bg-base-3 disabled:text-base-2 dark:disabled:text-base-3 disabled:cursor-not-allowed";
 
 const toggleButtonClasses =
-  "cursor-pointer transition-colors duration-200 focus:outline-none text-nl-400 dark:text-nd-400 hover:text-nl-600 dark:hover:text-nd-200 focus:text-primary-400 dark:focus:text-primary-300";
+  "cursor-pointer transition-colors duration-200 focus:outline-none text-base-2 dark:text-base-2 hover:text-base-3 dark:hover:text-neutral-content focus:text-primary-400 dark:focus:text-primary-300";
 
 const Input = forwardRef<InputRef, InputProps>(
   (
@@ -213,7 +213,7 @@ const Input = forwardRef<InputRef, InputProps>(
         {(helperText || error) && (
           <ErrorText
             className={
-              error ? "text-dl-500 dark:text-dd-500" : textClasses.muted
+              error ? "text-base-3 dark:text-neutral-500" : textClasses.muted
             }
           >
             {error || helperText}

@@ -17,7 +17,7 @@ const NoSearchResult: React.FC<NoSearchResultProps> = (props) => {
         <DarkGraphic />
       </div>
       {message && (
-        <h6 className="text-nl-600 dark:text-nd-200"> {message || ""} </h6>
+        <h6 className="text-base-3 dark:text-neutral-content"> {message || ""} </h6>
       )}
     </div>
   );

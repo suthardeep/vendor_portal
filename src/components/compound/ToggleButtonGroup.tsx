@@ -62,7 +62,7 @@ const ToggleButtonGroup = <T extends string | number>(
         {label && <Label className="mb-1"> {label} </Label>}
         <div
           className={cn(
-            "border-nl-200 dark:border-nd-500 relative flex gap-2 border-b",
+            "border-neutral-content dark:border-base-3 relative flex gap-2 border-b",
             fullWidth ? "w-full" : "w-fit",
             containerClassname,
           )}
@@ -70,7 +70,7 @@ const ToggleButtonGroup = <T extends string | number>(
         >
           {/* Animated underline */}
           <span
-            className="border-pl-600 dark:border-pd-50 absolute bottom-0 border-b-2 transition-all duration-300 ease-in-out"
+            className="border-primary-600 dark:border-primary-50 absolute bottom-0 border-b-2 transition-all duration-300 ease-in-out"
             style={{
               left: highlightStyle.left,
               width: highlightStyle.width,
@@ -88,8 +88,8 @@ const ToggleButtonGroup = <T extends string | number>(
               className={cn(
                 "relative px-4 py-2 text-sm font-medium transition-colors",
                 selected.value === item.value
-                  ? "text-pl-600 dark:text-pd-50"
-                  : "text-nl-600 hover:text-nl-800 dark:text-nd-300 dark:hover:text-nd-100",
+                  ? "text-primary-600 dark:text-primary-50"
+                  : "text-base-3 hover:text-neutral dark:text-base-2 dark:hover:text-neutral-content",
                 buttonClassname,
                 fullWidth && "flex-1",
               )}
@@ -107,14 +107,14 @@ const ToggleButtonGroup = <T extends string | number>(
       {label && <Label className="mb-1"> {label} </Label>}
       <div
         className={cn(
-          "bg-nl-50 dark:bg-nd-700 relative flex items-center gap-x-1 rounded-xl p-1",
+          "bg-neutral-content dark:bg-base-3 relative flex items-center gap-x-1 rounded-xl p-1",
           fullWidth ? "w-full" : "w-fit",
           containerClassname,
         )}
         ref={containerRef}
       >
         <span
-          className="bg-pl-100/50 dark:bg-pd-600/50 absolute top-1 bottom-1 rounded-lg transition-all duration-300 ease-in-out"
+          className="bg-primary-100/50 dark:bg-primary-600/50 absolute top-1 bottom-1 rounded-lg transition-all duration-300 ease-in-out"
           style={{
             left: highlightStyle.left,
             width: highlightStyle.width,
@@ -188,7 +188,7 @@ const sizeClasses: Record<"xs" | "sm" | "md", string> = {
   md: "px-4 py-2 text-sm",
 };
 
-const activeButtonClass = `text-pl-500 dark:text-pd-50`;
-const notActiveButtonClass = `text-nl-600 dark:text-nd-300 bg-transparent hover:bg-nl-100 hover:dark:bg-nd-600`;
+const activeButtonClass = `text-primary-500 dark:text-primary-50`;
+const notActiveButtonClass = `text-base-3 dark:text-base-2 bg-transparent hover:bg-neutral-content hover:dark:bg-base-3`;
 
 export default ToggleButtonGroup;

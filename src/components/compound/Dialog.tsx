@@ -49,7 +49,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
     >
       <div
         className={cn(
-          `dark:bg-nd-800 border-nl-200 dark:border-nd-500 m-auto flex w-full flex-col rounded-xl border bg-white shadow-lg`,
+          `dark:bg-neutral border-neutral-content dark:border-base-3 m-auto flex w-full flex-col rounded-xl border bg-white shadow-lg`,
           sizeMap[size],
         )}
         onClick={(e) => e.stopPropagation()}
@@ -64,12 +64,12 @@ const Dialog: React.FC<DialogProps> = (props) => {
             >
               <div className="flex flex-col">
                 {title && (
-                  <h5 className="text-nl-700 dark:text-nd-50 font-medium">
+                  <h5 className="text-base-3 dark:text-neutral-content font-medium">
                     {title}
                   </h5>
                 )}
                 {subTitle && (
-                  <p className="text-nl-400 dark:text-nd-300 mt-0.5">
+                  <p className="text-base-2 dark:text-base-2 mt-0.5">
                     {subTitle}
                   </p>
                 )}

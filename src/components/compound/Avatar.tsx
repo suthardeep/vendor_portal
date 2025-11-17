@@ -14,7 +14,7 @@ const Avatar: React.FC<AvatarProps> = (props) => {
   return (
     <div
       className={cn(
-        "fall bg-nd-200 shrink-0 overflow-hidden rounded-full",
+        "fall bg-neutral-content shrink-0 overflow-hidden rounded-full",
         sizeMap[size],
         classname,
       )}

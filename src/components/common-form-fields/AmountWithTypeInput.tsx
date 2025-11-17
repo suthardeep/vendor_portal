@@ -1,7 +1,12 @@
 import { Controller } from "react-hook-form";
 import { Input } from "../base/Input";
 import Select, { type SelectOption } from "../base/Select";
-import { AmountType } from "../../../enums/amountType.enum";
+
+
+export enum AmountType {
+  fix = "fix",
+  percentage = "percentage",
+}
 
 const amountTypeOptions: SelectOption[] = [
   { label: "Fixed", value: AmountType.fix },

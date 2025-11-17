@@ -1,16 +1,13 @@
 import Checkbox from "@/components/base/Checkbox";
 import NoSearchResult from "@/components/empty-states/NoSearchResult";
 import { cn } from "@/utils/helpers";
-import {
-  hasAnyActionPermission,
-  shouldRenderOptionsColumn,
-} from "@/utils/rbac";
+// import {
+//   hasAnyActionPermission,
+//   shouldRenderOptionsColumn,
+// } from "@/utils/rbac";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { MoveDown, MoveUp } from "lucide-react";
 import React from "react";
-import AccessControlledMenu, {
-  type AccessControlledMenuProps,
-} from "../AccessControlledMenu";
 import type { PaginationProps } from "../Pagination";
 import Pagination from "../Pagination";
 import TableCell from "./TableCell";
@@ -32,7 +29,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
     rowSelectionKey = "id",
     className = "",
     onRowClick,
-    showTableOptions,
+    // showTableOptions,
     customRender,
     isMuted = false,
     ...rest
@@ -85,13 +82,13 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
     });
   };
 
-  const hasOptionsColumn = shouldRenderOptionsColumn(data, showTableOptions);
+  // const hasOptionsColumn = shouldRenderOptionsColumn(data, showTableOptions);
 
   if (data?.length < 1 && !isLoading) {
     return (
-      <div className="fall bg-nl-50 dark:bg-nd-700/70 mt-4 flex-col rounded-xl p-6">
+      <div className="fall bg-neutral-content dark:bg-base-3/70 mt-4 flex-col rounded-xl p-6">
         <NoSearchResult />
-        <h6 className="text-nl-500 dark:text-nd-300">
+        <h6 className="text-base-3 dark:text-base-2">
           {" "}
           {emptyMessage || "No data found"}{" "}
         </h6>
@@ -104,9 +101,9 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
       {filterComponent && <div className="mt-4">{filterComponent}</div>}
 
       <div className="w-full">
-        <div className="no-scrollbar border-nl-200/80 dark:border-nd-500/80 w-full overflow-hidden overflow-x-auto rounded-xl border">
-          <table className="divide-nl-200/60 dark:divide-nd-500/60 w-full divide-y">
-            <thead className="bg-nl-50 dark:bg-nd-700">
+        <div className="no-scrollbar border-neutral-content/80 dark:border-base-3/80 w-full overflow-hidden overflow-x-auto rounded-xl border">
+          <table className="divide-neutral-content/60 dark:divide-base-3/60 w-full divide-y">
+            <thead className="bg-neutral-content dark:bg-base-3">
               <tr>
                 {enableRowSelection && (
                   <th className={cn(paddingMap[size], checkboxClasses)}>
@@ -153,25 +150,25 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                     </th>
                   );
                 })}
-                {hasOptionsColumn && (
+                {/* {hasOptionsColumn && (
                   <th className={cn(tableOptionsClasses)}></th>
-                )}
+                )} */}
               </tr>
             </thead>
-            <tbody className="divide-nl-100/70 dark:divide-nd-600 dark:bg-nd-800 divide-y bg-white">
+            <tbody className="divide-neutral-content/70 dark:divide-base-3 dark:bg-neutral divide-y bg-white">
               {customRender
                 ? customRender
                 : data?.length > 0 &&
                   !isLoading &&
                   data?.map((row, rowIndex) => {
                     const rowId = getRowId(row);
-                    const options = showTableOptions?.(row);
+                    // const options = showTableOptions?.(row);
 
                     return (
                       <tr
                         key={rowIndex}
                         className={cn(
-                          "hover:bg-nl-50/60 hover:dark:bg-nd-700/70",
+                          "hover:bg-neutral-content/60 hover:dark:bg-base-3/70",
                           onRowClick && "cursor-pointer",
                         )}
                         onClick={() => onRowClick?.(row)}
@@ -194,7 +191,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                             {renderCell(row, column)}
                           </TableCell>
                         ))}
-                        {options &&
+                        {/* {options &&
                           hasOptionsColumn &&
                           (() => {
                             return hasAnyActionPermission(options) ? (
@@ -202,7 +199,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                                 <AccessControlledMenu {...options} />
                               </TableCell>
                             ) : null;
-                          })()}
+                          })()} */}
                       </tr>
                     );
                   })}
@@ -284,7 +281,7 @@ interface BaseTableCommonProps<T> {
   className?: string;
   rowSelectionKey?: keyof T;
   onRowClick?: (row: T) => void;
-  showTableOptions?: (row: T) => AccessControlledMenuProps;
+  // showTableOptions?: (row: T) => AccessControlledMenuProps;
   customRender?: React.ReactNode;
   isMuted?: boolean;
 }
@@ -302,8 +299,8 @@ interface TablePropsWithSelection<T> extends BaseTableCommonProps<T> {
 type TableProps<T> = TablePropsWithSelection<T> | TablePropsWithoutSelection<T>;
 
 const tableHeadClassName =
-  "dark:text-nd-100 text-nl-800 text-left text-xs font-semibold tracking-wider uppercase text-nowrap";
-const tableOptionsClasses = `w-10`;
+  "dark:text-neutral-content text-neutral text-left text-xs font-semibold tracking-wider uppercase text-nowrap";
+// const tableOptionsClasses = `w-10`;
 
 function extractFieldNameFromAccessor(accessor: Function): string {
   const funcString = accessor.toString();
@@ -336,8 +333,8 @@ function SortIcons({ fieldName }: SortIconsProps) {
         className={cn(
           "cursor-pointer",
           isActiveField && isAscending
-            ? "text-pl-600 dark:text-nd-100"
-            : "text-nl-500 dark:text-nd-400",
+            ? "text-primary-600 dark:text-neutral-content"
+            : "text-base-3 dark:text-base-2",
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -350,8 +347,8 @@ function SortIcons({ fieldName }: SortIconsProps) {
         className={cn(
           "cursor-pointer",
           isActiveField && !isAscending
-            ? "text-pl-600 dark:text-nd-100"
-            : "text-nl-500 dark:text-nd-400",
+            ? "text-primary-600 dark:text-neutral-content"
+            : "text-base-3 dark:text-base-2",
         )}
         onClick={(e) => {
           e.stopPropagation();

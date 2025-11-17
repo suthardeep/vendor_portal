@@ -51,7 +51,7 @@ const ImageStack: React.FC<ImageStackProps> = (props) => {
         ))}
         {count > 4 && (
           <div className="fall absolute top-0 left-0 h-full w-full bg-black/80 backdrop-blur-[1.5px] dark:bg-black/90">
-            <p className="text-nl-200 font-medium text-shadow-md">
+            <p className="text-neutral-content font-medium text-shadow-md">
               {" "}
               {count} images{" "}
             </p>
