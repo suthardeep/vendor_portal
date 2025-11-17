@@ -339,6 +339,14 @@ input:-webkit-autofill {
   -webkit-text-fill-color: var(--base-content) !important;
 }
 
+/* svg.lucide {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2;
+  color: hsl(var(--primary-content));
+  flex-shrink: 0;
+} */
+
 :root {
 
   /*------------------ SEMANTIC COLORS ------------------ */
@@ -396,7 +404,10 @@ input:-webkit-autofill {
   --base-100: #FFFFFF;
   --base-200: #F8F7FB;
   --base-300: rgba(64, 63, 67, 0.06);
-  --base-content: #3F404D;
+
+  /* base-content == input border */
+  --base-content: #3F404D; 
+  --input-border: #3F404D; 
   --body-content: rgba(63, 64, 77, 0.8);
   --disabled-content: rgba(63, 64, 77, 0.5);
   
@@ -512,6 +523,7 @@ input:-webkit-autofill {
   --color-base-2: var(--base-200);
   --color-base-3: var(--base-300);
   --color-base-content: var(--base-content);
+  --color-input-border: var(--input-border);
   --color-body-content: var(--body-content);
   --color-disabled-content: var(--disabled-content);
 

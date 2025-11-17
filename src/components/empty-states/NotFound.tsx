@@ -29,10 +29,10 @@ const NotFound: React.FC<NotFoundProps> = (props) => {
           <DarkGraphic />
         </div>
       </div>
-      <h5 className="text-base-3 dark:text-neutral-content mt-4 text-center font-medium">
+      <h5 className="text-body-content dark:text-neutral-content mt-4 text-center font-medium">
         {title || "Not Found"}
       </h5>
-      <p className="text-base-3 dark:text-base-2 text-center">
+      <p className="text-body-content dark:text-base-2 text-center">
         {" "}
         {subTitle || ""}{" "}
       </p>
