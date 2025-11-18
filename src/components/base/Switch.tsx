@@ -1,97 +1,208 @@
-import React from "react";
+import { cva } from "class-variance-authority";
+import React, { useState, forwardRef, type InputHTMLAttributes } from "react";
+import Label from "./Label";
+import { cn } from "@/utils/helpers";
+import ErrorText from "./ErrorText";
 
-interface SwitchProps {
-  checked: boolean;
-  setChecked: (value: boolean) => void;
+// -----------------------------------------------------------------
+// 1. CVA VARIANT DEFINITIONS
+// -----------------------------------------------------------------
+
+// Visual Reference: Rectangular track with rounded corners (not full pill)
+const trackVariants = cva(
+  "relative inline-flex shrink-0 cursor-pointer border-2 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+  {
+    variants: {
+      size: {
+        sm: "h-6 w-10 rounded-sm", // Smaller, tighter rounding
+        md: "h-7 w-12 rounded-sm", // Standard, slightly more rounding
+        lg: "h-9 w-16 rounded-sm", // Large
+      },
+      state: {
+        unchecked: "bg-[#47485738] border-transparent", // Greyish background when off
+        checked: "bg-primary border-primary", // Primary color when on
+        error: "bg-error border-error",
+        disabled: "opacity-50 cursor-not-allowed bg-base-200 border-base-200",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      state: "unchecked",
+    },
+  }
+);
+
+const thumbVariants = cva(
+  "pointer-events-none block bg-white shadow ring-0 transition-transform duration-200 ease-in-out",
+  {
+    variants: {
+      size: {
+        sm: "size-4 rounded-sm", // Square-ish rounded corners
+        md: "size-5 rounded-sm",
+        lg: "size-7 rounded-sm",
+      },
+      state: {
+        unchecked: "translate-x-1", // Start with a little offset padding
+        checked: "", // Translation handled dynamically below
+        error: "",
+        disabled: "bg-base-100",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      state: "unchecked",
+    },
+  }
+);
+
+
+// -----------------------------------------------------------------
+// 2. TYPE DEFINITIONS
+// -----------------------------------------------------------------
+
+export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'> {
+  label?: string;
+  error?: string;
   size?: "sm" | "md" | "lg";
-  loading?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  containerClassName?: string;
+  labelClassName?: string;
+  trackClassName?: string;
+  thumbClassName?: string;
+  errorClassName?: string;
+  description?: string;
+  /** Label position relative to the switch */
+  labelPosition?: "left" | "right"; 
 }
 
-const Switch: React.FC<SwitchProps> = (props) => {
-  const { checked, setChecked, size = "md", loading = false } = props;
 
-  const sizeClasses = {
-    sm: {
-      container: "w-8 h-5",
-      slider: "w-4 h-4",
-      translate: "translate-x-3",
-      position: "top-0.5 left-0.5",
-      spinner: "w-2 h-2 border-[1px]",
+// -----------------------------------------------------------------
+// 3. COMPONENT IMPLEMENTATION
+// -----------------------------------------------------------------
+
+const Switch = forwardRef<HTMLInputElement, SwitchProps>(
+  (
+    {
+      label,
+      error,
+      size = "md",
+      disabled = false,
+      required = false,
+      checked: controlledChecked,
+      defaultChecked = false,
+      onCheckedChange,
+      containerClassName,
+      labelClassName,
+      trackClassName,
+      thumbClassName,
+      errorClassName,
+      className,
+      labelPosition = "right",
+      id,
+      ...props
     },
-    md: {
-      container: "w-10 h-6",
-      slider: "w-5 h-5",
-      translate: "translate-x-4",
-      position: "top-[2px] left-[2px]",
-      spinner: "w-2.5 h-2.5 border-[1.5px]",
-    },
-    lg: {
-      container: "w-13 h-7",
-      slider: "w-6 h-6",
-      translate: "translate-x-6",
-      position: "top-[1.8px] left-[1.8px]",
-      spinner: "w-3 h-3 border-2",
-    },
-  };
+    ref
+  ) => {
+    const [internalChecked, setInternalChecked] = useState<boolean>(!!defaultChecked);
+    const isChecked = controlledChecked !== undefined ? controlledChecked : internalChecked;
+    const inputId = id || `switch-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `${inputId}-error`;
 
-  const currentSize = sizeClasses[size];
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return;
+      const newChecked = event.target.checked;
+      if (controlledChecked === undefined) {
+        setInternalChecked(newChecked);
+      }
+      onCheckedChange?.(newChecked);
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!loading) {
-      setChecked(e.target.checked);
-    }
-  };
+    // Calculate state for CVA
+    let state: "checked" | "unchecked" | "error" | "disabled" = isChecked ? "checked" : "unchecked";
+    if (disabled) state = "disabled";
+    else if (error) state = "error";
 
-  return (
-    <label
-      className={`inline-block ${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-    >
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={handleChange}
-        disabled={loading}
-        className="sr-only"
-      />
-      <div
-        className={`${currentSize.container} relative rounded-full transition-colors duration-200 ${
-          loading
-            ? "bg-gray-300 dark:bg-gray-600"
-            : checked
-              ? "bg-secondary-500 dark:bg-secondary-600"
-              : "bg-base-2 dark:bg-base-3"
-        } ${
-          checked && !loading
-            ? "focus-within:shadow-lg focus-within:shadow-green-700/50"
-            : ""
-        } ${loading ? "opacity-80" : ""}`}
-      >
-        <div
-          className={`${currentSize.slider} ${currentSize.position} absolute flex items-center justify-center rounded-full transition-all duration-200 ${
-            loading
-              ? "bg-gray-100 dark:bg-gray-300"
-              : checked
-                ? "bg-white"
-                : "dark:bg-neutral-content bg-white"
-          } ${
-            loading
-              ? checked
-                ? currentSize.translate
-                : "translate-x-0"
-              : checked
-                ? currentSize.translate
-                : "translate-x-0"
-          }`}
-        >
-          {loading && (
-            <div
-              className={`${currentSize.spinner} animate-spin rounded-full border-gray-400 border-t-gray-600`}
+    // Translation logic (Thumb movement)
+    // We calculate specific translations to ensure the thumb stays inside the track with padding
+    const translateClasses = {
+      sm: isChecked ? "translate-x-4.5" : "translate-x-0.5",
+      md: isChecked ? "translate-x-5.5" : "translate-x-0.5",
+      lg: isChecked ? "translate-x-7.5" : "translate-x-0.5",
+    };
+
+    return (
+      <div className={cn("flex flex-col gap-1.5", containerClassName)}>
+        <div className="flex items-center gap-2">
+          {/* Left Label */}
+          {label && labelPosition === "left" && (
+             <Label 
+               htmlFor={inputId} 
+               required={required} 
+               className={cn("mb-0 cursor-pointer", error && "text-error", labelClassName)}
+             >
+               {label}
+             </Label>
+          )}
+
+          {/* Switch Track */}
+          <div className="relative flex items-center">
+            <input
+              ref={ref}
+              id={inputId}
+              type="checkbox"
+              role="switch"
+              checked={isChecked}
+              disabled={disabled}
+              onChange={handleChange}
+              aria-invalid={!!error}
+              aria-describedby={error ? errorId : undefined}
+              className="peer sr-only m-0"
+              {...props}
             />
+            
+            <label
+              htmlFor={inputId}
+              className={cn(
+                trackVariants({ size, state }),
+                // Use items-center to vertically center the thumb
+                "items-center", 
+                trackClassName,
+                className
+              )}
+            >
+              <span
+                className={cn(
+                  thumbVariants({ size, state: disabled ? "disabled" : "unchecked" }), // Base thumb style
+                  translateClasses[size], // Dynamic translation
+                  thumbClassName
+                )}
+              />
+            </label>
+          </div>
+
+          {/* Right Label (Default) */}
+          {label && labelPosition === "right" && (
+            <Label 
+              htmlFor={inputId} 
+              required={required} 
+              className={cn("mb-0 cursor-pointer", error && "text-error", labelClassName)}
+            >
+              {label}
+            </Label>
           )}
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <ErrorText className={errorClassName}>
+            {error}
+          </ErrorText>
+        )}
       </div>
-    </label>
-  );
-};
+    );
+  }
+);
+
+Switch.displayName = "Switch";
 
 export default Switch;

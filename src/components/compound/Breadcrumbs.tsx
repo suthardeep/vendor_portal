@@ -27,7 +27,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = (props) => {
             )}
             <Link
               to={breadcrumb.to}
-              className={`truncate text-sm transition-colors ${breadcrumbs.length === index + 1 ? "text-base-3 dark:text-neutral-content font-medium" : "text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"}`}
+              className={`truncate text-sm transition-colors ${breadcrumbs.length === index + 1 ? "text-base-3 font-medium" : "text-base-2 hover:text-base-1 dark:text-base-2 "}`}
             >
               {breadcrumb.label}
             </Link>

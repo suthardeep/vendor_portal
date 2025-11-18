@@ -104,7 +104,7 @@ const Textarea = forwardRef<TextareaRef, TextareaProps>(
         {(helperText || error) && (
           <ErrorText
             className={
-              error ? "text-base-3 dark:text-neutral-500" : textClasses.muted
+              error ? "text-base-content dark:text-neutral-500" : textClasses.muted
             }
           >
             {error || helperText}
@@ -120,27 +120,27 @@ Textarea.displayName = "Textarea";
 export default Textarea;
 
 const borderClasses = {
-  default: "border-neutral-content dark:border-base-3",
-  hover: `hover:border-base-2 dark:hover:border-base-2`,
+  default: "border-input-border dark:border-base-3",
+  hover: `hover:border-input-border dark:hover:border-base-2`,
   focus:
-    "focus-within:border-base-2 dark:focus-within:border-base-2 hover:focus-within:border-base-2 dark:hover:focus-within:border-base-2",
+    "focus-within:border-input-border dark:focus-within:border-base-2 hover:focus-within:border-input-border dark:hover:focus-within:border-base-2",
 };
 
 const dangerBorderClasses =
-  "border-base-3 hover:border-base-3 dark:border-neutral-500 hover:dark:border-neutral-400 focus-within:border-danger-500";
+  "border-error dark:border-neutral-500 hover:dark:border-neutral-400 focus-within:border-error";
 
 const textClasses = {
-  primary: "text-neutral dark:text-neutral-content",
+  primary: "text-base-content dark:text-neutral-content",
   secondary: "text-base-3 dark:text-neutral-content",
-  muted: "text-base-3 dark:text-base-2",
-  placeholder: "placeholder:text-base-2 dark:placeholder:text-base-2",
+  muted: "text-disabled-content dark:text-base-2",
+  placeholder: "placeholder:text-disabled-content dark:placeholder:text-base-2",
 };
 
 const backgroundClasses = {
   primary: "bg-white dark:bg-neutral",
-  secondary: "bg-neutral-content dark:bg-base-3/50",
+  secondary: "bg-base-200 dark:bg-base-3/50",
   transparent: "bg-transparent",
 };
 
 const disabledClasses =
-  "disabled:bg-neutral-content dark:disabled:bg-base-3 disabled:text-base-2 dark:disabled:text-base-3 disabled:cursor-not-allowed";
+  "disabled:bg-neutral-content dark:disabled:bg-base-3 disabled:text-disabled-content dark:disabled:text-base-3 disabled:cursor-not-allowed";

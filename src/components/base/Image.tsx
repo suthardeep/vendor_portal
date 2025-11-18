@@ -104,7 +104,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
 
       {isLoading && showLoadingSpinner && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
-\          <Icon name="Loader2" className="h-8 w-8 animate-spin text-blue-500" />
+          <Icon name="Loader2" className="h-8 w-8 animate-spin text-blue-500" />
         </div>
       )}
 
