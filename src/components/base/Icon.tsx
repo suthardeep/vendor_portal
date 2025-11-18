@@ -18,6 +18,10 @@ import {
   Music,
   Archive,
   Upload,
+  ChevronDown ,
+  EyeOff ,
+  Eye,
+  CheckCircle2
 } from "lucide-react";
 
 const iconRegistry = {
@@ -37,6 +41,10 @@ const iconRegistry = {
   Music,
   Archive,
   Upload,
+  ChevronDown ,
+  EyeOff ,
+  Eye,
+  CheckCircle2
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof iconRegistry;

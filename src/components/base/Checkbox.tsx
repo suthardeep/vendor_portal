@@ -1,240 +1,185 @@
+
+
+
+
 import React, { forwardRef } from "react";
-import { Check, Minus } from "lucide-react";
 import { cn } from "@/utils/helpers";
 import Label from "./Label";
+import ErrorText from "./ErrorText";
 
-const sizeClasses = {
-  sm: {
-    checkbox: "w-4 h-4",
-    icon: "w-2.5 h-2.5",
-    label: "text-xs",
-    helper: "text-xs",
-    gap: "gap-1",
-    helperOffset: "ml-6",
-    roundness: "rounded-sm",
-  },
-  md: {
-    checkbox: "w-5 h-5",
-    icon: "w-3 h-3",
-    label: "text-sm",
-    helper: "text-xs",
-    gap: "gap-2.5",
-    helperOffset: "ml-7.5",
-    roundness: "rounded-md",
-  },
-  lg: {
-    checkbox: "w-6 h-6",
-    icon: "w-4 h-4",
-    label: "text-base",
-    helper: "text-sm",
-    gap: "gap-3",
-    helperOffset: "ml-9",
-    roundness: "rounded-md",
-  },
-};
-
-const checkboxBaseClasses = cn(
-  "relative flex items-center justify-center border-[1.5px] transition-all duration-200 cursor-pointer",
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2",
-  "focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral",
-  "border-base-2 dark:border-base-3 bg-white dark:bg-base-3",
-  "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-base-2 dark:disabled:hover:border-base-3",
-  "disabled:hover:bg-white dark:disabled:hover:bg-base-3",
-);
-
-const baseHoverClass =
-  "hover:border-primary-400 dark:hover:border-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/40";
-
-const checkedClasses = cn(
-  "!border-[transparent] bg-primary-500 dark:bg-primary-500",
-  "disabled:border-primary-300 dark:disabled:border-primary-300 disabled:bg-primary-300 dark:disabled:bg-primary-300",
-);
-
-const checkedHoverClass =
-  "hover:border-[transparent] hover:bg-primary-600 dark:hover:bg-primary-600";
-
-const errorClasses = cn(
-  "border-base-3 dark:border-neutral-500",
-  "hover:border-base-3 dark:hover:border-neutral-600",
-  "focus-visible:ring-base-3 dark:focus-visible:ring-neutral-500",
-);
-
-const errorCheckedClasses = cn(
-  "border-base-3 dark:border-neutral-500 bg-base-3 dark:bg-neutral-500",
-  "hover:border-base-3 dark:hover:border-neutral-600 hover:bg-base-3 dark:hover:bg-neutral-600",
-);
-
-export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type"> {
-  size?: "sm" | "md" | "lg";
-  label?: string;
-  helperText?: string;
-  error?: string;
-  indeterminate?: boolean;
-  labelPosition?: "left" | "right";
-  wrapperClassName?: string;
+export interface CheckboxProps {
+  label?: string | React.ReactNode;
   labelClassName?: string;
-  helperClassName?: string;
-  description?: string;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  onBlur?: () => void;
+  name?: string;
+  error?: string;
+  success?: boolean;
+  helperText?: string;
+  required?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  containerClassName?: string;
+  className?: string;
+  inputClassName?: string;
+  size?: "sm" | "md" | "lg";
+  indeterminate?: boolean;
 }
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
-      size = "md",
       label,
-      helperText,
-      error,
-      indeterminate = false,
-      labelPosition = "right",
-      wrapperClassName,
       labelClassName,
-      helperClassName,
-      description,
+      checked = false,
+      onChange,
+      onBlur,
+      name,
+      error,
+      success = false,
+      helperText,
+      required = false,
+      disabled = false,
+      fullWidth = false,
+      containerClassName,
       className,
-      disabled,
-      checked,
-      id,
+      inputClassName,
+      size = "md",
+      indeterminate = false,
       ...props
     },
-    ref,
+    ref
   ) => {
-    const sizeClass = sizeClasses[size];
-    const checkboxId =
-      id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
-    const hasError = !!error;
+    const sizeClasses = {
+      sm: "w-4 h-4",
+      md: "w-5 h-5",
+      lg: "w-6 h-6",
+    };
 
-    const getCheckboxClasses = () => {
-      if (hasError) {
-        return checked || indeterminate
-          ? cn(
-              checkboxBaseClasses,
-              checkedHoverClass,
-              errorCheckedClasses,
-              className,
-            )
-          : cn(checkboxBaseClasses, baseHoverClass, errorClasses, className);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!disabled) {
+        onChange?.(e.target.checked);
       }
-
-      return checked || indeterminate
-        ? cn(checkboxBaseClasses, checkedHoverClass, checkedClasses, className)
-        : cn(checkboxBaseClasses, baseHoverClass, className);
     };
 
-    const renderCheckbox = () => (
-      <div className="relative shrink-0 cursor-pointer">
-        <input
-          ref={ref}
-          type="checkbox"
-          id={checkboxId}
-          className="sr-only"
-          disabled={disabled}
-          checked={checked}
-          {...props}
-        />
-        <Label
-          htmlFor={checkboxId}
-          className={cn(
-            getCheckboxClasses(),
-            sizeClass.checkbox,
-            sizeClass.roundness,
-            "flex shrink-0 items-center justify-center",
-          )}
-        >
-          <span
-            className={cn(
-              "flex w-full shrink-0 items-center justify-center transition-opacity duration-200",
-              checked || indeterminate ? "opacity-100" : "opacity-0",
-            )}
-          >
-            {indeterminate ? (
-              <Minus
-                className={cn("text-neutral-content dark:text-white", sizeClass.icon)}
-                strokeWidth={3}
-              />
-            ) : (
-              <Check
-                className={cn("text-neutral-content dark:text-white", sizeClass.icon)}
-                strokeWidth={3}
-              />
-            )}
-          </span>
-        </Label>
-      </div>
-    );
-
-    const renderLabel = () => {
-      if (!label) return null;
-
-      return (
-        <Label
-          htmlFor={checkboxId}
-          className={cn(
-            "cursor-pointer leading-none select-none",
-            disabled && "cursor-not-allowed opacity-50",
-            sizeClass.label,
-            labelClassName,
-          )}
-        >
-          {label}
-        </Label>
-      );
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if ((e.key === "Enter" || e.key === " ") && !disabled) {
+        e.preventDefault();
+        onChange?.(!checked);
+      }
     };
-
-    const renderHelperText = () => {
-      const text = hasError ? error : helperText;
-      if (!text && !description) return null;
-
-      return (
-        <div className="space-y-1">
-          {text && (
-            <p
-              className={cn(
-                "text-base-3 dark:text-base-2",
-                hasError && "text-base-3 dark:text-neutral-500",
-                sizeClass.helper,
-                helperClassName,
-              )}
-            >
-              {text}
-            </p>
-          )}
-          {description && (
-            <p className={cn("text-base-3 dark:text-base-2", sizeClass.helper)}>
-              {description}
-            </p>
-          )}
-        </div>
-      );
-    };
-
-    const content = (
-      <>
-        {labelPosition === "left" && renderLabel()}
-        {renderCheckbox()}
-        {labelPosition === "right" && renderLabel()}
-      </>
-    );
 
     return (
-      <div className={cn("inline-block", wrapperClassName)}>
-        <div className={cn("flex items-start", sizeClass.gap)}>{content}</div>
-        {(helperText || error || description) && (
-          <div
-            className={cn(
-              "mt-1.5",
-              labelPosition === "left" ? "mr-auto" : "ml-0",
-              labelPosition === "right" && label && sizeClass.helperOffset,
+      <div
+        className={cn(
+          "space-y-1 flex flex-col",
+          fullWidth && "w-full",
+          containerClassName
+        )}
+      >
+        <div className="flex items-start gap-3">
+          <div className="relative flex items-center">
+            <input
+              ref={ref}
+              type="checkbox"
+              checked={checked}
+              onChange={handleChange}
+              onBlur={onBlur}
+              name={name}
+              disabled={disabled}
+              aria-invalid={error ? "true" : "false"}
+              aria-describedby={error ? `${name}-error` : undefined}
+              className={cn(
+                "appearance-none cursor-pointer border rounded transition-all duration-200",
+                "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                sizeClasses[size],
+                "border-base-2 bg-base-1",
+                checked && "bg-primary border-primary",
+                checked && error && "bg-error border-error",
+                checked && success && !error && "bg-success border-success",
+                error && !checked && "border-error",
+                success && !error && !checked && "border-success",
+                disabled && "opacity-50 cursor-not-allowed bg-base-2",
+                !error && !success && "focus:ring-primary/30",
+                error && "focus:ring-error/30",
+                success && !error && "focus:ring-success/30",
+                inputClassName
+              )}
+              onKeyDown={handleKeyDown}
+              {...props}
+            />
+            
+            {(checked || indeterminate) && (
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center pointer-events-none",
+                  "text-white transition-all duration-200"
+                )}
+              >
+                {indeterminate ? (
+                  <div className={cn(
+                    "bg-current rounded-sm",
+                    size === "sm" && "w-2 h-0.5",
+                    size === "md" && "w-2.5 h-0.5",
+                    size === "lg" && "w-3 h-0.5"
+                  )} />
+                ) : (
+                  <svg
+                    className={cn(
+                      "fill-current",
+                      size === "sm" && "w-3 h-3",
+                      size === "md" && "w-3.5 h-3.5",
+                      size === "lg" && "w-4 h-4"
+                    )}
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    />
+                  </svg>
+                )}
+              </div>
             )}
-          >
-            {renderHelperText()}
           </div>
+
+          {label && (
+            <Label
+              required={required}
+              className={cn(
+                "cursor-pointer select-none mt-0.5",
+                error && "text-error",
+                success && !error && "text-success",
+                disabled && "opacity-50 cursor-not-allowed",
+                size === "sm" && "text-xs",
+                size === "md" && "text-sm",
+                size === "lg" && "text-sm",
+                labelClassName
+              )}
+              htmlFor={name}
+            >
+              {label}
+            </Label>
+          )}
+        </div>
+
+        {(helperText || error) && (
+          <ErrorText className={cn(
+            error ? "text-error" : "text-body-content",
+            "ml-0",
+            size === "sm" && "text-xs",
+            size === "md" && "text-sm",
+            size === "lg" && "text-sm"
+          )}>
+            {error || helperText}
+          </ErrorText>
         )}
       </div>
     );
-  },
+  }
 );
 
 Checkbox.displayName = "Checkbox";
 
-export default Checkbox;

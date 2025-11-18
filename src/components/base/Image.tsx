@@ -117,4 +117,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
   );
 });
 
+
+
+export default Image
+
 Image.displayName = "Image";

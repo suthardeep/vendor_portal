@@ -3,6 +3,12 @@ import { Input } from "@/components/base/Input";
 // import { Button } from "@/components/base/Button";
 import ImageMagnifier from "@/components/shared/ImageMagnifier";
 import Button2 from "@/components/base/Button2";
+import { MobileNumberInput } from "@/components/base/MobileNumberInput";
+import Demo from "./DemoForm";
+import { DateTimeInput } from "@/components/base/DateTimeInput";
+import { Checkbox } from "@/components/base/Checkbox";
+import { OTPInput } from "@/components/base/OTPInput";
+import {RadioGroup} from "@/components/base/RadioGroup";
 
 const LoginForm = () => {
   const {
@@ -15,7 +21,7 @@ const LoginForm = () => {
   } = useLogin();
 
   return (
-    <div className="flex h-dvh bg-gray-50">
+    <div className="flex h-dvh bg-gray-50 overflow-scroll">
       {/* Left Panel - Form */}
       <div className="flex h-full w-full flex-col justify-center items-center px-6 py-10 md:w-2/3 lg:w-1/2 lg:px-24">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
@@ -37,7 +43,26 @@ const LoginForm = () => {
               placeholder="Enter your email"
               {...register("email")}
               error={errors.email?.message}
+              isVerified={true}
+              showStatus={true}
+              unverifiedText="Verification needed"
+              verifiedText="Verified"
+
+              
+
             />
+
+            <MobileNumberInput
+            label="Phone Number"
+            placeholder="Enter your phone number"
+            type="text"
+            {...register("phoneNumber")}
+              
+            error={errors.phoneNumber?.message}
+
+
+
+            ></MobileNumberInput>
             <Input
               label="Password"
               togglePassword
@@ -46,7 +71,80 @@ const LoginForm = () => {
               {...register("password")}
               error={errors.password?.message}
             />
-            <div className="flex justify-end">
+
+            <Input
+            label="Dummy Input"
+            extraLabel="Extra"
+            extraLabelPosition="top-right"
+            ></Input>
+
+             <Input
+            label="Dummy Input"
+            extraLabel="Extra"
+            extraLabelPosition="bottom-right"
+            ></Input>
+
+
+             <Input
+            label="Dummy Input"
+            extraLabel="Extra"
+            extraLabelPosition="bottom-left"
+            ></Input>
+
+             <Input
+            label="Dummy Input"
+            disabled={true}
+          
+            ></Input>
+
+
+             <Input
+            label="Dummy Input"
+            extraLabel="Extra"
+            extraLabelPosition="top-right"
+            ></Input>
+
+
+             <Input
+            label="Dummy Input"
+            success={true}
+                 extraLabel="Extra"
+            extraLabelPosition="top-right"
+
+
+
+
+            
+
+          
+            ></Input>
+
+
+
+
+              <Input
+            label="Dummy Input"
+            type="number"
+            extraLabel="Extra"
+            extraLabelPosition="top-right"
+            ></Input>
+
+
+               
+{/* <RadioGroup name="size" options={[...]} size="sm" />
+<RadioGroup name="size" options={[...]} size="lg" /> */}
+
+
+{/* <Demo></Demo> */}
+
+
+
+
+
+            
+
+
+            {/* <div className="flex justify-end">
               <a
                 href="#"
                 className="text-sm text-indigo-600 hover:underline font-medium"
@@ -56,10 +154,19 @@ const LoginForm = () => {
             </div>
             <Button2
             theme={['primary-500', 'white']}
+            type="submit"
             >
               Login
-            </Button2>
+            </Button2> */}
           </form>
+
+          {/* <Demo></Demo> */}
+
+
+     
+
+
+          
           <p className="text-sm text-center text-gray-600 mt-6">
             Don't have an account?{" "}
             <a
@@ -86,3 +193,7 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
+
+
+

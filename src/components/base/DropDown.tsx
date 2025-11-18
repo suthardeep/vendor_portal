@@ -1,0 +1,307 @@
+
+
+
+
+import React, { forwardRef, useState, useRef, useEffect } from "react";
+import { cn } from "@/utils/helpers";
+import Label from "./Label";
+import ErrorText from "./ErrorText";
+import Icon from "./Icon";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScrolling";
+
+export interface DropdownOption {
+  value: string | number;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface DropdownProps {
+  label?: string;
+  labelClassName?: string;
+  placeholder?: string;
+  options: DropdownOption[];
+  value?: string | number | (string | number)[] | null;
+  onChange?: (value: any) => void;
+  onBlur?: () => void;
+  name?: string;
+  error?: string;
+  success?: boolean;
+  helperText?: string;
+  required?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  variant?: "outlined" | "filled";
+  inputSize?: "sm" | "md" | "lg";
+  containerClassName?: string;
+  className?: string;
+  multiple?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  onSearch?: (query: string) => void;
+  onLoadMore?: () => Promise<void> | void;
+  hasMore?: boolean;
+  isLoading?: boolean;
+  loadMoreText?: string;
+  icon?: React.ReactNode;
+  noOptionsText?: string;
+  maxHeight?: string;
+}
+
+
+const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
+  label,
+  labelClassName,
+  placeholder = "Select option",
+  options = [],
+  value,
+  onChange,
+  onBlur,
+  error,
+  success = false,
+  helperText,
+  required = false,
+  disabled = false,
+  fullWidth = false,
+  inputSize = "md",
+  containerClassName,
+  multiple = false,
+  searchable = false,
+  searchPlaceholder = "Search...",
+  onSearch,
+  onLoadMore,
+  hasMore = false,
+  isLoading = false,
+  loadMoreText = "Load more",
+  icon,
+  noOptionsText = "No options found",
+  maxHeight = "300px",
+}, ref) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  const { sentinelRef } = useInfiniteScroll({
+    onLoadMore: onLoadMore || (() => {}),
+    hasMore,
+    isLoading,
+  });
+
+  const sizeClasses = {
+    sm: "text-xs py-1.5 px-2.5",
+    md: "text-sm py-2 px-3",
+    lg: "text-sm py-2.5 px-3",
+  };
+
+  const selectedValues = multiple ? (Array.isArray(value) ? value : []) : (value != null ? [value] : []);
+  
+  const selectedOptionsMap = new Map<any, DropdownOption>();
+  options.forEach(opt => {
+    if (selectedValues.includes(opt.value)) {
+      selectedOptionsMap.set(opt.value, opt);
+    }
+  });
+
+  const sortedOptions = [
+    ...options.filter(opt => selectedValues.includes(opt.value)),
+    ...options.filter(opt => !selectedValues.includes(opt.value))
+  ];
+
+  const displayValue = multiple
+    ? selectedValues.length > 0 
+      ? `${selectedValues.length} selected`
+      : placeholder
+    : (selectedOptionsMap.get(value)?.label || placeholder);
+
+  const handleToggle = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  };
+
+  const handleSelect = (option: DropdownOption) => {
+    if (option.disabled) return;
+    
+    if (multiple) {
+      const currentValue = Array.isArray(value) ? value : [];
+      const newValue = currentValue.includes(option.value)
+        ? currentValue.filter(v => v !== option.value)
+        : [...currentValue, option.value];
+      onChange?.(newValue);
+    } else {
+      onChange?.(option.value);
+      setIsOpen(false);
+      onBlur?.();
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange?.(multiple ? [] : '');
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    onSearch?.(query);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        onBlur?.();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      searchInputRef.current?.focus();
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, onBlur]);
+
+  const hasValue = multiple ? Array.isArray(value) && value.length > 0 : value != null;
+
+  return (
+    <div
+      ref={dropdownRef}
+      className={cn("space-y-1 flex flex-col relative", fullWidth && "w-full", containerClassName)}
+    >
+      {label && (
+        <Label 
+          required={required} 
+          className={cn(
+            error && "text-error", 
+            success && "text-success", 
+            labelClassName
+          )}
+        >
+          {label}
+        </Label>
+      )}
+
+      <div
+        onClick={handleToggle}
+        className={cn(
+          "flex items-center justify-between cursor-pointer rounded-lg border transition-all",
+          "bg-base-1 border-base-content/30", 
+          error && "border-error",
+          success && "border-success",
+          !error && !success && "border-base-content/30",
+          sizeClasses[inputSize],
+          disabled && "opacity-50 cursor-not-allowed bg-base-2"
+        )}
+      >
+        <span className={cn("flex-1", !hasValue && "text-disabled-content")}>
+          {displayValue}
+        </span>
+        <div className="flex items-center gap-2">
+          {hasValue && !disabled && (
+            <div onClick={handleClear} className="cursor-pointer">
+              <Icon 
+                name="X"
+                size={16} 
+                className="text-body-content hover:text-base-content" 
+              />
+            </div>
+          )}
+          {icon || (
+            <Icon 
+              name="ChevronDown"
+              size={20} 
+              className={cn(
+                "transition-transform text-body-content", 
+                isOpen && "rotate-180"
+              )} 
+            />
+          )}
+        </div>
+      </div>
+
+      {isOpen && (
+        <div
+          className={cn(
+            "absolute z-50 w-full mt-1 border border-base-2 rounded-lg shadow-lg bg-base-1",
+            "top-full"
+          )}
+          style={{ maxHeight }}
+        >
+          {searchable && (
+            <div className="p-2 border-b border-base-2">
+              <div className="flex items-center gap-2 px-3 py-2 border border-base-2 rounded-lg bg-base-2">
+                <Icon name="Search" size={16} className="text-disabled-content" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  placeholder={searchPlaceholder}
+                  className="flex-1 bg-transparent outline-none text-sm text-base-content placeholder:text-disabled-content"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="overflow-y-auto" style={{ maxHeight: `calc(${maxHeight} - ${searchable ? '60px' : '0px'})` }}>
+            {sortedOptions.length === 0 ? (
+              <div className="p-4 text-center text-sm text-disabled-content">
+                {noOptionsText}
+              </div>
+            ) : (
+              sortedOptions.map((option) => {
+                const isSelected = selectedValues.includes(option.value);
+                return (
+                  <div
+                    key={option.value}
+                    onClick={() => handleSelect(option)}
+                    className={cn(
+                      "flex items-center justify-between px-3 py-2 cursor-pointer transition-colors",
+                      "hover:bg-base-2",
+                      isSelected && "bg-primary/10", 
+                      option.disabled && "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    <span className="text-sm text-base-content">
+                      {option.label}
+                    </span>
+                    {isSelected && (
+                      <Icon name="Check" size={16} className="text-success" />
+                    )}
+                  </div>
+                );
+              })
+            )}
+            
+            {onLoadMore && hasMore && <div ref={sentinelRef} className="h-4" />}
+            
+            {isLoading && (
+              <div className="p-3 text-center text-sm text-body-content">
+                Loading...
+              </div>
+            )}
+            
+            {onLoadMore && hasMore && !isLoading && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onLoadMore(); }}
+                className="w-full p-2 text-sm text-body-content hover:bg-base-2 transition-colors"
+              >
+                {loadMoreText}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {(helperText || error) && (
+        <ErrorText className={error ? "text-error" : "text-body-content"}>
+          {error || helperText}
+        </ErrorText>
+      )}
+    </div>
+  );
+});
+Dropdown.displayName = "Dropdown";
+
+export default Dropdown;
