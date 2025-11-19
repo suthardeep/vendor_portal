@@ -1,7 +1,6 @@
 import { useToggle } from "@/hooks/useToggle";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { Calendar } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import "react-day-picker/style.css";
 import { Input } from "../base/Input";
@@ -9,6 +8,7 @@ import { Popover } from "./Popover";
 import ErrorText from "../base/ErrorText";
 import { cn } from "@/utils/helpers";
 import { DatePicker, type DisabledDate } from "./DatePicker";
+import Icon from "../base/Icon";
 
 dayjs.extend(customParseFormat);
 
@@ -95,7 +95,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
             className="input-icon-container cursor-pointer"
             onClick={() => toggle()}
           >
-            <Calendar size={16} />
+            <Icon name="Calendar" size={16} />
           </div>
         }
       />

@@ -11,6 +11,7 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  ChevronRightIcon,
   Download,
   Image,
   File,
@@ -18,15 +19,31 @@ import {
   Music,
   Archive,
   Upload,
-  ChevronDown ,
-  EyeOff ,
+  ChevronDown,
+  EyeOff,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle,
+  CircleCheck,
+  Info,
+  XCircle,
+  Calendar,
+  Maximize2,
+  Minus,
+  Plus,
+  Clock5,
+  MoveDown,
+  MoveUp,
+  Bike,
+  ImageIcon,
+  SearchIcon,
+  LucideProps
 } from "lucide-react";
 
 const iconRegistry = {
   Save,
   Search,
+  SearchIcon,
   Menu,
   X,
   Monitor,
@@ -34,6 +51,7 @@ const iconRegistry = {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  ChevronRightIcon,
   Download,
   Image,
   File,
@@ -41,19 +59,31 @@ const iconRegistry = {
   Music,
   Archive,
   Upload,
-  ChevronDown ,
-  EyeOff ,
+  ChevronDown,
+  EyeOff,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle,
+  CircleCheck,
+  Info,
+  XCircle,
+  Calendar,
+  Maximize2,
+  Minus,
+  Plus,
+  Clock5,
+  MoveDown,
+  MoveUp,
+  Bike,
+  ImageIcon
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof iconRegistry;
 type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
-interface IconProps {
+interface IconProps extends Omit<LucideProps, "size"> {
   name: IconName;
   size?: Size | number;
-  className?: string;
 }
 
 const getIconSize = (size: Size) => {
@@ -67,9 +97,9 @@ const getIconSize = (size: Size) => {
   return sizeMap[size] || sizeMap["md"];
 };
 
-export default function Icon({ name, className, size }: IconProps) {
+export default function Icon({ name, size, className, ...props }: IconProps) {
   const Component = iconRegistry[name];
   const iconSize = typeof size === "string" ? getIconSize(size) : size;
 
-  return <Component className={cn("text-primary-content", className)} size={iconSize} />;
+  return <Component size={iconSize} className={cn(className)} {...props} />;
 }

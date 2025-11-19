@@ -1,6 +1,5 @@
-import { IconButton } from "@/components/base/IconButton";
-import { Minus, Plus } from "lucide-react";
 import { cn } from "@/utils/helpers";
+import Icon from "../base/Icon";
 
 interface QuantityControlProps {
   quantity: number;
@@ -30,8 +29,8 @@ const QuantityControl: React.FC<QuantityControlProps> = (props) => {
       {showLabel && (
         <span className="text-base-3 dark:text-base-2 text-sm">Quantity:</span>
       )}
-      <IconButton
-        icon={Minus}
+      <Icon
+        name={"Minus"}
         size={size}
         onClick={(e) => onDecrement(e)}
         className="text-base-3 dark:text-base-2 hover:bg-neutral-content dark:hover:bg-base-3"
@@ -47,14 +46,14 @@ const QuantityControl: React.FC<QuantityControlProps> = (props) => {
       >
         {quantity}
       </span>
-      <IconButton
-        icon={Plus}
+      <Icon
+        name={"Plus"}
         size={size}
-        onClick={(e) => onIncrement(e)}
-        disabled={isMaxReached}
+        onClick={(e) => { if(!isMaxReached) onIncrement(e)}}
         className={cn(
-          "text-base-3 dark:text-base-2 hover:bg-neutral-content dark:hover:bg-base-3",
+          "text-base-content dark:text-base-2 hover:bg-neutral-content dark:hover:bg-base-3",
           "disabled:cursor-not-allowed disabled:opacity-50",
+          isMaxReached ? "cursor-not-allowed text-base-3" : ""
         )}
       />
     </div>

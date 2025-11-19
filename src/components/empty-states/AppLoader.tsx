@@ -1,6 +1,6 @@
-import { Bike } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import "./index.css";
+import Icon from "../base/Icon";
 
 interface AppLoaderProps {
   isLoading: boolean;
@@ -78,7 +78,8 @@ const AppLoader: React.FC<AppLoaderProps> = ({ isLoading }) => {
 
           {/* Bike */}
           <div className="relative z-10">
-            <Bike
+            <Icon
+              name="Bike"
               className="text-primary-600 dark:text-primary-400 h-16 w-16"
               style={{
                 filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.6))",

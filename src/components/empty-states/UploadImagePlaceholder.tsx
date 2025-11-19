@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
-import { ImageIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import Icon from "../base/Icon";
 
 interface UploadImagePlaceholderProps {
   onClick: () => void;
@@ -25,7 +25,7 @@ const UploadImagePlaceholder: React.FC<UploadImagePlaceholderProps> = (
       {customIcon ? (
         customIcon
       ) : (
-        <ImageIcon className="text-base-3 dark:text-base-2" />
+        <Icon name="ImageIcon" className="text-base-3 dark:text-base-2" />
       )}
       {placeholder && (
         <p className="text-base-3 dark:text-base-2 max-w-3/4 text-center">

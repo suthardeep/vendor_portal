@@ -1,10 +1,9 @@
 import { cn } from "@/utils/helpers";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { IconButton } from "../base/IconButton";
 import { type DialogProps } from "./Dialog";
 import ImageComponent from "./ImageComponent";
 import { createPortal } from "react-dom";
+import Icon from "../base/Icon";
 
 export type LightboxGalleryProps = Pick<
   DialogProps,
@@ -95,25 +94,19 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = (props) => {
               {imageAction && imageAction(images[currentIndex], currentIndex)}
             </div>
 
-            <IconButton
-              icon={ChevronLeft}
+            <Icon
+              name={"ChevronLeft"}
               onClick={goToPrev}
-              className="absolute left-8"
-              iconClassName="text-white"
+              className={cn("absolute left-8 text-white", images.length<2 ? "text-disabled-content" : "")}
               strokeWidth={2}
               size={20}
-              noDefaultFill
-              disabled={images.length < 2}
             />
-            <IconButton
-              icon={ChevronRight}
+            <Icon
+              name={"ChevronRight"}
               onClick={goToNext}
-              className="absolute right-8"
-              iconClassName="text-white"
+              className={cn("absolute right-8 text-white", images.length<2 ? "text-disabled-content" : "")}
               strokeWidth={2}
               size={20}
-              noDefaultFill
-              disabled={images.length < 2}
             />
           </div>
 

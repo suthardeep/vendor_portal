@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 // --- Base Components ---
-import { Button } from "@/components/base/Button";
-import Checkbox from "./base/Checkbox";
+// import { Button } from "@/components/base/Button";
 import Chip from "@/components/base/Chip";
 import { DateTimeInput } from "@/components/base/DateTimeInput";
 import Divider from "@/components/base/Divider";
-import Dropdown, { DropdownOption } from "@/components/base/DropDown";
+// import Dropdown, { DropdownOption } from "@/components/base/DropDown";
+// import DropDown from "demaze-ui-lib/components/DropDown";
 import ErrorText from "@/components/base/ErrorText";
-import FileUploadField from "@/components/base/FileUploadField";
+// import FileUploadField from "demaze-ui-lib/components";
+
+// import { Checkbox } from "demaze-ui-lib/components";
+
 import Icon from "@/components/base/Icon";
 import { Image } from "@/components/base/Image";
 import { Input } from "@/components/base/Input";
@@ -28,7 +31,7 @@ import ProgressBar from "@/components/charts/ProgressBar";
 // --- Common Form Fields ---
 import { AmountTypeInput } from "@/components/common-form-fields/AmountWithTypeInput";
 import BooleanInput from "@/components/common-form-fields/BooleanInput";
-import Radio from "@/components/common-form-fields/Radio";
+// import Radio from "@/components/common-form-fields/Radio";
 
 // --- Compound Components ---
 import ActiveChip from "@/components/compound/ActiveChip";
@@ -66,7 +69,7 @@ import Tooltip from "@/components/compound/Tooltip";
 import SelectionCard from "@/components/compound/cards/SelectionCard";
 import StatCard from "@/components/compound/cards/StatCard";
 import VariantSelectorCard from "@/components/compound/cards/VariantSelectorCard";
-import Spinner from "@/components/compound/spinner/Spinner";
+// import Spinner from "@/components/compound/spinner/Spinner";
 import { Table } from "@/components/compound/table/Table";
 import { TimeRangeSelector } from "@/components/compound/time-range/TimeRangeSelector";
 import PillPath from "@/components/compound/PillPath";
@@ -86,6 +89,8 @@ import UploadImagePlaceholder from "@/components/empty-states/UploadImagePlaceho
 // --- Shared ---
 import Logo from "@/components/shared/Logo";
 import LogoutDialog from "@/components/shared/LogoutDialog";
+import { Button, Checkbox, Dropdown, DropdownOption, Spinner } from "demaze-ui-lib/components";
+// import { Button, } from "demaze-ui-lib/components";
 
 
 // --- Helper Component ---
@@ -235,7 +240,7 @@ export default function DemoAll() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <h4 className="mb-2 font-semibold">Custom Dropdown</h4>
-                    <Dropdown 
+                    <Dropdown
                         label="Single Select" 
                         options={dummyOptions as DropdownOption[]}
                         value={dropdownVal}
@@ -276,13 +281,13 @@ export default function DemoAll() {
                 <MobileNumberInput label="Mobile Number" countryCode="+91" />
                 <OTPInput length={4} value={otp} onValueChange={setOtp} label="OTP Input" />
                 <DateTimeInput label="Date Time Input" />
-                <FileUploadField 
+                {/* <FileUploadField 
                     label="File Upload" 
                     multiple 
                     value={files}
                     onChange={setFiles}
                     helperText="Upload images or docs"
-                />
+                /> */}
                 <Textarea label="Textarea" placeholder="Long text here..." />
             </div>
         </Section>
@@ -483,12 +488,12 @@ export default function DemoAll() {
                     label="Amount with Type" 
                 />
                 
-                <Radio 
+                {/* <Radio 
                     label="Standalone Radio" 
                     checked={radioVal === "opt1"} 
                     onChange={() => setRadioVal("opt1")}
                     description="This is a single radio description"
-                />
+                /> */}
                 
                 <CompoundRadioGroup
                     size="md"

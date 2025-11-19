@@ -1,9 +1,9 @@
 import { cn } from "@/utils/helpers";
-import { X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Button, type ButtonProps } from "../base/Button";
 import { IconButton } from "../base/IconButton";
+import Icon from "../base/Icon";
 
 const Dialog: React.FC<DialogProps> = (props) => {
   const {
@@ -74,7 +74,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
                   </p>
                 )}
               </div>
-              <IconButton icon={X} iconSize={18} size={"xs"} onClick={close} />
+              <Icon name={"X"} size={18} onClick={close} />
             </div>
 
             <div className="flex-1 overflow-hidden px-5 py-4">

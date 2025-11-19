@@ -182,11 +182,6 @@ This Project uses React 19 + vite with many libraries like (read package.json fo
 ├── vercel.json
 └── vite.config.ts
 
-## Important files 
-**tailwind.config.js**
-it consist of several classes , important ones are 
-a-primary, a-secondary and so on. which is basically the color palette for this project.
-
 ## Notes
 @ in the imports is an alias for src 
 

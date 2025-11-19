@@ -1,9 +1,9 @@
-import { ChevronDown } from "lucide-react";
 import Divider from "../base/Divider";
 import { cn } from "@/utils/helpers";
 import { IconButton } from "../base/IconButton";
 import { useToggle } from "@/hooks/useToggle";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Icon from "../base/Icon";
 
 interface ContainerProps {
   title: string;
@@ -78,18 +78,13 @@ const Container: React.FC<ContainerProps> = (props) => {
           {trailingHeaderComponent && trailingHeaderComponent}
         </div>
         {isCollapsible && (
-          <IconButton
-            icon={ChevronDown}
+          <Icon
+            name="ChevronDown"
             size={"sm"}
             onClick={(e) => {
               e.stopPropagation();
               handleOnCollapse();
             }}
-            noDefaultFill
-            iconClassName={cn(
-              "transition-all",
-              isOpen ? "-scale-y-100" : "scale-100",
-            )}
           />
         )}
       </div>

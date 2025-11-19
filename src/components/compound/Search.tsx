@@ -1,4 +1,4 @@
-import { Search as SearchIcon } from "lucide-react";
+import Icon from "../base/Icon";
 import { Input } from "../base/Input";
 
 interface SearchProps {
@@ -10,7 +10,7 @@ interface SearchProps {
 const Search: React.FC<SearchProps> = ({ placeholder, setValue, value }) => {
   return (
     <Input
-      leftElement={<SearchIcon size={18} strokeWidth={1} />}
+      leftElement={<Icon name="Search" size={18} strokeWidth={1} />}
       placeholder={placeholder || "Search"}
       value={value}
       onChange={(e) => setValue(e.target.value)}

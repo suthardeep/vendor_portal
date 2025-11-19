@@ -1,6 +1,6 @@
-import { X } from "lucide-react";
 import React, { forwardRef } from "react";
 import { cn } from "../../utils/helpers";
+import Icon from "./Icon";
 
 export type ChipColor =
   | "gray"
@@ -98,7 +98,8 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
       >
         <span className={cn("text-xs font-semibold", text)}>{label}</span>
         {isCollapsible && (
-          <X
+          <Icon
+            name="X"
             size={16}
             onClick={onCollapse}
             className="ml-1 cursor-pointer"

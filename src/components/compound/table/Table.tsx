@@ -5,12 +5,12 @@ import { cn } from "@/utils/helpers";
 //   shouldRenderOptionsColumn,
 // } from "@/utils/rbac";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { MoveDown, MoveUp } from "lucide-react";
 import React from "react";
 import type { PaginationProps } from "../Pagination";
 import Pagination from "../Pagination";
 import TableCell from "./TableCell";
 import Checkbox from "@/components/base/Checkbox";
+import Icon from "@/components/base/Icon";
 
 interface SortIconsProps {
   fieldName: string;
@@ -36,39 +36,26 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
   } = props;
 
   const renderCell = (row: T, column: TableColumn<T>) => {
-    const value =
-      typeof column.accessor === "function"
-        ? column.accessor(row)
-        : row[column.accessor];
+    const value = typeof column.accessor === "function" ? column.accessor(row) : row[column.accessor];
 
     return column.cell ? column.cell(value, row) : value;
   };
 
-  const selectedIds =
-    enableRowSelection && "selectedIds" in rest ? rest.selectedIds : [];
+  const selectedIds = enableRowSelection && "selectedIds" in rest ? rest.selectedIds : [];
 
-  const onRowSelection =
-    enableRowSelection && "onRowSelection" in rest
-      ? rest.onRowSelection
-      : undefined;
+  const onRowSelection = enableRowSelection && "onRowSelection" in rest ? rest.onRowSelection : undefined;
 
   const getRowId = (row: T) => String(row[rowSelectionKey]);
 
   const allRowsSelected =
-    enableRowSelection &&
-    data.length > 0 &&
-    data.every((row) => selectedIds.includes(getRowId(row)));
+    enableRowSelection && data.length > 0 && data.every((row) => selectedIds.includes(getRowId(row)));
 
-  const someRowsSelected =
-    enableRowSelection &&
-    data.some((row) => selectedIds.includes(getRowId(row)));
+  const someRowsSelected = enableRowSelection && data.some((row) => selectedIds.includes(getRowId(row)));
 
   const toggleSelectAll = () => {
     if (!onRowSelection) return;
 
-    const allSelected = data.every((row) =>
-      selectedIds.includes(getRowId(row)),
-    );
+    const allSelected = data.every((row) => selectedIds.includes(getRowId(row)));
 
     data.forEach((row) => {
       const rowId = getRowId(row);
@@ -88,10 +75,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
     return (
       <div className="fall bg-neutral-content dark:bg-base-3/70 mt-4 flex-col rounded-xl p-6">
         <NoSearchResult />
-        <h6 className="text-base-3 dark:text-base-2">
-          {" "}
-          {emptyMessage || "No data found"}{" "}
-        </h6>
+        <h6 className="text-base-3 dark:text-base-2"> {emptyMessage || "No data found"} </h6>
       </div>
     );
   }
@@ -123,9 +107,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                     } else if (typeof column.accessor === "string") {
                       sortFieldName = column.accessor as string;
                     } else if (typeof column.accessor === "function") {
-                      sortFieldName = extractFieldNameFromAccessor(
-                        column.accessor,
-                      );
+                      sortFieldName = extractFieldNameFromAccessor(column.accessor);
                     }
                   }
 
@@ -133,19 +115,11 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                     <th
                       key={index}
                       scope="col"
-                      className={cn(
-                        tableHeadClassName,
-                        paddingMap[size],
-                        column.className,
-                      )}
+                      className={cn(tableHeadClassName, paddingMap[size], column.className)}
                     >
                       <div className="flex items-center">
-                        {typeof column.header === "function"
-                          ? column.header(column)
-                          : column.header}
-                        {column.isSortable && sortFieldName && (
-                          <SortIcons fieldName={sortFieldName} />
-                        )}
+                        {typeof column.header === "function" ? column.header(column) : column.header}
+                        {column.isSortable && sortFieldName && <SortIcons fieldName={sortFieldName} />}
                       </div>
                     </th>
                   );
@@ -169,7 +143,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                         key={rowIndex}
                         className={cn(
                           "hover:bg-neutral-content/60 hover:dark:bg-base-3/70",
-                          onRowClick && "cursor-pointer",
+                          onRowClick && "cursor-pointer"
                         )}
                         onClick={() => onRowClick?.(row)}
                       >
@@ -183,11 +157,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                           </TableCell>
                         )}
                         {columns?.map((column, colIndex) => (
-                          <TableCell
-                            key={colIndex}
-                            className={cn(column.className)}
-                            isMuted={isMuted}
-                          >
+                          <TableCell key={colIndex} className={cn(column.className)} isMuted={isMuted}>
                             {renderCell(row, column)}
                           </TableCell>
                         ))}
@@ -220,11 +190,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
                                 height: loadingHeightMap[size],
                               }}
                             >
-                              <div
-                                className={cn(
-                                  "shimmer h-full rounded bg-gray-200/70",
-                                )}
-                              ></div>
+                              <div className={cn("shimmer h-full rounded bg-gray-200/70")}></div>
                             </td>
                           ))}
                       </tr>
@@ -235,13 +201,7 @@ export function Table<T extends Record<string, any>>(props: TableProps<T>) {
           </table>
         </div>
       </div>
-      {pagination && (
-        <Pagination
-          className="mt-4"
-          selectedIds={selectedIds}
-          {...pagination}
-        />
-      )}
+      {pagination && <Pagination className="mt-4" selectedIds={selectedIds} {...pagination} />}
     </div>
   );
 }
@@ -327,28 +287,30 @@ function SortIcons({ fieldName }: SortIconsProps) {
 
   return (
     <div className="flex-co ml-0.5 flex">
-      <MoveUp
+      <Icon
+        name="MoveUp"
         size={12}
         strokeWidth={3}
         className={cn(
           "cursor-pointer",
           isActiveField && isAscending
             ? "text-primary-600 dark:text-neutral-content"
-            : "text-base-3 dark:text-base-2",
+            : "text-base-3 dark:text-base-2"
         )}
         onClick={(e) => {
           e.stopPropagation();
           handleSort("true");
         }}
       />
-      <MoveDown
+      <Icon
+        name="MoveDown"
         size={12}
         strokeWidth={3}
         className={cn(
           "cursor-pointer",
           isActiveField && !isAscending
             ? "text-primary-600 dark:text-neutral-content"
-            : "text-base-3 dark:text-base-2",
+            : "text-base-3 dark:text-base-2"
         )}
         onClick={(e) => {
           e.stopPropagation();

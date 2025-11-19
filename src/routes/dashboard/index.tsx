@@ -1,5 +1,6 @@
 import DemoAll from "@/components/DemoAll";
 import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "demaze-ui-lib/components";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
@@ -8,10 +9,15 @@ export const Route = createFileRoute("/dashboard/")({
 function RouteComponent() {
   return (
     <div className="text-primary">
-      Hello dashboard!
+        Dashboard page
 
-      <DemoAll/>
+        <br />  
 
+        <Button 
+          onClick={() => alert("This button comes from demaze-ui-lib!")}
+        >
+          Button from demaze-ui-lib (npm package)
+        </Button>
     </div>
   );
 }

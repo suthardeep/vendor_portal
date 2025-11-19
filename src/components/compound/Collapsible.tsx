@@ -1,7 +1,7 @@
 import { useToggle } from "@/hooks/useToggle";
 import { cn } from "@/utils/helpers";
-import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Icon from "../base/Icon";
 
 interface CollapsibleProps {
   trigger: ReactNode;
@@ -59,26 +59,18 @@ const Collapsible: React.FC<CollapsibleProps> = (props) => {
 
   return (
     <div className={cn(classname)}>
-      <div
-        onClick={toggle}
-        className={cn("flex items-center gap-x-3", triggerClassname)}
-      >
+      <div onClick={toggle} className={cn("flex items-center gap-x-3", triggerClassname)}>
         {trigger}
         {hideIcon === false && (
-          <ChevronDown
+          <Icon
+            name="ChevronDown"
             size={16}
-            className={cn(
-              "ml-auto cursor-pointer transition-all",
-              isOpen ? "-scale-y-100" : "scale-100",
-            )}
+            className={cn("ml-auto cursor-pointer transition-all", isOpen ? "-scale-y-100" : "scale-100")}
           />
         )}
       </div>
       <div
-        className={cn(
-          "overflow-hidden transition-all duration-200 ease-in-out",
-          bodyClassname,
-        )}
+        className={cn("overflow-hidden transition-all duration-200 ease-in-out", bodyClassname)}
         style={{
           maxHeight: isOpen
             ? dynamicHeight

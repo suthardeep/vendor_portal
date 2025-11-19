@@ -1,8 +1,8 @@
 import { useImageZoomStore } from "@/store/useImageZoomStore";
 import { cn } from "@/utils/helpers";
-import { Maximize2, X } from "lucide-react";
 import { useState } from "react";
 import fallback from "@/assets/react.svg";
+import Icon from "../base/Icon";
 
 interface ImageComponentProps {
   src: string | File;
@@ -98,14 +98,14 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
             disableZoom && "hidden",
           )}
         >
-          <Maximize2 size={12} className="text-white" />
+          <Icon name="Maximize2" size={12} className="text-white" />
         </span>
         {onRemove && (
           <span
             className={cn("cursor-pointer rounded-full p-1 hover:bg-black/35")}
             onClick={onRemove}
           >
-            <X size={12} className="text-white" />
+            <Icon name="X" size={12} className="text-white" />
           </span>
         )}
       </span>

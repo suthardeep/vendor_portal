@@ -12,8 +12,8 @@ lerna-debug.log*
 .env.*.local
 .env.production
 
-claude.md
-CLAUDE.md
+CLAUDE2.md
+.tanstack
 
 node_modules
 dist

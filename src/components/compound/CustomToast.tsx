@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
-import { AlertTriangle, CircleCheck, Info, X, XCircle } from "lucide-react";
 import React from "react";
+import Icon from "../base/Icon";
 
 interface CustomToastProps {
   type: "success" | "error" | "warning" | "info" | "default";
@@ -36,10 +36,10 @@ const borderColorMap = {
 };
 
 const iconMap = {
-  success: <CircleCheck className={textColorMap["success"]} size={20} />,
-  error: <XCircle className={textColorMap["error"]} size={20} />,
-  warning: <AlertTriangle className={textColorMap["warning"]} size={20} />,
-  info: <Info className={textColorMap["info"]} size={20} />,
+  success: <Icon name="CircleCheck" className={textColorMap["success"]} size={20} />,
+  error: <Icon name="XCircle" className={textColorMap["error"]} size={20} />,
+  warning: <Icon name="AlertTriangle" className={textColorMap["warning"]} size={20} />,
+  info: <Icon name="Info" className={textColorMap["info"]} size={20} />,
   default: null,
 };
 
@@ -84,7 +84,7 @@ const CustomToast: React.FC<CustomToastProps> = ({
             )}
             onClick={onClose}
           >
-            <X size={16} className={cn(textColorMap[type])} />
+            <Icon name="X" size={16} className={cn(textColorMap[type])} />
           </div>
         )}
       </div>

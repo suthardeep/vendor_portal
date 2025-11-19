@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input } from "../base/Input";
-import { Clock5 } from "lucide-react";
+import Icon from "../base/Icon";
 
 type TimePickerInputProps = {
   value?: number | null;
@@ -74,7 +74,7 @@ const TimePickerInput: React.FC<TimePickerInputProps> = ({
           className="input-icon-container cursor-pointer"
           onClick={handleIconClick}
         >
-          <Clock5 size={16} />
+          <Icon name="Clock5" size={16} />
         </div>
       }
       rightElementClassname="pr-0"

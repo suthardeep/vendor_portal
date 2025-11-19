@@ -1,8 +1,8 @@
 import type { PaginationMeta } from "@/types/baseApi";
 import { cn, prettyNumber } from "@/utils/helpers";
 import { useRouter } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { IconButton } from "../base/IconButton";
+import Icon from "../base/Icon";
 
 export interface PaginationProps extends PaginationMeta {
   onPageChange?: (currentPage: number) => void;
@@ -68,14 +68,13 @@ const Pagination: React.FC<PaginationProps> = (props) => {
         Showing {resultStart}-{resultEnd} of {prettyNumber(totalRows)} results
       </p>
       <div className="flex items-center gap-x-2">
-        <IconButton
-          icon={ChevronLeft}
+        <Icon
+          name={"ChevronLeft"}
           onClick={handlePreviousPage}
           size={"xs"}
-          disableHoverBg
           className={cn(basClasses, buttonColorClasses)}
           strokeWidth={1.6}
-          disabled={!hasPrevPage || currentPage < 2}
+          // disabled={!hasPrevPage || currentPage < 2}
         />
         <div className="flex gap-x-1">
           {pageList.map((page, index) =>
@@ -102,14 +101,13 @@ const Pagination: React.FC<PaginationProps> = (props) => {
             ),
           )}
         </div>
-        <IconButton
-          icon={ChevronRight}
+        <Icon
+          name={"ChevronRight"}
           onClick={handleNextPage}
           size={"xs"}
-          disableHoverBg
           className={cn(basClasses, buttonColorClasses)}
           strokeWidth={1.6}
-          disabled={!hasNextPage || currentPage >= totalPages}
+          // disabled={!hasNextPage || currentPage >= totalPages}
         />
       </div>
     </div>

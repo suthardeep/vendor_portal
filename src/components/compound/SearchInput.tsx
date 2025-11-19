@@ -1,6 +1,6 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 import { Input } from "../base/Input";
-import { SearchIcon } from "lucide-react";
+import Icon from "../base/Icon";
 
 interface SearchInputProps {
   defaultVal?: string;
@@ -20,7 +20,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
 
   return (
     <Input
-      leftElement={<SearchIcon size={16} strokeWidth={1} />}
+      leftElement={<Icon name="SearchIcon" size={16} strokeWidth={1} />}
       placeholder={placeholder || "Search"}
       value={val}
       onChange={(e) => setVal(e.target.value)}

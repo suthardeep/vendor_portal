@@ -1,6 +1,7 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import React, { type ButtonHTMLAttributes, type ReactNode } from "react";
-import { cn } from "../../utils/helpers";
+// import { cn } from "../../utils/helpers";
+import { cn } from "demaze-ui-lib/utils";
 import Spinner from "../compound/spinner/Spinner";
 import Icon, { IconName } from "./Icon";
 

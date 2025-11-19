@@ -1,8 +1,8 @@
 import { cn } from "@/utils/helpers";
-import { X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, type ButtonProps } from "../base/Button";
 import { IconButton } from "../base/IconButton";
+import Icon from "../base/Icon";
 
 export interface SheetAction {
   label: string;
@@ -104,11 +104,11 @@ const Sheet: React.FC<SheetProps> = (props) => {
                       <p className="text-base-2 dark:text-base-2">{subTitle}</p>
                     )}
                   </div>
-                  <IconButton
-                    icon={X}
+                  <Icon
+                    name={"X"}
                     size={"xs"}
                     onClick={close}
-                    iconClassName="text-base-3 dark:text-neutral-content"
+                    className="text-base-content"
                   />
                 </div>
               )}

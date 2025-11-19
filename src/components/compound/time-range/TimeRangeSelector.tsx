@@ -4,8 +4,8 @@ import { PresetRange, type TimeRange } from "./timeRange.types";
 import DatePickerInput from "../DatePickerInput";
 import { Button } from "@/components/base/Button";
 import { cn } from "@/utils/helpers";
-import { Calendar } from "lucide-react";
 import SelectionCard from "../cards/SelectionCard";
+import Icon from "@/components/base/Icon";
 
 interface TimeRangeSelectorProps {
   value?: TimeRange;
@@ -43,7 +43,7 @@ export const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
     <div className="flex flex-col gap-4">
       {currentRange && (
         <div className="dark:bg-base-3 bg-neutral-content/60 flex items-center gap-2 rounded-lg px-3 py-2">
-          <Calendar className="text-text-secondary h-4 w-4" />
+          <Icon name="Calendar" className="text-text-secondary h-4 w-4" />
           <p className="text-base-3 dark:text-neutral-content font-medium">
             {currentRange}
           </p>

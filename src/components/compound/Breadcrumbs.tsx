@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronRightIcon } from "lucide-react";
 import React from "react";
+import Icon from "../base/Icon";
 
 export type BreadcrumbItem = {
   label: string;
@@ -20,10 +20,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = (props) => {
         return (
           <li key={index} className="flex items-center">
             {index > 0 && (
-              <ChevronRightIcon
-                className="text-base-2 dark:text-base-2 mr-0.5"
-                size={14}
-              />
+              <Icon name="ChevronRightIcon" className="text-base-2 dark:text-base-2 mr-0.5" size={14} />
             )}
             <Link
               to={breadcrumb.to}

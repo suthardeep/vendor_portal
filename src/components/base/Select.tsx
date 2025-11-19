@@ -1,5 +1,4 @@
 import { cn } from "@/utils/helpers";
-import { Check, ChevronDown, X } from "lucide-react";
 import React, { useMemo, type JSX } from "react";
 import type {
   GroupBase,
@@ -14,6 +13,7 @@ import Checkbox from "./Checkbox";
 import ErrorText from "./ErrorText";
 import Label from "./Label";
 import Spinner from "../compound/spinner/Spinner";
+import Icon from "./Icon";
 
 function CustomSelectInner<T = string>(
   props: CustomSelectProps<T>,
@@ -227,7 +227,7 @@ const Option = (props: any) => {
           size="sm"
         />
       ) : (
-        <>{isSelected && <Check size={16} className="ml-2" />}</>
+        <>{isSelected && <Icon name="Check" size={16} className="ml-2" />}</>
       )}
     </components.Option>
   );
@@ -235,7 +235,8 @@ const Option = (props: any) => {
 
 const DropdownIndicator = (props: any) => (
   <components.DropdownIndicator {...props}>
-    <ChevronDown
+    <Icon
+      name="ChevronDown"
       className="text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"
       size={20}
     />
@@ -244,7 +245,7 @@ const DropdownIndicator = (props: any) => (
 
 const ClearIndicator = (props: any) => (
   <components.ClearIndicator {...props}>
-    <X
+    <Icon name="X"
       className="text-base-2 hover:text-base-3 dark:text-base-2 hover:dark:text-neutral-content"
       size={16}
     />
