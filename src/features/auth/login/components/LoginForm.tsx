@@ -1,14 +1,7 @@
 import { useLogin } from "../hooks/useLogin";
 import { Input } from "@/components/base/Input";
 // import { Button } from "@/components/base/Button";
-import ImageMagnifier from "@/components/shared/ImageMagnifier";
-import Button2 from "@/components/base/Button2";
 import { MobileNumberInput } from "@/components/base/MobileNumberInput";
-import Demo from "./DemoForm";
-import { DateTimeInput } from "@/components/base/DateTimeInput";
-import { Checkbox } from "@/components/base/Checkbox";
-import { OTPInput } from "@/components/base/OTPInput";
-import {RadioGroup} from "@/components/base/RadioGroup";
 
 const LoginForm = () => {
   const {
@@ -32,7 +25,6 @@ const LoginForm = () => {
             Log in to access your account
           </p>
 
-          <ImageMagnifier/>
           <form
             className="mt-8 grid gap-y-5"
             onSubmit={handleSubmit(onSubmit)}

@@ -1,4 +1,3 @@
-import Checkbox from "@/components/base/Checkbox";
 import NoSearchResult from "@/components/empty-states/NoSearchResult";
 import { cn } from "@/utils/helpers";
 // import {
@@ -11,6 +10,7 @@ import React from "react";
 import type { PaginationProps } from "../Pagination";
 import Pagination from "../Pagination";
 import TableCell from "./TableCell";
+import Checkbox from "@/components/base/Checkbox";
 
 interface SortIconsProps {
   fieldName: string;

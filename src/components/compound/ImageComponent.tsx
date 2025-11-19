@@ -2,7 +2,7 @@ import { useImageZoomStore } from "@/store/useImageZoomStore";
 import { cn } from "@/utils/helpers";
 import { Maximize2, X } from "lucide-react";
 import { useState } from "react";
-import fallback from "/image-fallback.svg";
+import fallback from "@/assets/react.svg";
 
 interface ImageComponentProps {
   src: string | File;

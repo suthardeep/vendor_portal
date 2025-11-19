@@ -1,15 +1,14 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/base/Input";
 import { MobileNumberInput } from "@/components/base/MobileNumberInput";
 import { DateTimeInput } from "@/components/base/DateTimeInput";
-import { Checkbox } from "@/components/base/Checkbox";
+import Checkbox from "@/components/base/Checkbox";
 import { OTPInput } from "@/components/base/OTPInput";
 import { RadioGroup } from "@/components/base/RadioGroup";
 import Dropdown from "@/components/base/DropDown";
-import Button2 from "@/components/base/Button2";
+import { Button } from "@/components/base/Button";
 
 
 // Proper Zod schema with default values
@@ -322,22 +321,20 @@ export const ComponentDemo = () => {
           {/* Submit Buttons */}
           <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-              <Button2
-                theme={['gray-500', 'white']}
+              <Button
                 type="button"
                 onClick={() => reset()}
                 disabled={isSubmitting}
               >
                 Reset Form
-              </Button2>
+              </Button>
 
-              <Button2
-                theme={['primary-500', 'white']}
+              <Button
                 type="submit"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Submit Form"}
-              </Button2>
+              </Button>
             </div>
           </div>
         </form>

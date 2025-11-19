@@ -1,7 +1,3 @@
-
-
-
-
 import React, { forwardRef } from "react";
 import { cn } from "@/utils/helpers";
 import Label from "./Label";
@@ -27,7 +23,7 @@ export interface CheckboxProps {
   indeterminate?: boolean;
 }
 
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
       label,
@@ -182,4 +178,4 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 );
 
 Checkbox.displayName = "Checkbox";
-
+export default Checkbox;

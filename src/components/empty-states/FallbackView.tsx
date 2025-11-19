@@ -1,10 +1,9 @@
 import { cn } from "@/utils/helpers";
-import * as LucideIcons from "lucide-react";
 import type { ReactNode } from "react";
 
 export interface FallbackViewProps {
   title: string;
-  icon?: keyof typeof LucideIcons;
+  icon?: ReactNode;
   footer?: ReactNode;
   classname?: string;
 }
@@ -12,7 +11,7 @@ export interface FallbackViewProps {
 const FallbackView: React.FC<FallbackViewProps> = (props) => {
   const { title, footer, icon, classname } = props;
 
-  const Icon = icon ? (LucideIcons[icon] as LucideIcons.LucideIcon) : null;
+  const Icon = icon ? icon : null;
 
   return (
     <div
@@ -21,7 +20,7 @@ const FallbackView: React.FC<FallbackViewProps> = (props) => {
         classname,
       )}
     >
-      {Icon && <Icon size={48} strokeWidth={1.5} />}
+      {/* {Icon && <Icon size={48} strokeWidth={1.5} />} */}
       <p className="text-base-3 dark:text-neutral-content text-center">
         {title || "No data found"}
       </p>
