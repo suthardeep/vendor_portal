@@ -21,13 +21,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function Root() {
   return (
-    <div className="dark:bg-neutral h-screen w-screen bg-[#FAFAFA]">
-      <Toaster visibleToasts={6} />
-      <Outlet />
-      <ImageZoomDialog />
-      <MediaDialog />
-      {/* <TanStackRouterDevtools />
-      <ReactQueryDevtools initialIsOpen={false} /> */}
+    <div className="h-screen -z-20 w-screen relative bg-white">
+      <div className="absolute -z-10 top-0 left-0 w-full h-[45dvh] bg-black" />
+        <Toaster visibleToasts={6} />
+        <Outlet />
+        <ImageZoomDialog />
+        <MediaDialog />
+        {/* <TanStackRouterDevtools />
+        <ReactQueryDevtools initialIsOpen={false} /> */}
     </div>
   );
 }

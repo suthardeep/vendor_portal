@@ -6,5 +6,5 @@ export const Route = createFileRoute('/_auth/login/')({
 })
 
 function RouteComponent() {
-  return <Login></Login>
+  return <div className='text-red-300'>Login page</div>
 }

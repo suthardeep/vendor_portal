@@ -18,6 +18,8 @@ function RouteComponent() {
         >
           Button from demaze-ui-lib (npm package)
         </Button>
+
+        {/* <DemoAll/> */}
     </div>
   );
 }
