@@ -40,7 +40,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       multiple = false,
       maxFileSize = 10, // 10MB default
       maxFiles = 5,
-      allowedFileTypes = ['image/*', '.pdf', '.doc', '.docx', '.txt'],
+      allowedFileTypes = ['image/*', '.pdf'],
       previewHeight = '120px',
       previewWidth = '120px',
       filesPerRow = 4,
@@ -199,16 +199,16 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
     }[filesPerRow] || 'grid-cols-4';
 
     return (
-      <div className={cn("space-y-2", fullWidth && "w-full", containerClassName)}>
+      <div className={cn("space-y-2 flex flex-col", fullWidth && "w-full", containerClassName)}>
         {label && (
-          <Label required={required} className={cn("text-base-content", labelClassName)}>
-            {label}
-          </Label>
+          <Label title={label} required={required} className={cn("text-base-content", labelClassName)}>
+              {label}
+            </Label>
         )}
 
         <div
           className={cn(
-            "relative border-2 border-dashed rounded-lg transition-all duration-200",
+            "relative mt-auto border-2 border-dashed rounded-lg transition-all duration-200",
             dragActive ? "border-primary bg-primary/5" : "border-input-border",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-primary/60",
             error && "border-error",
@@ -232,7 +232,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
           />
 
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-            <Icon name="Upload" className="w-10 h-10 mb-3 text-base-content opacity-60" />
+            <Icon name="Upload" className="w-10 h-10 mb-3 text-base-content" />
             <p className="text-sm font-medium text-base-content mb-1">
               Drag & Drop or Choose file to upload
             </p>

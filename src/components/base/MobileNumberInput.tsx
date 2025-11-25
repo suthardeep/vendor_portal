@@ -105,7 +105,7 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
   ) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const numericValue = e.target.value.replace(/\D/g, "");
-      
+
       if (numericValue.length <= maxLength) {
         const syntheticEvent = {
           ...e,
@@ -126,7 +126,9 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
     return (
       <div className={cn("w-full space-y-1", containerClassName)}>
         {label && (
-         <Label required={true} className={error ? "text-error" : ""}>{label}</Label>
+          <Label required={true} className={error ? "text-error" : ""}>
+            {label}
+          </Label>
         )}
 
         <div className="relative">
@@ -165,11 +167,11 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
             />
 
             {isVerified && showStatus && !error && (
-             <Icon 
-  name="CheckCircle2"
-  size={size === "sm" ? 16 : size === "md" ? 20 : 24}
-  className="flex-shrink-0 text-success"
-/>
+              <Icon
+                name="CheckCircle2"
+                size={size === "sm" ? 16 : size === "md" ? 20 : 24}
+                className="flex-shrink-0 text-success"
+              />
             )}
           </div>
 
@@ -177,8 +179,8 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
             <div className="mt-1 sm:mt-2 flex justify-between items-start gap-2">
               {error ? (
                 <ErrorText className={error ? "text-xs text-error" : "text-xs text-body-content"}>
-                {error}
-              </ErrorText>
+                  {error}
+                </ErrorText>
               ) : (
                 showStatus && (
                   <span

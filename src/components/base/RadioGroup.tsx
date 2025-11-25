@@ -9,9 +9,9 @@ const radioVariants = cva(
   {
     variants: {
       state: {
-        default: "border-[var(--input-border)]",
-        error: "border-error",
-        checked: "border-primary",
+        default: "border-input-border bg-white hover:border-primary/30",
+        error: "border-error bg-white",
+        checked: "border-primary bg-primary",
       },
       size: {
         sm: "size-4",
@@ -26,12 +26,12 @@ const radioVariants = cva(
   }
 );
 
-const radioDotVariants = cva("rounded-full bg-primary transition-all duration-200", {
+const radioDotVariants = cva("rounded-full bg-white transition-all duration-200", {
   variants: {
     size: {
-      sm: "size-2.5",
-      md: "size-3",
-      lg: "size-4",
+      sm: "size-2",
+      md: "size-2.5",
+      lg: "size-3.5",
     },
   },
   defaultVariants: {

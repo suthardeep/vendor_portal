@@ -67,22 +67,17 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     };
 
     return (
-      <div
-        className={cn(
-          "space-y-1 flex flex-col",
-          fullWidth && "w-full",
-          containerClassName
-        )}
-      >
+      <div className={cn("space-y-1 flex flex-col", fullWidth && "w-full", containerClassName)}>
         <div className="flex items-start gap-3">
           <div className="relative flex items-center">
             <input
+              id={name ?? (label as string)}
               ref={ref}
               type="checkbox"
               checked={checked}
               onChange={handleChange}
               onBlur={onBlur}
-              name={name}
+              name={name ?? (label as string)}
               disabled={disabled}
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? `${name}-error` : undefined}
@@ -90,7 +85,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 "appearance-none cursor-pointer border rounded transition-all duration-200",
                 "focus:outline-none focus:ring-2 focus:ring-offset-1",
                 sizeClasses[size],
-                "border-base-2 bg-base-1",
+                "border-input-border bg-base-1",
                 checked && "bg-primary border-primary",
                 checked && error && "bg-error border-error",
                 checked && success && !error && "bg-success border-success",
@@ -105,7 +100,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               onKeyDown={handleKeyDown}
               {...props}
             />
-            
+
             {(checked || indeterminate) && (
               <div
                 className={cn(
@@ -114,12 +109,14 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 )}
               >
                 {indeterminate ? (
-                  <div className={cn(
-                    "bg-current rounded-sm",
-                    size === "sm" && "w-2 h-0.5",
-                    size === "md" && "w-2.5 h-0.5",
-                    size === "lg" && "w-3 h-0.5"
-                  )} />
+                  <div
+                    className={cn(
+                      "bg-current rounded-sm",
+                      size === "sm" && "w-2 h-0.5",
+                      size === "md" && "w-2.5 h-0.5",
+                      size === "lg" && "w-3 h-0.5"
+                    )}
+                  />
                 ) : (
                   <svg
                     className={cn(
@@ -145,7 +142,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             <Label
               required={required}
               className={cn(
-                "cursor-pointer select-none mt-0.5",
+                "cursor-pointer select-none",
                 error && "text-error",
                 success && !error && "text-success",
                 disabled && "opacity-50 cursor-not-allowed",
@@ -154,7 +151,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 size === "lg" && "text-sm",
                 labelClassName
               )}
-              htmlFor={name}
+              htmlFor={name ?? (label as string)}
             >
               {label}
             </Label>
@@ -162,13 +159,15 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         </div>
 
         {(helperText || error) && (
-          <ErrorText className={cn(
-            error ? "text-error" : "text-body-content",
-            "ml-0",
-            size === "sm" && "text-xs",
-            size === "md" && "text-sm",
-            size === "lg" && "text-sm"
-          )}>
+          <ErrorText
+            className={cn(
+              error ? "text-error" : "text-body-content",
+              "ml-0",
+              size === "sm" && "text-xs",
+              size === "md" && "text-sm",
+              size === "lg" && "text-sm"
+            )}
+          >
             {error || helperText}
           </ErrorText>
         )}

@@ -1,8 +1,8 @@
 import { cn } from "@/utils/helpers";
-import React, { forwardRef, type InputHTMLAttributes, useState } from "react";
+import React, { forwardRef, type InputHTMLAttributes, ReactNode, useState } from "react";
 import Label from "./Label";
 import ErrorText from "./ErrorText";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 
 type InputHTMLAttributesWithoutConflicts = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -30,6 +30,9 @@ export interface InputProps extends InputHTMLAttributesWithoutConflicts {
   formProps?: any;
   numericOnly?: boolean;
   maxLength?: number;
+
+  tooltip?: string|ReactNode;
+  tooltipIcon?: IconName;
   
   extraLabel?: string;
   extraLabelPosition?: "top-right" | "bottom-left" | "bottom-right";
@@ -45,7 +48,7 @@ export interface InputProps extends InputHTMLAttributesWithoutConflicts {
 export type InputRef = HTMLInputElement;
 
 const borderClasses = {
-  default: "border-[var(--input-border)]",
+  default: "border-input-border",
   error: "border-error",
   success: "border-success",
 };
@@ -101,6 +104,9 @@ const Input = forwardRef<InputRef, InputProps>(
       verifiedText = "Verified",
       unverifiedText = "Need verification",
       statusClassName,
+
+      tooltip,
+      tooltipIcon,
       ...props
     },
     ref,
@@ -164,7 +170,7 @@ const Input = forwardRef<InputRef, InputProps>(
         }
         e.target.value = value;
       } else if (type === "number") {
-        value = value === "" || isNaN(Number(value)) ? "0" : value;
+        value = value === "" || isNaN(Number(value)) ? "" : value;
         e.target.value = value;
       }
 
@@ -195,6 +201,8 @@ const Input = forwardRef<InputRef, InputProps>(
               <Label 
                 required={required}
                 className={cn(labelColorClass, labelClassName)}
+                tooltip={tooltip}
+                tooltipIcon={tooltipIcon}
               >
                 {label}
               </Label>
@@ -233,7 +241,7 @@ const Input = forwardRef<InputRef, InputProps>(
               type={inputType}
               inputMode={numericOnly || type === "tel" ? "numeric" : undefined}
               className={cn(
-                "w-full bg-transparent transition-colors outline-none read-only:cursor-default",
+                "appearance-none w-full bg-transparent transition-colors outline-none read-only:cursor-default",
                 textClasses.primary,
                 textClasses.placeholder,
                 disabledClasses,
@@ -270,7 +278,7 @@ const Input = forwardRef<InputRef, InputProps>(
                  <Icon 
                   name="CheckCircle2"
                   size={inputSize === "sm" ? 16 : inputSize === "md" ? 20 : 24}
-                  className="flex-shrink-0 text-success"
+                  className="shrink-0 text-success"
                   aria-label="Verified"
 />
                 ) : (

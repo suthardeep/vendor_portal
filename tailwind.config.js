@@ -23,9 +23,6 @@ module.exports = {
           },
         },
       },
-      colors: {
-        "a-primary": "#794DFF",
-      },
       backdropBlur: {
         xs: "2px",
       },
@@ -48,9 +45,9 @@ module.exports = {
     },
   ],
   safelist: [
-    "hover:bg-primary-500/90", 
-   {
-    pattern: /(bg|hover:bg|text|border)-(primary|secondary)-(50|100|200|300|400|500|600|700|800|900)(\/[0-9]{2})?/,
-  }
+  //   "hover:bg-primary-500/90", 
+  //  {
+  //   pattern: /(bg|hover:bg|text|border)-(primary|secondary)-(50|100|200|300|400|500|600|700|800|900)(\/[0-9]{2})?/,
+  // }
   ],
 };

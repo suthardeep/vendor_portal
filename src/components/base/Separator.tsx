@@ -3,7 +3,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/utils/helpers";
 
 const separatorVariants = cva(
-  "shrink-0 bg-current", // base line styling
+  "shrink-0 bg-current text-base-content/20", // base line styling
   {
     variants: {
       orientation: {
@@ -104,7 +104,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
           {/* LEGEND */}
           <span
             className={cn(
-              "mx-3 text-sm text-muted-foreground whitespace-nowrap",
+              "mx-3 text-sm text-base-content whitespace-nowrap",
               legendPosition === "left" && "order-first mr-3",
               legendPosition === "right" && "order-last ml-3"
             )}
