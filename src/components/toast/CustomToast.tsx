@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
 import React from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface CustomToastProps {
   type: "success" | "error" | "warning" | "info" | "default";

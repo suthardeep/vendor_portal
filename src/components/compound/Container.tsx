@@ -1,9 +1,8 @@
 import Divider from "../base/Divider";
 import { cn } from "@/utils/helpers";
-import { IconButton } from "../base/IconButton";
 import { useToggle } from "@/hooks/useToggle";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface ContainerProps {
   title: string;

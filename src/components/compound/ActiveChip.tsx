@@ -1,5 +1,5 @@
 import Chip from "../base/Chip";
-import Label from "../base/Label";
+import {Label} from "../base/Label";
 
 interface ActiveChipProps {
   isActive: boolean;

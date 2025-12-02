@@ -2,7 +2,7 @@ import { useImageZoomStore } from "@/store/useImageZoomStore";
 import { cn } from "@/utils/helpers";
 import { useState } from "react";
 import fallback from "@/assets/react.svg";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface ImageComponentProps {
   src: string | File;

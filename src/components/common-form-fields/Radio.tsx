@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import { cn } from "@/utils/helpers";
-import Label from "@/components/base/Label";
+import {Label} from "@/components/base/Label";
 
 export interface RadioProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type"> {

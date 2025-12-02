@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import React from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 export type BreadcrumbItem = {
   label: string;

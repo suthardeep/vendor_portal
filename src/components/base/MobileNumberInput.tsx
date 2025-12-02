@@ -1,9 +1,9 @@
 import React, { type InputHTMLAttributes, forwardRef } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
-import Icon from "./Icon";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
+import {Icon} from "./Icon";
 
 const mobileInputVariants = cva(
   "flex items-center gap-2 sm:gap-3 w-full rounded-lg border transition-all duration-200",
@@ -170,7 +170,7 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
               <Icon
                 name="CheckCircle2"
                 size={size === "sm" ? 16 : size === "md" ? 20 : 24}
-                className="flex-shrink-0 text-success"
+                className="shrink-0 text-success"
               />
             )}
           </div>
@@ -186,7 +186,7 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
                   <span
                     className={cn(
                       statusTextVariants({ state, size }),
-                      "text-right whitespace-nowrap overflow-hidden truncate max-w-[14rem] ml-auto",
+                      "text-right whitespace-nowrap overflow-hidden truncate max-w-56 ml-auto",
                       statusClassName
                     )}
                   >

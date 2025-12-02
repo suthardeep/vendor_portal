@@ -5,7 +5,7 @@ import DatePickerInput from "../DatePickerInput";
 import { Button } from "@/components/base/Button";
 import { cn } from "@/utils/helpers";
 import SelectionCard from "../cards/SelectionCard";
-import Icon from "@/components/base/Icon";
+import {Icon} from "@/components/base/Icon";
 
 interface TimeRangeSelectorProps {
   value?: TimeRange;

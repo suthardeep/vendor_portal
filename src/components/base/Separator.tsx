@@ -143,4 +143,4 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
 
 Separator.displayName = "Separator";
 
-export default Separator;
+export {Separator};

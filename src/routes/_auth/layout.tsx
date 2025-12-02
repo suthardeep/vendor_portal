@@ -1,4 +1,4 @@
-import Image from "@/components/base/Image";
+import {Image}  from "@/components/base/Image";
 import { Outlet } from "@tanstack/react-router";
 import authBg from "@/assets/auth/bg-left.png";
 

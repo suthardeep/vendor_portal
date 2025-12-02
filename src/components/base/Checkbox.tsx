@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { cn } from "@/utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
 
 export interface CheckboxProps {
   label?: string | React.ReactNode;
@@ -87,14 +87,14 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 sizeClasses[size],
                 "border-input-border bg-base-1",
                 checked && "bg-primary border-primary",
-                checked && error && "bg-error border-error",
-                checked && success && !error && "bg-success border-success",
-                error && !checked && "border-error",
-                success && !error && !checked && "border-success",
+                // checked && error && "bg-error border-error",
+                // checked && success && !error && "bg-success border-success",
+                // error && !checked && "border-error",
+                // success && !error && !checked && "border-success",
                 disabled && "opacity-50 cursor-not-allowed bg-base-2",
-                !error && !success && "focus:ring-primary/30",
-                error && "focus:ring-error/30",
-                success && !error && "focus:ring-success/30",
+                // !error && !success && "focus:ring-primary/30",
+                // error && "focus:ring-error/30",
+                // success && !error && "focus:ring-success/30",
                 inputClassName
               )}
               onKeyDown={handleKeyDown}
@@ -143,8 +143,8 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               required={required}
               className={cn(
                 "cursor-pointer select-none",
-                error && "text-error",
-                success && !error && "text-success",
+                // error && "text-error",
+                // success && !error && "text-success",
                 disabled && "opacity-50 cursor-not-allowed",
                 size === "sm" && "text-xs",
                 size === "md" && "text-sm",
@@ -177,4 +177,4 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 );
 
 Checkbox.displayName = "Checkbox";
-export default Checkbox;
+export {Checkbox};

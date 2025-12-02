@@ -1,6 +1,6 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 import { Input } from "../base/Input";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface SearchInputProps {
   defaultVal?: string;

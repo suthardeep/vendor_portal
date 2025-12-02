@@ -1,7 +1,7 @@
 import { cn } from "@/utils/helpers";
 import { forwardRef, type TextareaHTMLAttributes } from "react";
-import ErrorText from "./ErrorText";
-import Label from "./Label";
+import {ErrorText} from "./ErrorText";
+import {Label} from "./Label";
 
 type TextareaHTMLAttributesWithoutConflicts = Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
@@ -117,7 +117,7 @@ const Textarea = forwardRef<TextareaRef, TextareaProps>(
 
 Textarea.displayName = "Textarea";
 
-export default Textarea;
+export {Textarea};
 
 const borderClasses = {
   default: "border-input-border dark:border-base-3",

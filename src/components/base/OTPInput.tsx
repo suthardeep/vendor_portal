@@ -1,8 +1,8 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
 
 const otpBoxVariants = cva(
   "flex items-center justify-center rounded-lg border bg-transparent transition-all duration-200 outline-none text-center font-medium",
@@ -29,7 +29,7 @@ const otpBoxVariants = cva(
 export interface OTPInputProps {
   length?: number;
   value?: string;
-  onValueChange?: (value: string) => void;
+  onChange?: (value: string) => void;
   onComplete?: (value: string) => void;
   size?: "sm" | "md" | "lg";
   error?: string;
@@ -57,7 +57,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
     {
       length = 6,
       value = "",
-      onValueChange,
+      onChange,
       onComplete,
       size = "md",
       error,
@@ -85,7 +85,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
       },
       clear: () => {
         setOtp(Array(length).fill(""));
-        onValueChange?.("");
+        onChange?.("");
         inputRefs.current[0]?.focus();
       },
     }));
@@ -105,7 +105,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
         });
         setOtp(newOtp);
         const fullValue = newOtp.join("");
-        onValueChange?.(fullValue);
+        onChange?.(fullValue);
         
         const nextIndex = Math.min(index + digits.length, length - 1);
         inputRefs.current[nextIndex]?.focus();
@@ -121,7 +121,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
       setOtp(newOtp);
 
       const fullValue = newOtp.join("");
-      onValueChange?.(fullValue);
+      onChange?.(fullValue);
 
       if (numericValue && index < length - 1) {
         inputRefs.current[index + 1]?.focus();
@@ -140,11 +140,11 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
         if (otp[index]) {
           newOtp[index] = "";
           setOtp(newOtp);
-          onValueChange?.(newOtp.join(""));
+          onChange?.(newOtp.join(""));
         } else if (index > 0) {
           newOtp[index - 1] = "";
           setOtp(newOtp);
-          onValueChange?.(newOtp.join(""));
+          onChange?.(newOtp.join(""));
           inputRefs.current[index - 1]?.focus();
         }
       } else if (e.key === "ArrowLeft" && index > 0) {
@@ -166,7 +166,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
       
       setOtp(newOtp);
       const fullValue = newOtp.join("");
-      onValueChange?.(fullValue);
+      onChange?.(fullValue);
       
       const nextIndex = Math.min(digits.length, length - 1);
       inputRefs.current[nextIndex]?.focus();

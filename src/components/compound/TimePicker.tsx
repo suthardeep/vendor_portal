@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input } from "../base/Input";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 type TimePickerInputProps = {
   value?: number | null;

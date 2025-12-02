@@ -1,8 +1,7 @@
 import { cn } from "@/utils/helpers";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, type ButtonProps } from "../base/Button";
-import { IconButton } from "../base/IconButton";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 export interface SheetAction {
   label: string;

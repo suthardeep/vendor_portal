@@ -1,8 +1,8 @@
 import { cn } from "@/utils/helpers";
 import React, { forwardRef, type InputHTMLAttributes, ReactNode, useState } from "react";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
-import Icon, { IconName } from "./Icon";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
+import {Icon, IconName } from "./Icon";
 
 type InputHTMLAttributesWithoutConflicts = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -11,6 +11,7 @@ type InputHTMLAttributesWithoutConflicts = Omit<
 
 export interface InputProps extends InputHTMLAttributesWithoutConflicts {
   label?: string;
+  name?: string;
   helperText?: string;
   error?: string;
   success?: boolean;
@@ -76,6 +77,7 @@ const Input = forwardRef<InputRef, InputProps>(
       className,
       containerClassName,
       label,
+      name,
       labelClassName,
       helperText,
       error,
@@ -238,6 +240,7 @@ const Input = forwardRef<InputRef, InputProps>(
             )}
             <input
               ref={ref}
+              name={name}
               type={inputType}
               inputMode={numericOnly || type === "tel" ? "numeric" : undefined}
               className={cn(

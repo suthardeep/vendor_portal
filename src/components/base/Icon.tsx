@@ -38,6 +38,7 @@ import {
   Bike,
   ImageIcon,
   ChevronsRight,
+  Trash2,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -84,6 +85,7 @@ const lucideIconRegistry = {
   Bike,
   ImageIcon,
   ChevronsRight,
+  Trash2,
 }
 
 export type LucideIconName = keyof typeof lucideIconRegistry;
@@ -136,7 +138,7 @@ const getIconSize = (size: Size): number => {
 // COMPONENT
 // ============================================================================
 
-export default function Icon({
+function Icon({
   name,
   size = "md",
   className,
@@ -191,3 +193,5 @@ export default function Icon({
     // </span>
   );
 }
+
+export {Icon}

@@ -1,8 +1,8 @@
 import { cva } from "class-variance-authority";
 import React, { useState, forwardRef, type InputHTMLAttributes } from "react";
-import Label from "./Label";
+import {Label} from "./Label";
 import { cn } from "@/utils/helpers";
-import ErrorText from "./ErrorText";
+import {ErrorText} from "./ErrorText";
 
 // -----------------------------------------------------------------
 // 1. CVA VARIANT DEFINITIONS
@@ -205,4 +205,4 @@ const Switch = forwardRef<HTMLInputElement, SwitchProps>(
 
 Switch.displayName = "Switch";
 
-export default Switch;
+export {Switch};

@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
-import Label from "../base/Label";
+import {Label} from "../base/Label";
 
 export interface ToggleButtonListItem<T extends string | number> {
   label: string;

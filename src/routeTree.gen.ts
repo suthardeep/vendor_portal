@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
-import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as AuthBusinessRegistrationIndexRouteImport } from './routes/_auth/business-registration/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
@@ -29,48 +29,49 @@ const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
   path: '/signup/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthBusinessRegistrationIndexRoute =
+  AuthBusinessRegistrationIndexRouteImport.update({
+    id: '/business-registration/',
+    path: '/business-registration/',
+    getParentRoute: () => AuthRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardIndexRoute
+  '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
-  '/register': typeof AuthRegisterIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
+  '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
-  '/register': typeof AuthRegisterIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/_auth/business-registration/': typeof AuthBusinessRegistrationIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
-  '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/login' | '/register' | '/signup'
+  fullPaths: '/dashboard' | '/business-registration' | '/login' | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/login' | '/register' | '/signup'
+  to: '/dashboard' | '/business-registration' | '/login' | '/signup'
   id:
     | '__root__'
     | '/_auth'
     | '/dashboard/'
+    | '/_auth/business-registration/'
     | '/_auth/login/'
-    | '/_auth/register/'
     | '/_auth/signup/'
   fileRoutesById: FileRoutesById
 }
@@ -102,13 +103,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_auth/register/': {
-      id: '/_auth/register/'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
     '/_auth/login/': {
       id: '/_auth/login/'
       path: '/login'
@@ -116,18 +110,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/business-registration/': {
+      id: '/_auth/business-registration/'
+      path: '/business-registration'
+      fullPath: '/business-registration'
+      preLoaderRoute: typeof AuthBusinessRegistrationIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
   }
 }
 
 interface AuthRouteRouteChildren {
+  AuthBusinessRegistrationIndexRoute: typeof AuthBusinessRegistrationIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
   AuthSignupIndexRoute: typeof AuthSignupIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthBusinessRegistrationIndexRoute: AuthBusinessRegistrationIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
   AuthSignupIndexRoute: AuthSignupIndexRoute,
 }
 

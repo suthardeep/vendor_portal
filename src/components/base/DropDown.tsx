@@ -1,12 +1,8 @@
-
-
-
-
 import React, { forwardRef, useState, useRef, useEffect } from "react";
 import { cn } from "@/utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
-import Icon from "./Icon";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
+import {Icon} from "./Icon";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScrolling";
 
 export interface DropdownOption {
@@ -302,6 +298,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     </div>
   );
 });
+
 Dropdown.displayName = "Dropdown";
 
-export default Dropdown;
+export {Dropdown};

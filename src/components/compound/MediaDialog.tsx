@@ -4,7 +4,7 @@
 
 import { useMediaDialogStore } from "@/store/useMediaDialogStore";
 import { useEffect, useState } from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 export const MediaDialog = () => {
   const { isOpen, files, currentIndex, closeDialog, nextFile, prevFile } = useMediaDialogStore();

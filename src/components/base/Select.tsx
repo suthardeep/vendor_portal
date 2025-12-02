@@ -9,11 +9,11 @@ import type {
 } from "react-select";
 import ReactSelect, { components } from "react-select";
 import CreatableSelect from "react-select/creatable";
-import Checkbox from "./Checkbox";
-import ErrorText from "./ErrorText";
-import Label from "./Label";
+import {Checkbox} from "./Checkbox";
+import {ErrorText} from "./ErrorText";
+import {Label} from "./Label";
 import Spinner from "../compound/spinner/Spinner";
-import Icon from "./Icon";
+import {Icon} from "./Icon";
 
 function CustomSelectInner<T = string>(
   props: CustomSelectProps<T>,
@@ -179,7 +179,7 @@ const multiValueRemoveStyles =
 const inputStyles =
   "text-sm text-neutral dark:text-neutral-content placeholder:text-gray-400";
 
-export const Select = React.forwardRef(CustomSelectInner) as <
+const Select = React.forwardRef(CustomSelectInner) as <
   T = string,
   M = unknown,
 >(
@@ -307,7 +307,7 @@ export function findOptionByValue<T extends string | number>(
   return options.find((opt) => opt.value === value);
 }
 
-export default Select;
+export {Select};
 
 type CustomValueContainerProps = ValueContainerProps<
   SelectOption,

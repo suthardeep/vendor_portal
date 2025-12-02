@@ -2,7 +2,7 @@ import { cn } from "@/utils/helpers";
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Button, type ButtonProps } from "../base/Button";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 const Dialog: React.FC<DialogProps> = (props) => {
   const {

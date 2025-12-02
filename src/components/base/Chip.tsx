@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import { cn } from "../../utils/helpers";
-import Icon from "./Icon";
+import {Icon} from "./Icon";
 
 export type ChipColor =
   | "gray"

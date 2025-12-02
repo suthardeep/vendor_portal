@@ -1,8 +1,8 @@
 import React, { type InputHTMLAttributes, forwardRef } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
 
 const radioVariants = cva(
   "flex items-center justify-center rounded-full border-1 transition-all duration-200 cursor-pointer shrink-0",
@@ -62,7 +62,7 @@ export interface RadioGroupProps {
   options: RadioOption[];
   value?: string;
   defaultValue?: string;
-  onValueChange?: (value: string) => void;
+  onChange?: (value: string) => void;
   size?: "sm" | "md" | "lg";
   error?: string;
   label?: string;
@@ -76,6 +76,7 @@ export interface RadioGroupProps {
   required?: boolean;
   name: string;
   orientation?: "horizontal" | "vertical";
+  onBlur?: (event: React.FocusEvent<HTMLElement>) => void;
 }
 
 const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
@@ -84,7 +85,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       options,
       value,
       defaultValue,
-      onValueChange,
+      onChange,
       size = "md",
       error,
       label,
@@ -98,6 +99,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       required = false,
       name,
       orientation = "horizontal",
+      onBlur,
     },
     ref
   ) => {
@@ -109,7 +111,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         if (value === undefined) {
           setInternalValue(optionValue);
         }
-        onValueChange?.(optionValue);
+        onChange?.(optionValue);
       }
     };
 
@@ -152,6 +154,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                     aria-invalid={!!error}
                     aria-describedby={error ? `${name}-error` : undefined}
                     className="sr-only"
+                    onBlur={onBlur}
                   />
 
                   <div

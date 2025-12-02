@@ -1,7 +1,7 @@
 import { useToggle } from "@/hooks/useToggle";
 import { cn } from "@/utils/helpers";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface CollapsibleProps {
   trigger: ReactNode;

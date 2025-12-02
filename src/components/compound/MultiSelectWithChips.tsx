@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "../base/Select";
+import {Select}  from "../base/Select";
 import type { CustomSelectProps, SelectOption } from "../base/Select";
 import Chip from "../base/Chip";
 

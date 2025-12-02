@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
 import type { ReactNode } from "react";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface UploadImagePlaceholderProps {
   onClick: () => void;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./index.css";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface AppLoaderProps {
   isLoading: boolean;

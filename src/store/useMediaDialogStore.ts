@@ -22,7 +22,7 @@ interface MediaFile {
   title?: string;
 }
 
-export const useMediaDialogStore = create<MediaDialogStore>((set, get) => ({
+export const useMediaDialogStore = create<MediaDialogStore>((set, _get) => ({
   isOpen: false,
   files: [],
   currentIndex: 0,

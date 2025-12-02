@@ -5,10 +5,10 @@ import React, { useEffect, useRef, useState } from "react";
 import "react-day-picker/style.css";
 import { Input } from "../base/Input";
 import { Popover } from "./Popover";
-import ErrorText from "../base/ErrorText";
+import {ErrorText} from "../base/ErrorText";
 import { cn } from "@/utils/helpers";
 import { DatePicker, type DisabledDate } from "./DatePicker";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 dayjs.extend(customParseFormat);
 

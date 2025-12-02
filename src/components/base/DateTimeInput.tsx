@@ -1,8 +1,8 @@
 import React, { type InputHTMLAttributes, forwardRef } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/helpers";
-import Label from "./Label";
-import ErrorText from "./ErrorText";
+import {Label} from "./Label";
+import {ErrorText} from "./ErrorText";
 
 const dateTimeInputVariants = cva(
   "flex items-center gap-2 sm:gap-3 w-full rounded-lg border transition-all duration-200",

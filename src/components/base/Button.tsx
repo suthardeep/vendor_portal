@@ -3,7 +3,7 @@ import React, { type ButtonHTMLAttributes, type ReactNode } from "react";
 // import { cn } from "../../utils/helpers";
 import { cn } from "demaze-ui-lib/utils";
 import Spinner from "../compound/spinner/Spinner";
-import Icon, { IconName } from "./Icon";
+import { Icon,IconName } from "./Icon";
 
 /**
  * Button variant styles

@@ -1,5 +1,5 @@
 import { Button } from "@/components/base/Button";
-import Image from "@/components/base/Image";
+import {Image}  from "@/components/base/Image";
 import { Input } from "@/components/base/Input";
 import React, { useState } from "react";
 import logo from "@/assets/logo1.png";

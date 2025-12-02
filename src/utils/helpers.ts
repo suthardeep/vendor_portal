@@ -9,10 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const showErrorToasts = (
-  err: BaseApiErrorResponse | any,
-  limit?: number,
-) => {
+export const showErrorToasts = (err: BaseApiErrorResponse | any, limit?: number) => {
   if (Array.isArray(err.message)) {
     const messages = limit ? err.message.slice(0, limit) : err.message;
     messages.forEach((msg: string) => {
@@ -23,39 +20,45 @@ export const showErrorToasts = (
   }
 };
 
-export const showValidationErrors = (
-  errors: Record<string, any>,
-  limit?: number,
-) => {
+export const showValidationErrors = (errors: Record<string, string>, limit: number = 1, showOnlyMessage:boolean = true) => {
   const messages: { field: string; message: string }[] = [];
-
-  const collectMessages = (err: any, path: string = "") => {
-    // Skip if err is null or undefined
-    if (!err) return;
-
-    // Skip if ref contains a DOM element (check if it's an HTMLElement)
-    if (err.ref && err.ref instanceof HTMLElement) return;
-
-    if (err.message && typeof err.message === "string") {
+  // toast.info(JSON.stringify(errors))
+  for (const [field, message] of Object.entries(errors)) {
+    if (message && typeof message === "string") {
       messages.push({
-        field: path,
-        message: err.message,
+        field,
+        message,
       });
-      return; // Stop recursing once we find a message
     }
+  }
 
-    if (typeof err === "object") {
-      for (const [key, value] of Object.entries(err)) {
-        // Skip the 'ref' and 'type' keys as they're not field paths
-        if (key === "ref" || key === "type") continue;
+  // const collectMessages = (err: any, path: string = "") => {
+  //   // Skip if err is null or undefined
+  //   if (!err) return;
 
-        const newPath = path ? `${path}.${key}` : key;
-        collectMessages(value, newPath);
-      }
-    }
-  };
+  //   // Skip if ref contains a DOM element (check if it's an HTMLElement)
+  //   if (err.ref && err.ref instanceof HTMLElement) return;
 
-  collectMessages(errors);
+  //   if (err.message && typeof err.message === "string") {
+  //     messages.push({
+  //       field: path,
+  //       message: err.message,
+  //     });
+  //     return; // Stop recursing once we find a message
+  //   }
+
+  //   if (typeof err === "object") {
+  //     for (const [key, value] of Object.entries(err)) {
+  //       // Skip the 'ref' and 'type' keys as they're not field paths
+  //       if (key === "ref" || key === "type") continue;
+
+  //       const newPath = path ? `${path}.${key}` : key;
+  //       collectMessages(value, newPath);
+  //     }
+  //   }
+  // };
+
+  // collectMessages(errors);
 
   const limitedMessages = limit ? messages.slice(0, limit) : messages;
 
@@ -66,7 +69,11 @@ export const showValidationErrors = (
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" > ");
 
-    toast.error(`${formattedField}: ${message}`);
+    if (showOnlyMessage ){
+      toast.error(message)
+    }else{
+      toast.error(`${formattedField}: ${message}`);
+    }
   });
 };
 
@@ -75,14 +82,8 @@ export const objectToSearchParams = (obj?: Record<string, any>): string => {
 
   return new URLSearchParams(
     Object.entries(obj)
-      .filter(
-        ([_, v]) =>
-          v !== undefined &&
-          v !== null &&
-          v !== "" &&
-          !(typeof v === "number" && isNaN(v)),
-      )
-      .map(([k, v]) => [k, String(v)]),
+      .filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v)))
+      .map(([k, v]) => [k, String(v)])
   ).toString();
 };
 
@@ -112,9 +113,7 @@ export const getResponsiveGridLayoutClass = (length: number) => {
   return "grid-cols-3";
 };
 
-export function formatCurrencyINR(
-  amount: number | null | undefined,
-): string | undefined {
+export function formatCurrencyINR(amount: number | null | undefined): string | undefined {
   if (amount == null || typeof amount !== "number" || isNaN(amount)) {
     return undefined;
   }
@@ -139,15 +138,10 @@ export function formatPhoneNumber(phone: string) {
   const match = phone.match(/^(\D*\d{1,5})\D*\d{10}$/);
   const displayPrefix = match ? match[1].replace(/\s+/, "") : prefix;
 
-  return (
-    (displayPrefix ? displayPrefix + " " : "") +
-    `${last10.slice(0, 5)} ${last10.slice(5)}`
-  );
+  return (displayPrefix ? displayPrefix + " " : "") + `${last10.slice(0, 5)} ${last10.slice(5)}`;
 }
 
-export function prettyNumber(
-  value: number | null | undefined,
-): string | undefined {
+export function prettyNumber(value: number | null | undefined): string | undefined {
   if (value == null || typeof value !== "number" || isNaN(value)) {
     return undefined;
   }

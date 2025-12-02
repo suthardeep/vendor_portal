@@ -1,6 +1,6 @@
 import { useMediaDialogStore } from "@/store/useMediaDialogStore";
 import React, { useState, forwardRef } from "react";
-import Icon from "./Icon";
+import {Icon} from "./Icon";
 
 // ============================================================================
 // BASE IMAGE COMPONENT - Lightweight, use everywhere
@@ -116,9 +116,5 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
     </div>
   );
 });
-
-
-
-export default Image
 
 Image.displayName = "Image";

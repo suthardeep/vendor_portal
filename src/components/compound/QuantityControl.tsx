@@ -1,5 +1,5 @@
 import { cn } from "@/utils/helpers";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 interface QuantityControlProps {
   quantity: number;

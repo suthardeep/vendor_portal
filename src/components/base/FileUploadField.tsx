@@ -1,8 +1,8 @@
 import React, { forwardRef, useRef, useState } from "react";
-import Label from "./Label";
+import {Label} from "./Label";
 import { cn } from "@/utils/helpers";
-import ErrorText from "./ErrorText";
-import Icon from "./Icon";
+import {ErrorText} from "./ErrorText";
+import {Icon} from "./Icon";
 
 export interface FileUploadFieldProps {
   label?: string;
@@ -24,6 +24,7 @@ export interface FileUploadFieldProps {
   previewContainerClassName?: string;
   onChange?: (files: File[]) => void;
   onFileRemove?: (index: number) => void;
+  onBlur?: (event: React.FocusEvent<HTMLElement>) => void;
   value?: File[];
   showPreview?: boolean;
 }
@@ -52,6 +53,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       onFileRemove,
       value = [],
       showPreview = true,
+      onBlur,
       ...props
     },
     ref
@@ -228,6 +230,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
             multiple={multiple}
             disabled={disabled}
             accept={allowedFileTypes.join(',')}
+            onBlur={onBlur}
             {...props}
           />
 
@@ -326,4 +329,4 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
 
 FileUploadField.displayName = "FileUploadField";
 
-export default FileUploadField;
+export {FileUploadField};

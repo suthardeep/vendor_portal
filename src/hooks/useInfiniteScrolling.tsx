@@ -48,7 +48,7 @@ export function useInfiniteScroll({
   isLoading,
   threshold = 200,
   root = null,
-  rootMargin = '0px',
+  // rootMargin = '0px',
 }: UseInfiniteScrollOptions): UseInfiniteScrollReturn {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);

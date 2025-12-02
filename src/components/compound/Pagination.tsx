@@ -2,7 +2,7 @@ import type { PaginationMeta } from "@/types/baseApi";
 import { cn, prettyNumber } from "@/utils/helpers";
 import { useRouter } from "@tanstack/react-router";
 import { IconButton } from "../base/IconButton";
-import Icon from "../base/Icon";
+import {Icon} from "../base/Icon";
 
 export interface PaginationProps extends PaginationMeta {
   onPageChange?: (currentPage: number) => void;

@@ -14,4 +14,4 @@ const ErrorText: React.FC<ErrorTextProps> = (props) => {
   );
 };
 
-export default ErrorText;
+export {ErrorText};

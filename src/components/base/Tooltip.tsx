@@ -22,7 +22,7 @@ const arrowClasses = {
   right: "left-[-4px] top-1/2 -translate-y-1/2 ",
 };
 
-export const Tooltip = ({ 
+const Tooltip = ({ 
   children, 
   content, 
   position = "top", 
@@ -63,3 +63,5 @@ export const Tooltip = ({
     </div>
   );
 };
+
+export {Tooltip}
