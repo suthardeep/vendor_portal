@@ -1,30 +1,14 @@
+import { z } from "zod";
 
-import z from "zod";
+// Mobile number regex for Indian numbers (starts with 6-9 and is 10 digits)
+const mobileRegex = /^[6-9]\d{9}$/;
 
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid Email Address" }),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(12, "Password must be less than 12 characters"),
-phoneNumber: z.string().regex(/^\d{10}$/, "Invalid phone number"),
-  date: z
-    .string() // Change this to string since DateTimeInput returns string
-    .refine(
-      (value) => {
-        if (!value) return false;
-        const date = new Date(value);
-        return date > new Date("2025-11-17");
-      },
-      { message: "Date must be after 17 Nov 2025" }
-    ),
-
-terms: z.boolean().refine(val => val === true, {
-  message: "You must accept the terms"
-})
-
-
+export const LoginSchema = z.object({
+  mobileNumber: z.string().regex(mobileRegex, "Please enter a valid 10-digit mobile number"),
 });
-export type LoginSchema = z.infer<typeof loginSchema>;
+
+export const OtpSchema = z.object({
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});
+
+export type LoginFormData = z.infer<typeof LoginSchema>;

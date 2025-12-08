@@ -1,12 +1,9 @@
-import { User } from "@/types/user"
+export type LoginStep = "INPUT_MOBILE" | "INPUT_OTP";
 
-interface LoginPayload{
-    email:string ,
-    password:string
-}
-
-
-interface LoginResponse{
-    user:User ,
-    token:string
+export interface LoginState {
+  step: LoginStep;
+  isLoading: boolean;
+  isResending: boolean;
+  mobileNumber: string;
+  otp: string;
 }
