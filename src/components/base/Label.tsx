@@ -17,7 +17,7 @@ const Label: React.FC<LabelProps> = (props) => {
     <div className="flex items-center justify-start">
       <label className={cn("flex items-center gap-1 text-base-content text-xs md:text-sm font-normal", className)} {...rest}>
         {children}
-        {!required && <span className="text-base-content">(Optional)</span>}
+        {!required && <span className="text-error ml-2">(Optional)</span>}
         {tooltip && (
           <Tooltip content={tooltip}>
             <Icon name={tooltipIcon} className="text-base-content text-xs md:text-xs" />

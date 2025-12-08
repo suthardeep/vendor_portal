@@ -96,7 +96,7 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
         )}
         {...props}
       >
-        <span className={cn("text-xs font-semibold", text)}>{label}</span>
+        <span className={cn("text-xs font-semibold", text , className)}>{label}</span>
         {isCollapsible && (
           <Icon
             name="X"

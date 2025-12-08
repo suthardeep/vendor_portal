@@ -14,12 +14,10 @@ const COLOR_MAP = [
 
 const pillVariants = cva(
   `
-    // Base: smaller text/padding, but still readable
     px-3 py-1 
     text-sm 
-    rounded-lg // Smaller border radius
+    rounded-lg 
     
-    // Medium/Desktop: scale up for better visibility
     md:px-4 md:py-2 
     md:text-base
     md:rounded-xl 
@@ -46,36 +44,33 @@ const pillVariants = cva(
 );
 
 const separatorVariants = cva(
-    'text-base-content text-lg md:text-xl  leading-none select-none shrink-0'
+  'text-base-content text-lg md:text-xl leading-none select-none shrink-0'
 );
 
 interface PillPathProps {
   items: string[];
   label?: string;
+  /** 👇 NEW — Controls if > separator is shown */
+  showSeparator?: boolean;
 }
 
-const PillPath: React.FC<PillPathProps> = ({ items, label }) => {
-  if (!items || items.length === 0) {
-    return null;
-  }
+const PillPath: React.FC<PillPathProps> = ({ items, label, showSeparator = false }) => {
+  if (!items || items.length === 0) return null;
 
   return (
     <div className="p-3 md:p-4 bg-white shadow-lg rounded-xl max-w-full">
-      <h2 className="text-gray-700 text-base md:text-lg font-semibold mb-3">{label || "Categories"}</h2>
-      
+      <h2 className="text-gray-700 text-base md:text-lg font-semibold mb-3">
+        {label || "Categories"}
+      </h2>
+
       <div className="flex flex-row flex-wrap items-center gap-y-2 gap-x-2">
-        
+
         {items.map((item, index) => {
           const colorVariant = COLOR_MAP[index % COLOR_MAP.length];
-          const showSeparator = index < items.length - 1;
+          const showArrow = showSeparator && index < items.length - 1;
 
-          // Check if this is the last pill on a row (for complex wrapping scenarios, though flex-wrap handles most)
-          // For a wrapping path, the separator needs special handling to appear only between pills.
-          
           return (
-            // Use a wrapping div for the pill and its separator
             <React.Fragment key={index}>
-              {/* Item Pill */}
               <div 
                 className={cn(pillVariants({ variant: colorVariant }))}
                 title={item}
@@ -83,8 +78,7 @@ const PillPath: React.FC<PillPathProps> = ({ items, label }) => {
                 {item}
               </div>
 
-              {/* Separator Arrow - Will now appear at the end of the pill group on the same row */}
-              {showSeparator && (
+              {showArrow && (
                 <div className={cn(separatorVariants())}>
                   &gt;
                 </div>
@@ -92,6 +86,7 @@ const PillPath: React.FC<PillPathProps> = ({ items, label }) => {
             </React.Fragment>
           );
         })}
+
       </div>
     </div>
   );

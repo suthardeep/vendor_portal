@@ -40,6 +40,28 @@ import {
   ChevronsRight,
   Trash2,
   Move,
+  BarChart3,
+  Home,
+  Package,
+  Tag,
+  Wallet,
+  Target,
+  Box,
+  Bell,
+  MoreVertical,
+  TrendingUp,
+  IndianRupee,
+  TrendingDown,
+  ChevronsLeft,
+  Star,
+  SquareChevronRight,
+  Copy,
+  SlidersHorizontal,
+  User,
+  Key,
+  LogOut,
+  ChevronUp,
+  Triangle,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -87,7 +109,31 @@ const lucideIconRegistry = {
   ImageIcon,
   ChevronsRight,
   Trash2,
-  Move
+  Move,
+  BarChart3,
+  Home,
+  Package,
+  Tag,
+  Wallet,
+  Target,
+  Box ,
+  Bell ,
+  MoreVertical ,
+  TrendingUp ,
+  IndianRupee  ,
+  TrendingDown ,
+  ChevronsLeft ,
+  Star ,
+  SquareChevronRight ,
+  Copy ,
+  SlidersHorizontal ,
+     User ,
+   Key ,
+    LogOut ,
+   
+
+   ChevronUp ,
+   Triangle ,
 }
 
 export type LucideIconName = keyof typeof lucideIconRegistry;
@@ -140,7 +186,7 @@ const getIconSize = (size: Size): number => {
 // COMPONENT
 // ============================================================================
 
-function Icon({
+export default function Icon({
   name,
   size = "md",
   className,

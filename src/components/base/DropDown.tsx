@@ -43,7 +43,6 @@ export interface DropdownProps {
   maxHeight?: string;
 }
 
-
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   label,
   labelClassName,
@@ -83,14 +82,20 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     isLoading,
   });
 
+  const TEXT_SIZE_MAP = {
+    sm: "text-sm",
+    md: "text-sm",
+    lg: "text-sm",
+  };
+
   const sizeClasses = {
-    sm: "text-xs py-1.5 px-2.5",
-    md: "text-sm py-2 px-3",
-    lg: "text-sm py-2.5 px-3",
+    sm: `${TEXT_SIZE_MAP.sm} py-1.5 px-2.5`,
+    md: `${TEXT_SIZE_MAP.md} py-2 px-4`,
+    lg: `${TEXT_SIZE_MAP.lg} py-2.5 px-4`,
   };
 
   const selectedValues = multiple ? (Array.isArray(value) ? value : []) : (value != null ? [value] : []);
-  
+
   const selectedOptionsMap = new Map<any, DropdownOption>();
   options.forEach(opt => {
     if (selectedValues.includes(opt.value)) {
@@ -169,8 +174,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         <Label 
           required={required} 
           className={cn(
-            error && "text-error", 
-            success && "text-success", 
+            error ? "text-error" : success ? "text-success" : "text-base-content/40",
             labelClassName
           )}
         >
@@ -181,16 +185,20 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       <div
         onClick={handleToggle}
         className={cn(
-          "flex items-center justify-between cursor-pointer rounded-lg border transition-all",
-          "bg-base-1 border-base-content/30", 
+          "flex items-center justify-between cursor-pointer rounded-md border-1 transition-all",
+          "bg-base-1", 
           error && "border-error",
           success && "border-success",
-          !error && !success && "border-base-content/30",
+          !error && !success && "border-base-content/40",
           sizeClasses[inputSize],
           disabled && "opacity-50 cursor-not-allowed bg-base-2"
         )}
       >
-        <span className={cn("flex-1", !hasValue && "text-disabled-content")}>
+        <span className={cn(
+          "flex-1", 
+          TEXT_SIZE_MAP[inputSize],
+          hasValue ? "text-base-content/50" : "text-base-content/50"
+        )}>
           {displayValue}
         </span>
         <div className="flex items-center gap-2">
@@ -199,7 +207,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
               <Icon 
                 name="X"
                 size={16} 
-                className="text-body-content hover:text-base-content" 
+                className="text-base-content hover:text-error" 
               />
             </div>
           )}
@@ -208,7 +216,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
               name="ChevronDown"
               size={20} 
               className={cn(
-                "transition-transform text-body-content", 
+                "transition-transform text-base-content", 
                 isOpen && "rotate-180"
               )} 
             />
@@ -219,22 +227,25 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       {isOpen && (
         <div
           className={cn(
-            "absolute z-50 w-full mt-1 border border-base-2 rounded-lg shadow-lg bg-base-1",
+            "absolute z-50 w-full mt-1 border border-base-content/40 rounded-lg shadow-lg bg-base-1",
             "top-full"
           )}
           style={{ maxHeight }}
         >
           {searchable && (
-            <div className="p-2 border-b border-base-2">
-              <div className="flex items-center gap-2 px-3 py-2 border border-base-2 rounded-lg bg-base-2">
-                <Icon name="Search" size={16} className="text-disabled-content" />
+            <div className="p-2 border-b border-base-content/40">
+              <div className="flex items-center gap-2 px-3 py-2 border border-base-content/40 rounded-lg bg-base-2">
+                <Icon name="Search" size={16} className="text-base-content" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={handleSearch}
                   placeholder={searchPlaceholder}
-                  className="flex-1 bg-transparent outline-none text-sm text-base-content placeholder:text-disabled-content"
+                  className={cn(
+                    "flex-1 bg-transparent outline-none text-base-content/40 placeholder:text-base-content/30", 
+                    TEXT_SIZE_MAP[inputSize]
+                  )}
                 />
               </div>
             </div>
@@ -242,7 +253,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 
           <div className="overflow-y-auto" style={{ maxHeight: `calc(${maxHeight} - ${searchable ? '60px' : '0px'})` }}>
             {sortedOptions.length === 0 ? (
-              <div className="p-4 text-center text-sm text-disabled-content">
+              <div className={cn("p-4 text-center text-base-content/40", TEXT_SIZE_MAP[inputSize])}>
                 {noOptionsText}
               </div>
             ) : (
@@ -259,11 +270,11 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
                       option.disabled && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    <span className="text-sm text-base-content">
+                    <span className={cn("text-base-content/40", TEXT_SIZE_MAP[inputSize])}>
                       {option.label}
                     </span>
                     {isSelected && (
-                      <Icon name="Check" size={16} className="text-success" />
+                      <Icon name="Check" size={16} className="text-base-content" />
                     )}
                   </div>
                 );
@@ -273,7 +284,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
             {onLoadMore && hasMore && <div ref={sentinelRef} className="h-4" />}
             
             {isLoading && (
-              <div className="p-3 text-center text-sm text-body-content">
+              <div className={cn("p-3 text-center text-base-content/30", TEXT_SIZE_MAP[inputSize])}>
                 Loading...
               </div>
             )}
@@ -281,7 +292,10 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
             {onLoadMore && hasMore && !isLoading && (
               <button
                 onClick={(e) => { e.stopPropagation(); onLoadMore(); }}
-                className="w-full p-2 text-sm text-body-content hover:bg-base-2 transition-colors"
+                className={cn(
+                  "w-full p-2 text-base-content/40 hover:bg-base-2 transition-colors", 
+                  TEXT_SIZE_MAP[inputSize]
+                )}
               >
                 {loadMoreText}
               </button>
@@ -291,7 +305,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       )}
 
       {(helperText || error) && (
-        <ErrorText className={error ? "text-error" : "text-body-content"}>
+        <ErrorText className={error ? "text-error" : "text-base-content/40"}>
           {error || helperText}
         </ErrorText>
       )}

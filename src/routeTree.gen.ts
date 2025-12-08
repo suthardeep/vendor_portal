@@ -10,18 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as AuthBusinessRegistrationIndexRouteImport } from './routes/_auth/business-registration/index'
+import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppOrdersNewOrdersRouteRouteImport } from './routes/_app/orders/new-orders/route'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
@@ -40,44 +41,70 @@ const AuthBusinessRegistrationIndexRoute =
     path: '/business-registration/',
     getParentRoute: () => AuthRouteRoute,
   } as any)
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrdersNewOrdersRouteRoute = AppOrdersNewOrdersRouteRouteImport.update({
+  id: '/orders/new-orders',
+  path: '/orders/new-orders',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof DashboardIndexRoute
+  '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/dashboard': typeof AppDashboardIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof DashboardIndexRoute
+  '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/dashboard': typeof AppDashboardIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/dashboard/': typeof DashboardIndexRoute
+  '/_app/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_auth/business-registration/': typeof AuthBusinessRegistrationIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/business-registration' | '/login' | '/signup'
+  fullPaths:
+    | '/orders/new-orders'
+    | '/dashboard'
+    | '/business-registration'
+    | '/login'
+    | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/business-registration' | '/login' | '/signup'
+  to:
+    | '/orders/new-orders'
+    | '/dashboard'
+    | '/business-registration'
+    | '/login'
+    | '/signup'
   id:
     | '__root__'
+    | '/_app'
     | '/_auth'
-    | '/dashboard/'
+    | '/_app/orders/new-orders'
+    | '/_app/dashboard/'
     | '/_auth/business-registration/'
     | '/_auth/login/'
     | '/_auth/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -89,11 +116,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexRouteImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/signup/': {
@@ -117,8 +144,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthBusinessRegistrationIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/orders/new-orders': {
+      id: '/_app/orders/new-orders'
+      path: '/orders/new-orders'
+      fullPath: '/orders/new-orders'
+      preLoaderRoute: typeof AppOrdersNewOrdersRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
+
+interface AppRouteRouteChildren {
+  AppOrdersNewOrdersRouteRoute: typeof AppOrdersNewOrdersRouteRoute
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppOrdersNewOrdersRouteRoute: AppOrdersNewOrdersRouteRoute,
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
 
 interface AuthRouteRouteChildren {
   AuthBusinessRegistrationIndexRoute: typeof AuthBusinessRegistrationIndexRoute
@@ -137,8 +192,8 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
