@@ -16,8 +16,8 @@ export const initialBrandState: SingleBrandType = {
   natureOfBusiness: "Brand Owner",
   category: "",
   documents: [],
-  website: "",
-  socialMedia: "",
+  website: "", //optional
+  socialMedia: "", //optional
 };
 
 const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, errors }) => {

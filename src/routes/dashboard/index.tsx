@@ -1,3 +1,5 @@
+import DemoProductPage from "@/components/media-picker/Demo";
+import {MediaPicker} from "@/components/media-picker/MediaPicker";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "demaze-ui-lib/components";
 
@@ -17,6 +19,8 @@ function RouteComponent() {
         >
           Button from demaze-ui-lib (npm package)
         </Button>
+        {/* <MediaPicker /> */}
+        <DemoProductPage/>
 
         {/* <DemoAll/> */}
     </div>

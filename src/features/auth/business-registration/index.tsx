@@ -81,7 +81,7 @@ const BusinessRegistrationForm: React.FC = () => {
       gstCertificate: null,
       businessName: "",
       addressLine1: "",
-      addressLine2: "",
+      addressLine2: "", //optional
       pinCode: "",
       city: "",
       state: "",

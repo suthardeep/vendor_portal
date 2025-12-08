@@ -3,7 +3,7 @@ import React, { type ButtonHTMLAttributes, type ReactNode } from "react";
 // import { cn } from "../../utils/helpers";
 import { cn } from "demaze-ui-lib/utils";
 import Spinner from "../compound/spinner/Spinner";
-import { Icon,IconName } from "./Icon";
+import { Icon, IconName } from "./Icon";
 
 /**
  * Button variant styles
@@ -143,6 +143,30 @@ const buttonVariants = cva(
 );
 
 /**
+ * Get icon classes based on button variant and color theme
+ * - For filled (solid) buttons use the "*-content" color tokens (contrast text)
+ * - For outline/ghost/link/text use the base color token (e.g. text-primary)
+ */
+function getIconClasses(variant: ButtonVariant = "filled", color: ButtonColor = "primary"): string {
+  const contentMap: Record<ButtonColor, string> = {
+    primary: "text-primary-content",
+    neutral: "text-neutral-content",
+    success: "text-secondary-content",
+    danger: "text-error-content",
+  };
+
+  const baseMap: Record<ButtonColor, string> = {
+    primary: "text-primary",
+    neutral: "text-neutral",
+    success: "text-secondary",
+    danger: "text-error",
+  };
+
+  // Use contrast/content colors for filled variant, otherwise use base color tokens
+  return variant === "filled" ? (contentMap[color] ?? baseMap[color]) : (baseMap[color] ?? "text-primary");
+}
+
+/**
  * Get size-specific classes for loading animation and icons
  * Returns container heights, translations, and icon sizes based on button size
  */
@@ -280,8 +304,8 @@ export const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, Bu
       type = "button",
       color = "primary",
       animation = "none",
-      startIconClassname = "text-primary-content",
-      endIconClassname = "text-primary-content",
+      startIconClassname = "",
+      endIconClassname = "",
       as = "button",
       href = "",
       target = "",
@@ -293,16 +317,18 @@ export const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, Bu
     // Get size-specific classes for loading animation
     const { container, contentHeight, translate } = getSizeClasses(size);
 
+    const iconClasses = cn(getIconClasses(variant, color), buttonTextClass);
+
     // Determine which icons to use
-    const startIconElement = (startIcon) ? (
+    const startIconElement = startIcon ? (
       <span className={cn("mr-1.5 shrink-0 md:mr-2")}>
-        <Icon name={startIcon} className={startIconClassname} size={size} />
+        <Icon name={startIcon} className={cn(iconClasses,startIconClassname)} size={size} />
       </span>
     ) : null;
 
-    const endIconElement = (endIcon) ? (
+    const endIconElement = endIcon ? (
       <span className={cn("ml-1.5 shrink-0 md:ml-2")}>
-        <Icon name={endIcon} className={endIconClassname} size={size} />
+        <Icon name={endIcon} className={cn(iconClasses, endIconClassname)} size={size} />
       </span>
     ) : null;
 

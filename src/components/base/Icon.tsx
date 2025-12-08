@@ -39,6 +39,7 @@ import {
   ImageIcon,
   ChevronsRight,
   Trash2,
+  Move,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -86,6 +87,7 @@ const lucideIconRegistry = {
   ImageIcon,
   ChevronsRight,
   Trash2,
+  Move
 }
 
 export type LucideIconName = keyof typeof lucideIconRegistry;

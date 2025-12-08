@@ -39,7 +39,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
     <div
       aria-label="dialog"
       className={cn(
-        `fall fixed inset-0 z-[101] bg-black/80 backdrop-blur-[1.5px] transition-all duration-200`,
+        `fall fixed inset-0 z-101 bg-black/80 backdrop-blur-[1.5px] transition-all duration-200`,
         isOpen
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-4 opacity-0",
@@ -62,13 +62,16 @@ const Dialog: React.FC<DialogProps> = (props) => {
               )}
             >
               <div className="flex flex-col">
-                {title && (
-                  <h5 className="text-base-3 dark:text-neutral-content font-medium">
+                {title && typeof title === 'string' ? (
+                  <h5 className="text-body-content font-medium">
                     {title}
                   </h5>
-                )}
+                ) 
+              :
+              title
+              }
                 {subTitle && (
-                  <p className="text-base-2 dark:text-base-2 mt-0.5">
+                  <p className="text-body-content/10 mt-0.5">
                     {subTitle}
                   </p>
                 )}
@@ -76,8 +79,8 @@ const Dialog: React.FC<DialogProps> = (props) => {
               <Icon name={"X"} size={18} onClick={close} />
             </div>
 
-            <div className="flex-1 overflow-hidden px-5 py-4">
-              <div className="no-scrollbar max-h-[90dvh] overflow-y-auto">
+            <div className="flex-1 overflow-hidden px-5 py-4 relative z-9999">
+              <div className="no-scrollbar max-h-[90dvh] overflow-y-auto relative z-9999">
                 {children}
               </div>
             </div>
@@ -85,7 +88,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
             {actions && (
               <div
                 className={cn(
-                  "flex shrink-0 justify-end gap-x-2",
+                  "flex shrink-0 justify-end gap-x-2 relative",
                   paddingClass,
                 )}
               >
@@ -193,7 +196,7 @@ export interface DialogProps {
   close: () => void;
   isOpen: boolean;
   children: ReactNode;
-  title: string;
+  title: string | ReactNode;
   subTitle?: string;
   actions?: DialogActions;
   size?: "sm" | "md" | "lg" | "xl" | "full";
