@@ -4,19 +4,50 @@ import { BankDetailsType, BrandDetailsType, BusinessDetailsType } from "../schem
 import { addMockFileData } from "../utils/mockFileData";
 
 export const businessRegistration = (data: BusinessDetailsType) => {
-    // Add mock file data if enabled
-    let processedData = addMockFileData(data);
+    const processedData = addMockFileData(data);
     
-    // If hasGST is false, remove GST-related fields from the payload
-    if (!processedData.hasGST) {
-        const { gstNumber, gstCertificateId, gstCertificate, ...dataWithoutGST } = processedData;
-        processedData = dataWithoutGST as BusinessDetailsType;
+    console.log('📋 [DEBUG] Original data:', data);
+    console.log('📋 [DEBUG] Processed data after mock:', processedData);
+    
+    const payload: any = {
+        businessDetails: {
+            name: processedData.businessName,
+            addressLine1: processedData.addressLine1,
+            addressLine2: processedData.addressLine2,
+            pinCode: processedData.pinCode,
+            city: processedData.city,
+            state: processedData.state,
+            panCard: processedData.panCard,
+            panCardId: processedData.panCardId,
+            registrationCertificate: processedData.registrationCertificate,
+            registrationCertificateId: processedData.registrationCertificateId,
+        },
+        authorisedPersonDetails: {
+            name: processedData.authorisedPersonName,
+            mobileNumber: processedData.authorisedPersonPhoneNumber,
+            email: processedData.authorisedPersonEmail,
+            panCard: processedData.authorisedPersonPanCard,
+            panCardId: processedData.authorisedPersonPanCardId,
+            aadharCard: processedData.authorisedPersonAadharCard,
+            aadharCardId: processedData.authorisedPersonAadharCardId,
+        },
+    };
+    
+    if (processedData.hasGST) {
+        payload.gstNumber = processedData.gstNumber;
+        payload.gstCertificateUrl = processedData.gstCertificate;
+        payload.gstCertificateId = processedData.gstCertificateId;
+        payload.selfDeclared = false;
+    } else {
+        payload.selfDeclared = processedData.selfDeclared;
         console.log('📦 [API] Excluded GST fields from payload (hasGST = false)');
     }
     
+    console.log('📤 [API] Final payload being sent:', payload);
+    
     return apiService({
         method: "POST",
-        data: processedData,
+        data: payload,
         endpoint: apiPaths.onboarding.businessDetails
     });
 }
