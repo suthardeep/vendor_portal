@@ -33,7 +33,7 @@ export interface BusinessDetailsStepProps {
 export interface BrandDetailsStepProps {
   data: BrandDetailsType;
   onChange: (data: BrandDetailsType) => void;
-  errors: Record<string, any>; // Any because errors is an array of objects here
+  errors: Record<string, any>; 
 }
 
 export interface BankDetailsStepProps {

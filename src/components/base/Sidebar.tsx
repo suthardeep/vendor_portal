@@ -29,6 +29,7 @@ export interface SidebarProps {
   onNavigate?: (path: string) => void;
   className?: string;
   containerClassName?: string;
+  showOverlay?: boolean; // Add this prop
 }
 
 const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
@@ -44,6 +45,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       onNavigate,
       className,
       containerClassName,
+      showOverlay = true, // Default to false
       ...props
     },
     ref
@@ -98,18 +100,21 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       <div
         ref={ref}
         className={cn(
-          "sidebar flex flex-col h-full  rounded-lg overflow-hidden bg-base-1",
+          "sidebar flex flex-col h-full rounded-lg overflow-hidden bg-base-1 relative",
           "shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.06),0px_4px_6px_-1px_rgba(0,0,0,0.1)]",
           containerClassName
         )}
         {...props}
       >
-        <SidebarHeader 
-          logo={logo}
-          logoAlt={logoAlt}
-          userRole={userRole}
-          className={className}
-        />
+        {/* Header - Above overlay */}
+        <div className={cn(showOverlay && "relative z-[1001")}>
+          <SidebarHeader 
+            logo={logo}
+            logoAlt={logoAlt}
+            userRole={userRole}
+            className={className}
+          />
+        </div>
 
         <SidebarMenu
           menuItems={menuItems}
@@ -119,13 +124,16 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           onNavigate={handleNavigation}
         />
 
-        <SidebarProfile
-          userName={userName}
-          userRole={userRole}
-          userAvatar={userAvatar}
-          userExpanded={userExpanded}
-          onUserExpand={setUserExpanded}
-        />
+        {/* Profile - Above overlay */}
+        <div className={cn(showOverlay && "relative z-[1001]")}>
+          <SidebarProfile
+            userName={userName}
+            userRole={userRole}
+            userAvatar={userAvatar}
+            userExpanded={userExpanded}
+            onUserExpand={setUserExpanded}
+          />
+        </div>
       </div>
     );
   }

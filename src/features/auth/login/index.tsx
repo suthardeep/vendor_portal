@@ -9,113 +9,163 @@ import { toast } from "@/components/toast/Sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { MobileNumberInput } from "@/components/base/MobileNumberInput";
 
+// --- Hypothetical Imports (Assuming these exist in the project) ---
+import { ROUTES } from "@/constants/routes"; 
+
+
+// -----------------------------------------------------------------
+
+import {TokenUtil} from '@/utils/tokenUtil'
+
+import { useSendOtpMutation, useVerifyOtpMutation } from "./api/queryHooks";
+import { useAuthStore } from "@/store/useAuthStore"; // NEW: Import Auth Store
+
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
 
+  // NEW: Get the setUser function from the Auth Store
+  const { setUser } = useAuthStore(); 
+  
   // --- State ---
   const [step, setStep] = useState<"INPUT_MOBILE" | "INPUT_OTP">("INPUT_MOBILE");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [phone, setPhone] = useState(""); 
   const [otp, setOtp] = useState("");
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
+  // Local error state for form validation
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // --- Helpers ---
-  const fakeApiCall = async (time?: number) => {
-    await new Promise((resolve) => setTimeout(resolve, time ?? 2000));
-  };
+  // --- TanStack Query Mutations ---
+  const sendOtpMutation = useSendOtpMutation();
+  const resendOtpMutation = useSendOtpMutation(); 
+  const verifyOtpMutation = useVerifyOtpMutation();
+
+  // Determine the overall "busy" state to disable unrelated actions
+  const isPending = sendOtpMutation.isPending || verifyOtpMutation.isPending;
+
 
   // --- Handlers ---
 
-  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "").slice(0, 10);
-    setMobileNumber(value);
-    if (errors.mobileNumber) {
+    setPhone(value); 
+    if (errors.phone) { 
       setErrors((prev) => {
         const newErr = { ...prev };
-        delete newErr.mobileNumber;
+        delete newErr.phone; 
         return newErr;
       });
     }
   };
 
-  const handleGetOtp = async () => {
+  const handleGetOtp = () => {
     // 1. Validate Mobile
-    const result = LoginSchema.safeParse({ mobileNumber });
+    const result = LoginSchema.safeParse({ phone }); 
     if (!result.success) {
-      setErrors({ mobileNumber: result.error.issues[0].message });
+      setErrors({ phone: result.error.issues[0].message }); 
       return;
     }
 
-    // 2. API Call
-    setIsLoading(true);
-    try {
-      await fakeApiCall(1500); // Simulate network
-      toast.success(`OTP sent to ${mobileNumber}`);
-      setStep("INPUT_OTP");
-    } catch (error) {
-      toast.error("Failed to send OTP. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    // 2. API Call (Send OTP)
+    setErrors({}); 
+    
+    sendOtpMutation.mutate(
+      { phone: phone }, 
+      {
+        onSuccess: (data) => {
+          toast.success(data.message || `OTP sent to +91 ${phone}`); 
+          setStep("INPUT_OTP");
+        },
+        onError: (error) => {
+          const errorMessage = (error as { message?: string })?.message || "Failed to send OTP. Please try again.";
+          toast.error(errorMessage);
+        },
+      }
+    );
   };
 
   const handleChangeNumber = () => {
     setStep("INPUT_MOBILE");
     setOtp("");
     setErrors({});
+    sendOtpMutation.reset();
+    resendOtpMutation.reset();
+    verifyOtpMutation.reset();
   };
 
-  const handleResendOtp = async () => {
-    setIsResending(true);
-    try {
-      await fakeApiCall(1500);
-      toast.success("OTP sent successfully");
-    } catch (error) {
-      toast.error("Failed to resend OTP");
-    } finally {
-      setIsResending(false);
-    }
-  };
-
-  const handleLogin = async () => {
-    // 1. Validate OTP presence
-    if (otp.length !== 6) {
-      setErrors({ otp: "Please enter a valid 6-digit OTP" });
+  const handleResendOtp = () => {
+    // 1. Validate Mobile
+    const result = LoginSchema.safeParse({ phone }); 
+    if (!result.success) {
+      toast.error("Invalid phone number.");
       return;
     }
-
-    // 2. API Call
-    setIsLoading(true);
-    setErrors({});
     
-    try {
-      await fakeApiCall(2000);
+    // 2. API Call (Resend OTP)
+    resendOtpMutation.mutate(
+        { phone: phone }, 
+        {
+            onSuccess: (data) => {
+                toast.success(data.message || "OTP resent successfully");
+            },
+            onError: (error) => {
+                const errorMessage = (error as { message?: string })?.message || "Failed to resend OTP. Please try again.";
+                toast.error(errorMessage);
+            }
+        }
+    );
+  };
 
-      // Mock Check: Accept "123456"
-      if (otp === "123456") {
-        toast.success("Login Successful!");
-        console.log("Logged in user:", mobileNumber);
-        // Navigate to dashboard or home
-        // there will be conditional navigation here , 
-        navigate({ to: "/dashboard" }); 
-      } else {
-        setErrors({ otp: "Invalid OTP. Try 123456" });
-        toast.error("Invalid credentials");
-      }
-    } catch (error) {
-      toast.error("Login failed");
-    } finally {
-      setIsLoading(false);
+  const handleLogin = () => {
+    // 1. Validate OTP presence
+    const otpResult = z.object({ otp: z.string().length(6, "OTP must be 6 digits") }).safeParse({ otp });
+    
+    if (!otpResult.success) {
+      setErrors({ otp: otpResult.error.issues[0].message });
+      return;
     }
+    
+    // 2. API Call (Verify OTP / Login)
+    setErrors({});
+
+    verifyOtpMutation.mutate(
+      { phone: phone, otp: otp }, 
+      {
+        onSuccess: (res) => {
+            
+            const userData = res.data.user;
+            
+            // 3. Store Access Token
+
+
+
+            console.log("accessToken" , res.data.access_token)
+            TokenUtil.setToken(res.data.access_token); 
+            
+            // 4. Store user details in Zustand store
+            setUser(userData); // NEW: Storing user data
+            
+            toast.success("Login Successful!");
+            console.log("Logged in user:", userData.phone);
+            
+            // 5. Conditional Navigation
+            if (userData.emailVerified === false) {
+                navigate({ to: ROUTES.REGISTRATION }); 
+            } else {
+                navigate({ to: ROUTES.DASHBOARD });
+            }
+        },
+        onError: (error) => {
+            const errorMessage = (error as { message?: string })?.message || "Invalid credentials or login failed.";
+            setErrors({ otp: "Invalid OTP" });
+            toast.error(errorMessage);
+        },
+      }
+    );
   };
 
   const handleOtpComplete = (val: string) => {
-     // Optional: Auto-trigger login when 6 digits are filled
-     // setOtp(val); 
-     // We usually wait for button click in Login screens, 
-     // but you can call handleLogin() here if desired.
+     // We wait for button click.
   };
 
   return (
@@ -142,9 +192,9 @@ const Login: React.FC = () => {
             <MobileNumberInput
               label="Mobile Number"
               placeholder="Enter number"
-              value={mobileNumber}
-              onChange={handleMobileChange}
-              error={errors.mobileNumber}
+              value={phone} 
+              onChange={handlePhoneChange} 
+              error={errors.phone} 
               maxLength={10}
               required
               isVerified={false}
@@ -155,13 +205,13 @@ const Login: React.FC = () => {
 
             <Button
               onClick={handleGetOtp}
-              isLoading={isLoading}
-              disabled={mobileNumber.length < 10}
+              isLoading={sendOtpMutation.isPending} 
+              disabled={phone.length < 10 || isPending}
               fullWidth
               color="primary"
               size="lg"
             >
-              Get OTP
+              {sendOtpMutation.isPending ? "Sending OTP..." : "Get OTP"}
             </Button>
           </div>
         ) : (
@@ -169,13 +219,13 @@ const Login: React.FC = () => {
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
             {/* Display Number & Change Link */}
             <div className="text-sm sm:text-base text-base-content">
-              Register Mobile number{" "}
+              Registered Mobile Number{" "}
               <span className="font-semibold text-base-content mx-1">
-                +91 {mobileNumber}
+                +91 {phone} 
               </span>
               <button
                 onClick={handleChangeNumber}
-                className="text-disabled-content underline hover:text-primary transition-colors ml-1 text-sm"
+                className="text-disabled-content underline hover:text-primary transition-colors ml-1 text-sm  hover:cursor-pointer"
               >
                 change?
               </button>
@@ -191,7 +241,7 @@ const Login: React.FC = () => {
               }}
               onComplete={handleOtpComplete}
               error={errors.otp}
-              disabled={isLoading}
+              disabled={isPending}
               // Adjusting size to match screenshot look
               size="lg" 
               boxClassName="border-base-content/20 rounded-lg h-12 w-12 sm:h-14 sm:w-14"
@@ -199,24 +249,24 @@ const Login: React.FC = () => {
 
             <Button
               onClick={handleLogin}
-              isLoading={isLoading}
-              disabled={otp.length !== 6}
+              isLoading={verifyOtpMutation.isPending} 
+              disabled={otp.length !== 6 || isPending}
               fullWidth
               color="primary"
               size="lg"
             >
-              Login
+              {verifyOtpMutation.isPending ? "Verifying..." : "Login"}
             </Button>
 
             <div className="w-full flex justify-center">
               <Button
                 variant="ghost"
                 onClick={handleResendOtp}
-                isLoading={isResending}
-                disabled={isLoading}
+                isLoading={resendOtpMutation.isPending} 
+                disabled={isPending || resendOtpMutation.isPending}
                 className="text-primary hover:bg-transparent hover:underline"
               >
-                Resend OTP
+                {resendOtpMutation.isPending ? "Resending..." : "Resend OTP"}
               </Button>
             </div>
           </div>

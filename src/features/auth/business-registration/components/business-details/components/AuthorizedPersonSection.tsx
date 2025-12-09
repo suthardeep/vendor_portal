@@ -4,21 +4,31 @@ import { MobileNumberInput } from "@/components/base/MobileNumberInput";
 import {Checkbox}  from "@/components/base/Checkbox";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useState } from "react";
-import {FileUploadField}  from "@/components/base/FileUploadField";
+import { MediaPicker } from "@/components/media-picker/MediaPicker";
+import { MediaItem } from "@/components/media-picker/MediaGallery";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
 
+// Helper function to create a minimal MediaItem for the picker's value prop
+const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
+  if (!id) return [];
+  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
+};
+
 const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
+  // Fetch user object from the global store
   const { user } = useAuthStore();
   const [isSameAsBeforeChecked, setIsSameAsBeforeChecked] = useState(false);
 
   const handleSameAsBeforeClick = (checked: boolean) => {
     setIsSameAsBeforeChecked(checked);
     if (checked) {
+      // Map user details from the store (user is optional, fields can be null)
       onChange({
         ...data,
-        authorisedPersonName: user?.name ?? "",
+        authorisedPersonName: user?.fullName ?? "", // Mapping user.fullName to name
         authorisedPersonEmail: user?.email ?? "",
-        authorisedPersonPhoneNumber: user?.phoneNumber ?? "",
+        // Mapping user.phone to authorisedPersonPhoneNumber. Stripping '+91' if present.
+        authorisedPersonPhoneNumber: user?.phone?.replace('+91', '') ?? "", 
       });
     } else {
       onChange({
@@ -68,18 +78,50 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         fullWidth
         required
       />
-      <FileUploadField
-        label="Upload PAN Card"
-        onChange={(files) => onChange({ ...data, authorisedPersonPanCard: files[0] || null })}
-        error={errors.authorisedPersonPanCard}
-        required
-      />
-      <FileUploadField
-        label="Upload Aadhar Card"
-        onChange={(files) => onChange({ ...data, authorisedPersonAadharCard: files[0] || null })}
-        error={errors.authorisedPersonAadharCard}
-        required
-      />
+      
+      {/* Start PAN Card MediaPicker Integration */}
+      <div className="w-full">
+        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
+          <span className="label-text font-semibold text-base-content">Upload PAN Card</span>
+          <span className="text-error">*</span>
+        </label>
+        <MediaPicker
+          value={createMinimalMediaItem(data.authorisedPersonPanCard ?? "", "Authorised Person PAN")}
+          onChange={(items) => onChange({
+            ...data,
+            authorisedPersonPanCard: items.length > 0 ? items[items.length - 1].id : "",
+          })}
+          maxFiles={1}
+          containerClassName={errors.authorisedPersonPanCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          previewGridClassName="grid-cols-1"
+          itemClassName="aspect-video h-20"
+          maxHeight="max-h-none"
+        />
+        {errors.authorisedPersonPanCard && <p className="text-xs text-error mt-1">{errors.authorisedPersonPanCard}</p>}
+      </div>
+      {/* End PAN Card MediaPicker Integration */}
+
+      {/* Start Aadhar Card MediaPicker Integration */}
+      <div className="w-full">
+        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
+          <span className="label-text font-semibold text-base-content">Upload Aadhar Card</span>
+          <span className="text-error">*</span>
+        </label>
+        <MediaPicker
+          value={createMinimalMediaItem(data.authorisedPersonAadharCard ?? "", "Authorised Person Aadhar")}
+          onChange={(items) => onChange({
+            ...data,
+            authorisedPersonAadharCard: items.length > 0 ? items[items.length - 1].id : "",
+          })}
+          maxFiles={1}
+          containerClassName={errors.authorisedPersonAadharCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          previewGridClassName="grid-cols-1"
+          itemClassName="aspect-video h-20"
+          maxHeight="max-h-none"
+        />
+        {errors.authorisedPersonAadharCard && <p className="text-xs text-error mt-1">{errors.authorisedPersonAadharCard}</p>}
+      </div>
+      {/* End Aadhar Card MediaPicker Integration */}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import {Label} from "./Label";
 import {ErrorText} from "./ErrorText";
 
 const otpBoxVariants = cva(
-  "flex items-center justify-center rounded-lg border bg-transparent transition-all duration-200 outline-none text-center font-medium",
+  "flex items-center justify-center rounded-lg border bg-transparent transition-all duration-200 outline-none text-center font-medium aspect-square",
   {
     variants: {
       state: {
@@ -14,9 +14,9 @@ const otpBoxVariants = cva(
         filled: "border-primary text-base-content",
       },
       size: {
-        sm: "size-10 text-sm",
-        md: "size-12 text-base sm:size-14 sm:text-lg",
-        lg: "size-14 text-lg sm:size-16 sm:text-xl",
+        sm: "h-10 text-sm",
+        md: "h-12 text-base sm:h-14 sm:text-lg",
+        lg: "h-14 text-lg sm:h-16 sm:text-xl",
       },
     },
     defaultVariants: {
@@ -183,7 +183,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
         {(label || phoneNumber || email) && (
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <Label required={required} className={cn(error && "text-error", labelClassName)}>
-              {label || "Register Mobile number"}{" "}
+              {label || "Registered Mobile Number"}{" "}
               {phoneNumber && <span className="font-semibold">{phoneNumber}</span>}
               {email && <span className="font-semibold">{email}</span>}
             </Label>
@@ -199,7 +199,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
           </div>
         )}
 
-        <div className="flex items-center justify-left gap-2 sm:gap-3">
+        <div className="flex items-center justify-start gap-2 sm:gap-3">
           {Array.from({ length }).map((_, index) => (
             <input
               key={index}
@@ -215,6 +215,9 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
               name={name ? `${name}-${index}` : undefined}
               aria-label={`OTP digit ${index + 1}`}
               aria-invalid={!!error}
+              style={{ 
+                maxWidth: `calc((100% - ${(length - 1) * 0.5}rem) / ${length})`
+              }}
               className={cn(
                 otpBoxVariants({ state, size }),
                 disabled && "cursor-not-allowed opacity-50",

@@ -3,7 +3,14 @@ import { BankDetailsStepProps } from "../../types/registration.types";
 import StepContainer from "../StepContainer";
 import { Input } from "@/components/base/Input";
 import {Icon} from "@/components/base/Icon";
-import {FileUploadField}  from "@/components/base/FileUploadField";
+import { MediaPicker } from "@/components/media-picker/MediaPicker";
+import { MediaItem } from "@/components/media-picker/MediaGallery";
+
+// Helper function to create a minimal MediaItem for the picker's value prop
+const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
+  if (!id) return [];
+  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
+};
 
 const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, errors }) => {
   const [isDocumentVerified, setIsDocumentVerified] = useState(false);
@@ -13,9 +20,10 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
         <Input
           label="Bank Account number"
           placeholder="Type here"
-          value={data.bankAccountNumber}
-          onChange={(e) => onChange({ ...data, bankAccountNumber: e.target.value.replace(/\D/g, "") })}
-          error={errors.bankAccountNumber}
+          // UPDATED KEY: bankAccountNumber -> accountNumber
+          value={data.accountNumber}
+          onChange={(e) => onChange({ ...data, accountNumber: e.target.value.replace(/\D/g, "") })}
+          error={errors.accountNumber}
           required
           type="password" // Masked for security usually, or text if preferred
           fullWidth
@@ -42,24 +50,36 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
           fullWidth
         />
 
-        <FileUploadField
-          label="Upload cancelled cheque/bank proof"
-          helperText="Upload a clear image of cancelled cheque or passbook front page"
-          value={data.cancellationProof ? [data.cancellationProof] : []}
-          onChange={(files) => onChange({ ...data, cancellationProof: files[0] || null })}
-          error={errors.cancellationProof}
-          required
-          fullWidth
-          maxFiles={1}
-          showPreview
-        />
+        {/* Start Cancellation Proof MediaPicker Integration */}
+        <div className="w-full">
+          <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
+            <span className="label-text font-semibold text-base-content">Upload cancelled cheque/bank proof</span>
+            <span className="text-error">*</span>
+          </label>
+          <p className="text-xs text-body-content/60 mb-2">Upload a clear image of cancelled cheque or passbook front page</p>
+          <MediaPicker
+            // UPDATED KEY: cancellationProof -> bankProofDocumentId
+            value={createMinimalMediaItem(data.bankProofDocumentId, "Cancelled Cheque/Proof")}
+            onChange={(items) => onChange({
+              ...data,
+              // UPDATED KEY: cancellationProof -> bankProofDocumentId
+              bankProofDocumentId: items.length > 0 ? items[items.length - 1].id : "",
+            })}
+            maxFiles={1}
+            // UPDATED ERROR KEY: cancellationProof -> bankProofDocumentId
+            containerClassName={errors.bankProofDocumentId ? "h-auto p-0 border-error" : "h-auto p-0"}
+            previewGridClassName="grid-cols-1"
+            itemClassName="aspect-video h-20"
+            maxHeight="max-h-none"
+          />
+          {errors.bankProofDocumentId && <p className="text-xs text-error mt-1">{errors.bankProofDocumentId}</p>}
+        </div>
+        {/* End Cancellation Proof MediaPicker Integration */}
 
         {!isDocumentVerified && (
           <div className="flex justify-end">
             {/* A visual indicator that bank is verified (Static for demo) */}
-            <div className="flex items-center gap-1 text-success text-sm font-medium">
-              <Icon name="CheckCircle2" className="text-success" /> Verified
-            </div>
+            
           </div>
         )}
       </div>

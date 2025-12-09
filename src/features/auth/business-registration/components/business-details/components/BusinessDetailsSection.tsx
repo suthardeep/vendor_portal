@@ -1,7 +1,14 @@
 import { Input } from "@/components/base/Input";
 import { getCityStateFromPincode } from "@/api/external-api/getCityStateFromPincode";
-import {FileUploadField}  from "@/components/base/FileUploadField";
+import { MediaPicker } from "@/components/media-picker/MediaPicker";
+import { MediaItem } from "@/components/media-picker/MediaGallery";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
+
+// Helper function to create a minimal MediaItem for the picker's value prop
+const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
+  if (!id) return [];
+  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
+};
 
 const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
   const handlePincodeBlur = async () => {
@@ -65,22 +72,50 @@ const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
         error={errors.state}
         required
       />
-      <FileUploadField
-        label="PAN Card"
-        onChange={(files) => onChange({ ...data, panCard: files[0] || null })}
-        error={errors.panCard}
-        // containerClassName="flex flex-col"
-        // dropzoneClassName="mt-auto"
-        required
-      />
-      <FileUploadField
-        label="Business Registration"
-        onChange={(files) => onChange({ ...data, businessRegistrationCertificate: files[0] || null })}
-        error={errors.businessRegistrationCertificate}
-        // containerClassName="flex flex-col"
-        // dropzoneClassName="mt-auto"
-        required
-      />
+      
+      {/* Start PAN Card MediaPicker Integration */}
+      <div className="w-full">
+        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
+          <span className="label-text font-semibold text-base-content">PAN Card</span>
+          <span className="text-error">*</span>
+        </label>
+        <MediaPicker
+          value={createMinimalMediaItem(data.panCard || "", "Business PAN Card")}
+          onChange={(items) => onChange({
+            ...data,
+            panCard: items.length > 0 ? items[items.length - 1].id : "",
+          })}
+          maxFiles={1}
+          containerClassName={errors.panCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          previewGridClassName="grid-cols-1"
+          itemClassName="aspect-video h-20"
+          maxHeight="max-h-none"
+        />
+        {errors.panCard && <p className="text-xs text-error mt-1">{errors.panCard}</p>}
+      </div>
+      {/* End PAN Card MediaPicker Integration */}
+
+      {/* Start Business Registration MediaPicker Integration */}
+      <div className="w-full">
+        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
+          <span className="label-text font-semibold text-base-content">Business Registration</span>
+          <span className="text-error">*</span>
+        </label>
+        <MediaPicker
+          value={createMinimalMediaItem(data.registrationCertificate || "", "Registration Certificate")}
+          onChange={(items) => onChange({
+            ...data,
+            registrationCertificate: items.length > 0 ? items[items.length - 1].id : "",
+          })}
+          maxFiles={1}
+          containerClassName={errors.registrationCertificate ? "h-auto p-0 border-error" : "h-auto p-0"}
+          previewGridClassName="grid-cols-1"
+          itemClassName="aspect-video h-20"
+          maxHeight="max-h-none"
+        />
+        {errors.registrationCertificate && <p className="text-xs text-error mt-1">{errors.registrationCertificate}</p>}
+      </div>
+      {/* End Business Registration MediaPicker Integration */}
     </div>
   );
 };

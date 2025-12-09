@@ -46,8 +46,13 @@ const BusinessDetailsStep: React.FC<BusinessDetailsStepProps> = ({ data, onChang
         </div>
       )}
 
+      {/* UPDATED: Show Business Info and Authorised Person Sections for non-GST */}
       {!data.hasGST && (
-        <div>
+        <div className="space-y-4">
+          <Separator legend="Business Information" legendPosition="center" />
+          <BusinessDetailsSection data={data} onChange={onChange} errors={errors} />
+          <Separator legend="Authorised Person Details" legendPosition="center" />
+          <AuthorisedPersonSection data={data} onChange={onChange} errors={errors} />
           <Separator legend="Self Declaration" legendPosition="center" />
           <SelfDeclarationSection data={data} onChange={onChange} errors={errors} />
         </div>

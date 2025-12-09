@@ -18,10 +18,11 @@ const SelfDeclarationSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
 
       <Checkbox
         label="Yes, I accept the above terms."
-        checked={data.selfDeclaration || false}
-        onChange={(checked) => onChange({ ...data, selfDeclaration: checked })}
+        // RENAMED
+        checked={data.selfDeclared || false}
+        onChange={(checked) => onChange({ ...data, selfDeclared: checked })}
         required
-        error={errors?.selfDeclaration}
+        error={errors?.selfDeclared}
       />
     </div>
   );

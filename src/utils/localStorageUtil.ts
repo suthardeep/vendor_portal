@@ -8,6 +8,8 @@ export class LocalStorageUtil {
     }
   }
 
+
+
   static getItem<T>(key: string): T | null {
     try {
       const item = localStorage.getItem(key);
@@ -19,6 +21,9 @@ export class LocalStorageUtil {
     }
   }
 
+
+
+
   static removeItem(key: string): void {
     try {
       localStorage.removeItem(key);
@@ -26,6 +31,8 @@ export class LocalStorageUtil {
       console.error(`Failed to remove item '${key}' from localStorage:`, error);
     }
   }
+
+  
 
   static clear(): void {
     try {

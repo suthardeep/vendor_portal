@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from "react";
 import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
@@ -10,9 +11,11 @@ import {
   businessDetailsWithGSTSchema,
   businessDetailsWithoutGSTSchema,
   DeclarationSchema,
+  BusinessDetailsType,
+  BrandDetailsType,
+  BankDetailsType, // Used for the mutation data type
 } from "./schemas/registration.schema";
-
-// Component Imports
+import { useBankDetailsRegistration, useBrandDetailsRegistration, useBusinessRegistrationMutation, useSubmitVerification } from "./api/queryHooks"; 
 import BusinessDetailsStep from "./components/business-details/BusinessDetailsStep";
 import BrandDetailsStep, { initialBrandState } from "./components/brand-details/BrandDetailsStep";
 import BankDetailsStep from "./components/bank-details/BankDetailsStep";
@@ -22,10 +25,9 @@ import { Button } from "@/components/base/Button";
 import {Icon} from "@/components/base/Icon";
 import { showValidationErrors } from "@/utils/helpers";
 import DeclarationStep from "./components/declaration/DeclarationStep";
+import { toast } from "@/components/toast/Sonner";
 
-// ============================================================================
-// STATIC STEPS CONFIG
-// ============================================================================
+
 const BASE_STEPS: SidebarStep[] = [
   { id: 1, title: "Business Details", description: "Your business information", icon: "TriangleDash" },
   { id: 2, title: "Brand Details", description: "Your brand information", icon: "Gem" },
@@ -39,34 +41,36 @@ const DECLARATION_STEP: SidebarStep = {
   icon: "FileInfo",
 };
 
-// // ============================================================================
-// // Fetching Step number from step number
-// // ============================================================================
 
-// const getStepNumber = (stepName: number) => {
-//   switch (stepName) {
-//     case "business-details":
-//       return 1;
-//     case "brand-details":
-//       return 2;
-//     case "bank-details":
-//       return 3;
-//     case "declaration":
-//       return 4;
-//     default:
-//       return 1;
-//   }
-// };
-
-// ============================================================================
-// MAIN REGISTRATION FORM COMPONENT
-// ============================================================================
 
 const BusinessRegistrationForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  
+  // 1. INITIALIZE ALL MUTATION HOOKS
+  const businessMutation = useBusinessRegistrationMutation();
+  const brandMutation= useBrandDetailsRegistration();
+  const bankMutation = useBankDetailsRegistration();
+  const verificationMutation = useSubmitVerification();
+
+  // 2. DEFINE AGGREGATE LOADING STATE
+  const isSaving = useMemo(() => {
+    return (
+      businessMutation.isPending ||
+      brandMutation.isPending ||
+      bankMutation.isPending ||
+      verificationMutation.isPending
+    );
+  }, [
+    businessMutation.isPending,
+    brandMutation.isPending,
+    bankMutation.isPending,
+    verificationMutation.isPending,
+  ]);
+    
+  // NOTE: Previous individual loading states (isLoading, isBrandMutationLoading, etc.) have been removed.
+
 
   const { step, tab } = Route.useSearch();
   const navigate = useNavigate();
@@ -78,32 +82,32 @@ const BusinessRegistrationForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     businessDetails: {
       hasGST: true,
-      gstCertificate: null,
+      gstNumber: "",
+      gstCertificateId: "",
       businessName: "",
       addressLine1: "",
-      addressLine2: "", //optional
+      addressLine2: "",
       pinCode: "",
       city: "",
       state: "",
-      panCard: null,
-      businessRegistrationCertificate: null,
-      gstNumber: "",
+      panCard: "", 
+      registrationCertificate: "", 
       authorisedPersonName: "",
       authorisedPersonEmail: "",
       authorisedPersonPhoneNumber: "",
-      authorisedPersonPanCard: null,
-      authorisedPersonAadharCard: null,
-      selfDeclaration: false, // Used only if hasGST is false
+      authorisedPersonPanCard: "", 
+      authorisedPersonAadharCard: "", 
+      selfDeclared: false, 
     },
     brandDetails: [initialBrandState],
     bankDetails: {
-      bankAccountNumber: "",
+      accountNumber: "",
       ifscCode: "",
       accountHolderName: "",
-      cancellationProof: null,
+      bankProofDocumentId: "", 
     },
     declaration: {
-      agreed: false, // Used if hasGST is true (Step 4)
+      agreed: false, 
     },
   });
 
@@ -120,7 +124,6 @@ const BusinessRegistrationForm: React.FC = () => {
     }
   }, [tab]);
 
-  // Dynamic Sidebar Steps based on GST selection
   const steps = useMemo(() => {
     if (formData.businessDetails.hasGST) {
       return [...BASE_STEPS, DECLARATION_STEP];
@@ -142,6 +145,7 @@ const BusinessRegistrationForm: React.FC = () => {
           if (formData.businessDetails.hasGST) {
             businessDetailsWithGSTSchema.parse(formData.businessDetails);
           } else {
+            // Validates all required non-GST fields
             businessDetailsWithoutGSTSchema.parse(formData.businessDetails);
           }
           break;
@@ -184,30 +188,33 @@ const BusinessRegistrationForm: React.FC = () => {
 
         setErrors((prev) => ({ ...prev, [`step${step}`]: stepErrors }));
 
-        // Optional: Show toast for visibility
         showValidationErrors(stepErrors);
       }
       return false;
     }
   };
 
-  // API CALLS (Mock)
+  // API CALLS
   const saveStepData = async (step: number) => {
-    setIsLoading(true);
     try {
-      // Simulate API call based on step
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      if (step === 1) {
+        await businessMutation.mutateAsync(formData.businessDetails as BusinessDetailsType);
+      } else if(step==2) {
 
-      // if(step === 1) await apiService.post('/register/business', formData.businessDetails);
-      // if(step === 2) await apiService.post('/register/brand', formData.brandDetails);
-      // etc...
+        console.log("brabd" ,formData.brandDetails)
+        await brandMutation.mutateAsync(formData.brandDetails as BrandDetailsType)
+
+      }else if(step == 3){
+        await bankMutation.mutateAsync(formData.bankDetails as BankDetailsType)
+      }else if(step==4){
+        // API call for final verification/submission
+        await verificationMutation.mutateAsync()
+      }
 
       return true;
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error("Error saving step data:", error);
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -216,7 +223,7 @@ const BusinessRegistrationForm: React.FC = () => {
       const success = await saveStepData(currentStep);
       if (success) {
         setCompletedSteps((prev) => (prev.includes(currentStep) ? prev : [...prev, currentStep]));
-        if (currentStep < 4) {
+        if (currentStep < steps.length) {
           handleStepChange(currentStep + 1);
         }
         // window.scrollTo({ top: 0, behavior: "smooth" });
@@ -239,16 +246,51 @@ const BusinessRegistrationForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (validateStep(currentStep)) {
-      setIsLoading(true);
       try {
-        // Final Submission Logic
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        console.log("Final Form Data:", formData);
-        alert("Registration Successful!");
+        // Ensure the final step's API call is made
+        const success = await saveStepData(currentStep);
+
+        if(success){
+            // Mocked successful post-submission logic
+            console.log("Final submission successful.");
+            toast.success("Registration Successful!");
+        }
+
+        const businessDetails = formData.businessDetails;
+        const backendPayload = {
+          // STEP 1: BUSINESS DETAILS
+          businessDetails: {
+            name: businessDetails.businessName,
+            addressLine1: businessDetails.addressLine1,
+            addressLine2: businessDetails.addressLine2,
+            pinCode: businessDetails.pinCode,
+            city: businessDetails.city,
+            state: businessDetails.state,
+            panCard: businessDetails.panCard, // Business PAN ID
+            registrationCertificate: businessDetails.registrationCertificate,
+          },
+          authorisedPersonDetails: {
+            name: businessDetails.authorisedPersonName, // Renamed from authorisedPersonName to name in payload
+            mobileNumber: businessDetails.authorisedPersonPhoneNumber, // Renamed from authorisedPersonPhoneNumber to mobileNumber in payload
+            email: businessDetails.authorisedPersonEmail, // Renamed from authorisedPersonEmail to email in payload
+            panCard: businessDetails.authorisedPersonPanCard, // Authorised Person PAN ID
+            aadharCard: businessDetails.authorisedPersonAadharCard, // Authorised Person Aadhar ID
+          },
+          gstNumber: businessDetails.gstNumber,
+          // selfDeclared is used for the "without-GST" flow
+          selfDeclared: businessDetails.selfDeclared, 
+          gstCertificateId: businessDetails.gstCertificateId,
+
+          // You would typically include other steps' data here as well:
+          // brandDetails: formData.brandDetails,
+          // bankDetails: formData.bankDetails,
+          // declaration: formData.declaration,
+        };
+        console.log("Final Backend Payload (for reference):", backendPayload);
+
       } catch (error) {
         console.error("Error submitting form:", error);
-      } finally {
-        setIsLoading(false);
+        toast.error("Final submission failed.");
       }
     }
   };
@@ -313,7 +355,7 @@ const BusinessRegistrationForm: React.FC = () => {
               onClick={handleSkip} // Skip essentially validates and moves next in dev usually, but here behaves as Next
               variant="ghost"
               className="text-base-content/80 text-base flex gap-2"
-              disabled={isLoading}
+              disabled={isSaving}
             >
               Skip
               <Icon name="ChevronsRight" className="text-base text-base-content/80" />
@@ -357,7 +399,7 @@ const BusinessRegistrationForm: React.FC = () => {
               onClick={handlePrevious}
               variant="filled"
               className="w-full bg-secondary text-secondary-content hover:bg-secondary/80"
-              disabled={isLoading}
+              disabled={isSaving}
             >
               Previous
             </Button>
@@ -367,7 +409,7 @@ const BusinessRegistrationForm: React.FC = () => {
         <div className="w-[70%]">
           <Button
             onClick={isLastStep ? handleSubmit : handleNext}
-            isLoading={isLoading}
+            isLoading={isSaving}
             loadingText={isLastStep ? "Submitting..." : "Saving..."}
             fullWidth
             color="primary"
