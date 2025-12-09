@@ -80,6 +80,53 @@ flowchart TD
 - Instrument critical failures in Sentry with context (token timestamps, endpoint, response codes).
 - Use short local expirations (clock skew) and request validation from server whenever possible.
 
----
 
-Please examine this flow and the edge-case list and tell me if you'd like any changes or a rendered diagram (SVG/Mermaid preview). I'm ready to adjust anything — please review and confirm.
+----
+
+
+// this is what i wrote
+
+when user enters url : http://localhost:5173 (later change to domain name)
+
+STEP-1: 
+Check if token exists in the localstorage
+    NO - redirect to /login , STEP - 6
+    YES - STEP-2
+
+STEP-2
+loading starts -> i send token from localstorage to backend to check the user's auth info -> Token exists means user exists
+    isTokenExpired ?
+        Yes - Send refresh token to generate new accesstoken
+            isRefreshTokenExpired ?
+                Yes - return 401 and redirect to /login -> STEP-6
+                No - generate access token and send required details 
+                    - frontend stores tokens
+                    - STEP-3
+        No - STEP-3
+
+
+STEP-3
+    isRegistered ?
+        NO - redirect to /registration, STEP-7
+        YES - STEP-4
+
+STEP-4 
+    isBusinessRegistrationComplete ?
+        No - Check incomplete steps and redirect accordingly
+        Yes - STEP-5
+
+STEP-5 
+    isApproved/isVerified ?
+        No - Show approval pending + blur dashboard
+        Yes - redirect to /dashboard
+
+STEP-6
+    - Verify mobile number -> redirect to register to enter fullname and email
+    - STEP-7
+
+STEP-7
+    - Enter full name and email
+    - Verify email (store email while veryfying only)
+    - send fullname (and maybe email) in payload as email is already stored while verifying
+    - redirect to /business-registration?step=1 
+

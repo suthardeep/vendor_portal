@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DemoRouteRouteImport } from './routes/demo/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRegistrationIndexRouteImport } from './routes/_auth/registration/index'
@@ -17,6 +18,11 @@ import { Route as AuthBusinessRegistrationIndexRouteImport } from './routes/_aut
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppOrdersNewOrdersRouteRouteImport } from './routes/_app/orders/new-orders/route'
 
+const DemoRouteRoute = DemoRouteRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
@@ -53,6 +59,7 @@ const AppOrdersNewOrdersRouteRoute = AppOrdersNewOrdersRouteRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/demo': typeof DemoRouteRoute
   '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
@@ -60,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/registration': typeof AuthRegistrationIndexRoute
 }
 export interface FileRoutesByTo {
+  '/demo': typeof DemoRouteRoute
   '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/demo': typeof DemoRouteRoute
   '/_app/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_auth/business-registration/': typeof AuthBusinessRegistrationIndexRoute
@@ -79,6 +88,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/demo'
     | '/orders/new-orders'
     | '/dashboard'
     | '/business-registration'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/registration'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/demo'
     | '/orders/new-orders'
     | '/dashboard'
     | '/business-registration'
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app'
     | '/_auth'
+    | '/demo'
     | '/_app/orders/new-orders'
     | '/_app/dashboard/'
     | '/_auth/business-registration/'
@@ -105,10 +117,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  DemoRouteRoute: typeof DemoRouteRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth': {
       id: '/_auth'
       path: ''
@@ -194,6 +214,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  DemoRouteRoute: DemoRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

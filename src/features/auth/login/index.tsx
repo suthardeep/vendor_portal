@@ -7,6 +7,7 @@ import Logo from "@/components/base/Logo";
 import { OTPInput } from "@/components/base/OTPInput";
 import { toast } from "@/components/toast/Sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { MobileNumberInput } from "@/components/base/MobileNumberInput";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -118,10 +119,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-5 py-6 sm:px-6 md:px-8 lg:px-10 flex flex-col max-w-lg mx-auto min-h-screen justify-center">
+    <div className="w-full px-5 py-6 sm:px-6 md:px-8 lg:px-10 flex flex-col">
       {/* --- Heading Section --- */}
       <div className="mb-6 shrink-0">
-        <div className="mb-8">
+        <div className="mb-16">
             <Logo height={90} />
         </div>
         <div>
@@ -138,16 +139,18 @@ const Login: React.FC = () => {
         {step === "INPUT_MOBILE" ? (
           /* --- Step 1: Mobile Input --- */
           <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
-            <Input
+            <MobileNumberInput
               label="Mobile Number"
               placeholder="Enter number"
               value={mobileNumber}
               onChange={handleMobileChange}
               error={errors.mobileNumber}
-              type="tel"
-              numericOnly
               maxLength={10}
-              fullWidth
+              required
+              isVerified={false}
+              showStatus={false}
+              
+
             />
 
             <Button

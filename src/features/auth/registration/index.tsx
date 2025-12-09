@@ -166,7 +166,7 @@ const Registration: React.FC = () => {
       <div className="w-full px-5 py-6 sm:px-6 md:px-8 lg:px-10 flex flex-col">
         {/* Heading */}
         <div className="mb-6 shrink-0">
-          <div className="mb-10">
+          <div className="mb-16">
             <Logo height={90} />
           </div>
           <div>
