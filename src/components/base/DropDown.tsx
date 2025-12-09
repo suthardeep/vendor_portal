@@ -41,6 +41,7 @@ export interface DropdownProps {
   icon?: React.ReactNode;
   noOptionsText?: string;
   maxHeight?: string;
+  showClear?: boolean;
 }
 
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
@@ -70,6 +71,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   icon,
   noOptionsText = "No options found",
   maxHeight = "300px",
+  showClear = false
 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -185,7 +187,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       <div
         onClick={handleToggle}
         className={cn(
-          "flex items-center justify-between cursor-pointer rounded-md border-1 transition-all",
+          "flex items-center justify-between cursor-pointer rounded-lg border transition-all",
           "bg-base-1", 
           error && "border-error",
           success && "border-success",
@@ -197,12 +199,12 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         <span className={cn(
           "flex-1", 
           TEXT_SIZE_MAP[inputSize],
-          hasValue ? "text-base-content/50" : "text-base-content/50"
+          "text-body-content" 
         )}>
           {displayValue}
         </span>
         <div className="flex items-center gap-2">
-          {hasValue && !disabled && (
+          {showClear && hasValue && !disabled && (
             <div onClick={handleClear} className="cursor-pointer">
               <Icon 
                 name="X"
@@ -216,7 +218,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
               name="ChevronDown"
               size={20} 
               className={cn(
-                "transition-transform text-base-content", 
+                "transition-transform text-base-content ml-2", 
                 isOpen && "rotate-180"
               )} 
             />
@@ -235,7 +237,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
           {searchable && (
             <div className="p-2 border-b border-base-content/40">
               <div className="flex items-center gap-2 px-3 py-2 border border-base-content/40 rounded-lg bg-base-2">
-                <Icon name="Search" size={16} className="text-base-content" />
+                <Icon name="Search" size={16} className="text-body-content" />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -243,7 +245,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
                   onChange={handleSearch}
                   placeholder={searchPlaceholder}
                   className={cn(
-                    "flex-1 bg-transparent outline-none text-base-content/40 placeholder:text-base-content/30", 
+                    "flex-1 bg-transparent outline-none text-body-content placeholder:text-base-content/30", 
                     TEXT_SIZE_MAP[inputSize]
                   )}
                 />
@@ -257,7 +259,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
                 {noOptionsText}
               </div>
             ) : (
-              sortedOptions.map((option) => {
+              sortedOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);
                 return (
                   <div
@@ -265,12 +267,15 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
                     onClick={() => handleSelect(option)}
                     className={cn(
                       "flex items-center justify-between px-3 py-2 cursor-pointer transition-colors",
-                      "hover:bg-base-2",
-                      isSelected && "bg-primary/10", 
+                      "bg-primary-50",
+                      index === 0 && "rounded-t-lg",
+                      index === sortedOptions.length-1  && "rounded-b-lg",
+                      "hover:bg-primary-100 hover:text-body-content",
+                      isSelected && "bg-primary-100", 
                       option.disabled && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    <span className={cn("text-base-content/40", TEXT_SIZE_MAP[inputSize])}>
+                    <span className={cn(isSelected ? "text-body-content" : "text-body-content" , TEXT_SIZE_MAP[inputSize])}>
                       {option.label}
                     </span>
                     {isSelected && (

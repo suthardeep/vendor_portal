@@ -90,8 +90,8 @@ when user enters url : http://localhost:5173 (later change to domain name)
 
 STEP-1: 
 Check if token exists in the localstorage
-    NO - redirect to /login , STEP - 6
-    YES - STEP-2
+    NO - redirect to /login -> STEP - 6
+    YES - STEP-2 
 
 STEP-2
 loading starts -> i send token from localstorage to backend to check the user's auth info -> Token exists means user exists
@@ -99,15 +99,15 @@ loading starts -> i send token from localstorage to backend to check the user's 
         Yes - Send refresh token to generate new accesstoken
             isRefreshTokenExpired ?
                 Yes - return 401 and redirect to /login -> STEP-6
-                No - generate access token and send required details 
+                No - generate access token and send required details
                     - frontend stores tokens
                     - STEP-3
-        No - STEP-3
+        No - (/get-profile api) -> STEP-3
 
 
 STEP-3
     isRegistered ?
-        NO - redirect to /registration, STEP-7
+        NO - redirect to /registration -> STEP-7
         YES - STEP-4
 
 STEP-4 

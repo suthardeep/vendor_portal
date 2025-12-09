@@ -2,7 +2,7 @@ import { cn } from "@/utils/helpers";
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Button, type ButtonProps } from "../base/Button";
-import {Icon} from "../base/Icon";
+import { Icon } from "../base/Icon";
 
 const Dialog: React.FC<DialogProps> = (props) => {
   const {
@@ -40,102 +40,59 @@ const Dialog: React.FC<DialogProps> = (props) => {
       aria-label="dialog"
       className={cn(
         `fall fixed inset-0 z-101 bg-black/80 backdrop-blur-[1.5px] transition-all duration-200`,
-        isOpen
-          ? "translate-y-0 opacity-100"
-          : "pointer-events-none translate-y-4 opacity-0",
+        isOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       )}
       onClick={handleBackdropClick}
     >
       <div
         className={cn(
-          `dark:bg-neutral border-neutral-content dark:border-base-3 m-auto flex w-full flex-col rounded-xl border bg-white shadow-lg`,
-          sizeMap[size],
+          `dark:bg-neutral border-neutral-content dark:border-base-3 max-h-[90dvh] max-w-[90dvw] m-auto flex w-full flex-col rounded-xl border bg-white shadow-lg`,
+          sizeMap[size]
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {shouldRenderContent && (
           <>
-            <div
-              className={cn(
-                "flex shrink-0 items-center justify-between",
-                paddingClass,
-              )}
-            >
+            <div className={cn("flex shrink-0 items-center justify-between", paddingClass)}>
               <div className="flex flex-col">
-                {title && typeof title === 'string' ? (
-                  <h5 className="text-body-content font-medium">
-                    {title}
-                  </h5>
-                ) 
-              :
-              title
-              }
-                {subTitle && (
-                  <p className="text-body-content/10 mt-0.5">
-                    {subTitle}
-                  </p>
+                {title && typeof title === "string" ? (
+                  <h5 className="text-body-content font-medium">{title}</h5>
+                ) : (
+                  title
                 )}
+                {subTitle && <p className="text-body-content/10 mt-0.5">{subTitle}</p>}
               </div>
-              <Icon name={"X"} size={18} onClick={close} />
+              <span className="hover:bg-error/80 group  rounded-lg p-2">
+              <Icon name={"X"} className="group-hover:text-white w-6 h-6" onClick={close} />
+              </span>
             </div>
 
             <div className="flex-1 overflow-hidden px-5 py-4 relative z-9999">
-              <div className="no-scrollbar max-h-[90dvh] overflow-y-auto relative z-9999">
-                {children}
-              </div>
+              <div className="no-scrollbar max-h-[90dvh] overflow-y-auto relative z-9999">{children}</div>
             </div>
 
             {actions && (
-              <div
-                className={cn(
-                  "flex shrink-0 justify-end gap-x-2 relative",
-                  paddingClass,
-                )}
-              >
+              <div className={cn("flex shrink-0 justify-end gap-x-2 relative", paddingClass)}>
                 {actions?.tertiary && (
                   <Button
-                    disabled={actions?.tertiary?.disabled}
-                    onClick={actions?.tertiary?.onClick}
-                    startIcon={actions?.tertiary?.startIcon}
-                    endIcon={actions?.tertiary?.endIcon}
-                    size={actions?.tertiary?.size}
-                    variant={actions?.tertiary?.variant || "ghost"}
-                    color={actions?.tertiary?.color || "neutral"}
-                    className={actions.tertiary.className}
-                    isLoading={actions?.tertiary?.loading}
-                  >
-                    {actions?.tertiary?.label}
-                  </Button>
+                    variant={actions?.secondary?.variant || "ghost"}
+                    color={actions?.secondary?.color || "neutral"}
+                    {...actions.tertiary}
+                  />
                 )}
                 {actions?.secondary && (
                   <Button
-                    disabled={actions?.secondary?.disabled}
-                    onClick={actions?.secondary?.onClick}
-                    startIcon={actions?.secondary?.startIcon}
-                    endIcon={actions?.secondary?.endIcon}
-                    size={actions?.secondary?.size}
                     variant={actions?.secondary?.variant || "ghost"}
                     color={actions?.secondary?.color || "neutral"}
-                    className={actions.secondary.className}
-                    isLoading={actions?.secondary?.loading}
-                  >
-                    {actions?.secondary?.label}
-                  </Button>
+                    {...actions.secondary}
+                  />
                 )}
                 {actions?.primary && (
                   <Button
-                    disabled={actions?.primary?.disabled}
-                    onClick={actions?.primary?.onClick}
-                    startIcon={actions?.primary?.startIcon}
-                    size={actions?.primary?.size}
-                    endIcon={actions?.primary?.endIcon}
-                    className={actions?.primary?.className}
-                    isLoading={actions?.primary?.loading}
                     variant={actions?.primary?.variant || "filled"}
                     color={actions?.primary?.color || "primary"}
-                  >
-                    {actions?.primary?.label}
-                  </Button>
+                    {...actions.primary}
+                  />
                 )}
               </div>
             )}
@@ -172,24 +129,24 @@ const paddingClass = `px-5 py-4`;
 
 export default Dialog;
 
-export interface DialogAction {
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  startIcon?: ButtonProps["startIcon"];
-  endIcon?: ButtonProps["endIcon"];
-  fullWidth?: boolean;
-  loading?: boolean;
-  className?: string;
-  size?: ButtonProps["size"];
-  variant?: ButtonProps["variant"];
-  color?: ButtonProps["color"];
-}
+// export interface DialogAction {
+//   label: string;
+//   onClick: () => void;
+//   disabled?: boolean;
+//   startIcon?: ButtonProps["startIcon"];
+//   endIcon?: ButtonProps["endIcon"];
+//   fullWidth?: boolean;
+//   loading?: boolean;
+//   className?: string;
+//   size?: ButtonProps["size"];
+//   variant?: ButtonProps["variant"];
+//   color?: ButtonProps["color"];
+// }
 
 export interface DialogActions {
-  primary?: DialogAction;
-  secondary?: DialogAction;
-  tertiary?: DialogAction;
+  primary?: ButtonProps;
+  secondary?: ButtonProps;
+  tertiary?: ButtonProps;
 }
 
 export interface DialogProps {

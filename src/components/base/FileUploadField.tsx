@@ -289,7 +289,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
                     e.stopPropagation();
                     handleRemoveFile(index);
                   }}
-                  className="absolute top-2 right-2 z-10 bg-error text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-error/90"
+                  className="absolute top-2 right-2 z-10 bg-error/60 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-error/90"
                   disabled={disabled}
                 >
                   <Icon name="X" className="w-4 h-4 text-base-1" /> 

@@ -1,13 +1,10 @@
 import { cn } from "@/utils/helpers";
 import React, { forwardRef, type InputHTMLAttributes, ReactNode, useState } from "react";
-import {Label} from "./Label";
-import {ErrorText} from "./ErrorText";
-import {Icon, IconName } from "./Icon";
+import { Label } from "./Label";
+import { ErrorText } from "./ErrorText";
+import { Icon, IconName } from "./Icon";
 
-type InputHTMLAttributesWithoutConflicts = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size" | "className"
->;
+type InputHTMLAttributesWithoutConflicts = Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "className">;
 
 export interface InputProps extends InputHTMLAttributesWithoutConflicts {
   label?: string;
@@ -32,13 +29,13 @@ export interface InputProps extends InputHTMLAttributesWithoutConflicts {
   numericOnly?: boolean;
   maxLength?: number;
 
-  tooltip?: string|ReactNode;
+  tooltip?: string | ReactNode;
   tooltipIcon?: IconName;
-  
+
   extraLabel?: string;
   extraLabelPosition?: "top-right" | "bottom-left" | "bottom-right";
   extraLabelClassName?: string;
-  
+
   isVerified?: boolean;
   showStatus?: boolean;
   verifiedText?: string;
@@ -111,7 +108,7 @@ const Input = forwardRef<InputRef, InputProps>(
       tooltipIcon,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -135,23 +132,15 @@ const Input = forwardRef<InputRef, InputProps>(
 
       switch (variant) {
         case "outlined":
-          return cn(
-            baseClasses,
-            backgroundClasses.secondary,
-            getBorderClass(),
-          );
+          return cn(baseClasses, backgroundClasses.secondary, getBorderClass());
         case "filled":
-          return cn(
-            baseClasses,
-            backgroundClasses.primary,
-            getBorderClass(),
-          );
+          return cn(baseClasses, backgroundClasses.primary, getBorderClass());
         case "transparent":
           return cn(
             baseClasses,
             backgroundClasses.transparent,
             "border-transparent",
-            (error || success) && getBorderClass(),
+            (error || success) && getBorderClass()
           );
         default:
           return baseClasses;
@@ -179,28 +168,18 @@ const Input = forwardRef<InputRef, InputProps>(
       onChange?.(e);
     };
 
-    const labelColorClass = error 
-      ? "text-error" 
-      : success 
-      ? "text-success" 
-      : "";
+    const labelColorClass = error ? "text-error" : success ? "text-success" : "";
 
     const isExtraLabelTop = extraLabelPosition === "top-right";
     const isExtraLabelRight = extraLabelPosition === "top-right" || extraLabelPosition === "bottom-right";
 
     return (
-      <div
-        className={cn(
-          "space-y-1 flex flex-col",
-          fullWidth && "w-full",
-          containerClassName
-        )}
-      >
+      <div className={cn("space-y-1 flex flex-col", fullWidth && "w-full", containerClassName)}>
         {/* Top labels row */}
         {(label || (extraLabel && isExtraLabelTop)) && (
           <div className="flex items-center justify-between gap-2">
             {label && (
-              <Label 
+              <Label
                 required={required}
                 className={cn(labelColorClass, labelClassName)}
                 tooltip={tooltip}
@@ -210,29 +189,18 @@ const Input = forwardRef<InputRef, InputProps>(
               </Label>
             )}
             {extraLabel && isExtraLabelTop && (
-              <span className={cn(
-                "text-xs text-body-content",
-                extraLabelClassName
-              )}>
-                {extraLabel}
-              </span>
+              <span className={cn("text-xs text-body-content", extraLabelClassName)}>{extraLabel}</span>
             )}
           </div>
         )}
-        
-        <div className="w-full space-y-1">
-          <div
-            className={cn(
-              "flex overflow-hidden rounded-lg",
-              getVariantClasses(),
-              inputWrapperClassName,
-            )}
-          >
+
+        <div className="w-full flex flex-col gap-1">
+          <div className={cn("flex overflow-hidden rounded-lg", getVariantClasses(), inputWrapperClassName)}>
             {leftElement && (
               <div
                 className={cn(
                   "pointer-events-none flex aspect-square items-center justify-center p-2",
-                  leftElementClassname,
+                  leftElementClassname
                 )}
               >
                 {leftElement}
@@ -250,9 +218,8 @@ const Input = forwardRef<InputRef, InputProps>(
                 disabledClasses,
                 sizeClasses[inputSize],
                 leftElement && "pl-0",
-                (rightElement || (togglePassword && type === "password")) &&
-                  "pr-3",
-                className,
+                (rightElement || (togglePassword && type === "password")) && "pr-3",
+                className
               )}
               disabled={disabled}
               aria-invalid={error ? "true" : "false"}
@@ -261,10 +228,10 @@ const Input = forwardRef<InputRef, InputProps>(
               {...props}
               {...formProps}
             />
-            {(rightElement || (togglePassword && type === "password") || (isVerified && showStatus && !error)) && (
-              <div
-                className={cn("flex items-center pr-2", rightElementClassname)}
-              >
+            {(rightElement ||
+              (togglePassword && type === "password") ||
+              (isVerified && showStatus && !error)) && (
+              <div className={cn("flex items-center pr-2", rightElementClassname)}>
                 {togglePassword && type === "password" ? (
                   <button
                     type="button"
@@ -273,56 +240,64 @@ const Input = forwardRef<InputRef, InputProps>(
                     tabIndex={-1}
                     disabled={disabled}
                   >
-                    {showPassword ? 
-                   
-                    <Icon name="EyeOff" size={20}></Icon> :<Icon name="Eye" size={20}></Icon>}
+                    {showPassword ? (
+                      <Icon name="EyeOff" size={20}></Icon>
+                    ) : (
+                      <Icon name="Eye" size={20}></Icon>
+                    )}
                   </button>
                 ) : isVerified && showStatus && !error ? (
-                 <Icon 
-                  name="CheckCircle2"
-                  size={inputSize === "sm" ? 16 : inputSize === "md" ? 20 : 24}
-                  className="shrink-0 text-success"
-                  aria-label="Verified"
-/>
+                  <Icon
+                    name="CheckCircle2"
+                    size={inputSize === "sm" ? 16 : inputSize === "md" ? 20 : 24}
+                    className="shrink-0 text-success"
+                    aria-label="Verified"
+                  />
                 ) : (
                   rightElement
                 )}
               </div>
             )}
           </div>
-          
-          <div className="flex items-center justify-between gap-2">
-            {(helperText || error) && (   
-               <ErrorText className={error ? "text-xs text-error" : "text-xs text-body-content"}>
-                {error || helperText}
-              </ErrorText>
-            )}
-            
-            {!error && !helperText && showStatus && (
-              <span className={cn(
-                "text-xs font-medium",
-                isVerified ? "text-success ml-auto" : "text-body-content ml-auto",
-                statusClassName
-              )}>
-                {isVerified ? verifiedText : unverifiedText}
-              </span>
-            )}
-            
-            {extraLabel && !isExtraLabelTop && (
-              <span className={cn(
-                "text-xs text-body-content",
-                !isExtraLabelRight && "mr-auto",
-                isExtraLabelRight && "ml-auto",
-                extraLabelClassName
-              )}>
-                {extraLabel}
-              </span>
-            )}
-          </div>
+
+          {!!(helperText || error || showStatus || (extraLabel && !isExtraLabelTop)) && (
+            <div className="flex items-center justify-between gap-2">
+              {(helperText || error) && (
+                <ErrorText className={error ? "text-xs text-error" : "text-xs text-body-content"}>
+                  {error || helperText}
+                </ErrorText>
+              )}
+
+              {!error && !helperText && showStatus && (
+                <span
+                  className={cn(
+                    "text-xs font-medium",
+                    isVerified ? "text-success ml-auto" : "text-body-content ml-auto",
+                    statusClassName
+                  )}
+                >
+                  {isVerified ? verifiedText : unverifiedText}
+                </span>
+              )}
+
+              {extraLabel && !isExtraLabelTop && (
+                <span
+                  className={cn(
+                    "text-xs text-body-content",
+                    !isExtraLabelRight && "mr-auto",
+                    isExtraLabelRight && "ml-auto",
+                    extraLabelClassName
+                  )}
+                >
+                  {extraLabel}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
-  },
+  }
 );
 
 Input.displayName = "Input";

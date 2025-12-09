@@ -62,6 +62,7 @@ import {
   LogOut,
   ChevronUp,
   Triangle,
+  Folder,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -130,7 +131,7 @@ const lucideIconRegistry = {
      User ,
    Key ,
     LogOut ,
-   
+   Folder,
 
    ChevronUp ,
    Triangle ,
