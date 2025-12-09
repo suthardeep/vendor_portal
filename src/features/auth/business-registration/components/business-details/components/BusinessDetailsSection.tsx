@@ -80,18 +80,22 @@ const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
           <span className="text-error">*</span>
         </label>
         <MediaPicker
-          value={createMinimalMediaItem(data.panCard || "", "Business PAN Card")}
-          onChange={(items) => onChange({
-            ...data,
-            panCard: items.length > 0 ? items[items.length - 1].id : "",
-          })}
+          value={createMinimalMediaItem(data.panCardId || "", "Business PAN Card")}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              panCardId: selectedItem?.id || "",
+              panCard: selectedItem?.url || "",
+            });
+          }}
           maxFiles={1}
-          containerClassName={errors.panCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          containerClassName={errors.panCardId ? "h-auto p-0 border-error" : "h-auto p-0"}
           previewGridClassName="grid-cols-1"
           itemClassName="aspect-video h-20"
           maxHeight="max-h-none"
         />
-        {errors.panCard && <p className="text-xs text-error mt-1">{errors.panCard}</p>}
+        {errors.panCardId && <p className="text-xs text-error mt-1">{errors.panCardId}</p>}
       </div>
       {/* End PAN Card MediaPicker Integration */}
 
@@ -102,18 +106,22 @@ const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
           <span className="text-error">*</span>
         </label>
         <MediaPicker
-          value={createMinimalMediaItem(data.registrationCertificate || "", "Registration Certificate")}
-          onChange={(items) => onChange({
-            ...data,
-            registrationCertificate: items.length > 0 ? items[items.length - 1].id : "",
-          })}
+          value={createMinimalMediaItem(data.registrationCertificateId || "", "Registration Certificate")}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              registrationCertificateId: selectedItem?.id || "",
+              registrationCertificate: selectedItem?.url || "",
+            });
+          }}
           maxFiles={1}
-          containerClassName={errors.registrationCertificate ? "h-auto p-0 border-error" : "h-auto p-0"}
+          containerClassName={errors.registrationCertificateId ? "h-auto p-0 border-error" : "h-auto p-0"}
           previewGridClassName="grid-cols-1"
           itemClassName="aspect-video h-20"
           maxHeight="max-h-none"
         />
-        {errors.registrationCertificate && <p className="text-xs text-error mt-1">{errors.registrationCertificate}</p>}
+        {errors.registrationCertificateId && <p className="text-xs text-error mt-1">{errors.registrationCertificateId}</p>}
       </div>
       {/* End Business Registration MediaPicker Integration */}
     </div>

@@ -86,18 +86,22 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
           <span className="text-error">*</span>
         </label>
         <MediaPicker
-          value={createMinimalMediaItem(data.authorisedPersonPanCard ?? "", "Authorised Person PAN")}
-          onChange={(items) => onChange({
-            ...data,
-            authorisedPersonPanCard: items.length > 0 ? items[items.length - 1].id : "",
-          })}
+          value={createMinimalMediaItem(data.authorisedPersonPanCardId ?? "", "Authorised Person PAN")}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              authorisedPersonPanCardId: selectedItem?.id || "",
+              authorisedPersonPanCard: selectedItem?.url || "",
+            });
+          }}
           maxFiles={1}
-          containerClassName={errors.authorisedPersonPanCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          containerClassName={errors.authorisedPersonPanCardId ? "h-auto p-0 border-error" : "h-auto p-0"}
           previewGridClassName="grid-cols-1"
           itemClassName="aspect-video h-20"
           maxHeight="max-h-none"
         />
-        {errors.authorisedPersonPanCard && <p className="text-xs text-error mt-1">{errors.authorisedPersonPanCard}</p>}
+        {errors.authorisedPersonPanCardId && <p className="text-xs text-error mt-1">{errors.authorisedPersonPanCardId}</p>}
       </div>
       {/* End PAN Card MediaPicker Integration */}
 
@@ -108,18 +112,22 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
           <span className="text-error">*</span>
         </label>
         <MediaPicker
-          value={createMinimalMediaItem(data.authorisedPersonAadharCard ?? "", "Authorised Person Aadhar")}
-          onChange={(items) => onChange({
-            ...data,
-            authorisedPersonAadharCard: items.length > 0 ? items[items.length - 1].id : "",
-          })}
+          value={createMinimalMediaItem(data.authorisedPersonAadharCardId ?? "", "Authorised Person Aadhar")}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              authorisedPersonAadharCardId: selectedItem?.id || "",
+              authorisedPersonAadharCard: selectedItem?.url || "",
+            });
+          }}
           maxFiles={1}
-          containerClassName={errors.authorisedPersonAadharCard ? "h-auto p-0 border-error" : "h-auto p-0"}
+          containerClassName={errors.authorisedPersonAadharCardId ? "h-auto p-0 border-error" : "h-auto p-0"}
           previewGridClassName="grid-cols-1"
           itemClassName="aspect-video h-20"
           maxHeight="max-h-none"
         />
-        {errors.authorisedPersonAadharCard && <p className="text-xs text-error mt-1">{errors.authorisedPersonAadharCard}</p>}
+        {errors.authorisedPersonAadharCardId && <p className="text-xs text-error mt-1">{errors.authorisedPersonAadharCardId}</p>}
       </div>
       {/* End Aadhar Card MediaPicker Integration */}
     </div>

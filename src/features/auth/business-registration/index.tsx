@@ -84,30 +84,36 @@ const BusinessRegistrationForm: React.FC = () => {
       hasGST: true,
       gstNumber: "",
       gstCertificateId: "",
+      gstCertificate: "",
       businessName: "",
       addressLine1: "",
       addressLine2: "",
       pinCode: "",
       city: "",
       state: "",
-      panCard: "", 
-      registrationCertificate: "", 
+      panCardId: "",
+      panCard: "",
+      registrationCertificateId: "",
+      registrationCertificate: "",
       authorisedPersonName: "",
       authorisedPersonEmail: "",
       authorisedPersonPhoneNumber: "",
-      authorisedPersonPanCard: "", 
-      authorisedPersonAadharCard: "", 
-      selfDeclared: false, 
+      authorisedPersonPanCardId: "",
+      authorisedPersonPanCard: "",
+      authorisedPersonAadharCardId: "",
+      authorisedPersonAadharCard: "",
+      selfDeclared: false,
     },
     brandDetails: [initialBrandState],
     bankDetails: {
       accountNumber: "",
       ifscCode: "",
       accountHolderName: "",
-      bankProofDocumentId: "", 
+      bankProofDocumentId: "",
+      bankProofDocument: "",
     },
     declaration: {
-      agreed: false, 
+      agreed: false,
     },
   });
 
@@ -257,7 +263,9 @@ const BusinessRegistrationForm: React.FC = () => {
         }
 
         const businessDetails = formData.businessDetails;
-        const backendPayload = {
+        
+        // Build base payload
+        const backendPayload: any = {
           // STEP 1: BUSINESS DETAILS
           businessDetails: {
             name: businessDetails.businessName,
@@ -266,26 +274,36 @@ const BusinessRegistrationForm: React.FC = () => {
             pinCode: businessDetails.pinCode,
             city: businessDetails.city,
             state: businessDetails.state,
-            panCard: businessDetails.panCard, // Business PAN ID
+            panCard: businessDetails.panCard,
+            panCardId: businessDetails.panCardId,
             registrationCertificate: businessDetails.registrationCertificate,
+            registrationCertificateId: businessDetails.registrationCertificateId,
           },
           authorisedPersonDetails: {
-            name: businessDetails.authorisedPersonName, // Renamed from authorisedPersonName to name in payload
-            mobileNumber: businessDetails.authorisedPersonPhoneNumber, // Renamed from authorisedPersonPhoneNumber to mobileNumber in payload
-            email: businessDetails.authorisedPersonEmail, // Renamed from authorisedPersonEmail to email in payload
-            panCard: businessDetails.authorisedPersonPanCard, // Authorised Person PAN ID
-            aadharCard: businessDetails.authorisedPersonAadharCard, // Authorised Person Aadhar ID
+            name: businessDetails.authorisedPersonName,
+            mobileNumber: businessDetails.authorisedPersonPhoneNumber,
+            email: businessDetails.authorisedPersonEmail,
+            panCard: businessDetails.authorisedPersonPanCard,
+            panCardId: businessDetails.authorisedPersonPanCardId,
+            aadharCard: businessDetails.authorisedPersonAadharCard,
+            aadharCardId: businessDetails.authorisedPersonAadharCardId,
           },
-          gstNumber: businessDetails.gstNumber,
-          // selfDeclared is used for the "without-GST" flow
-          selfDeclared: businessDetails.selfDeclared, 
-          gstCertificateId: businessDetails.gstCertificateId,
-
           // You would typically include other steps' data here as well:
           // brandDetails: formData.brandDetails,
           // bankDetails: formData.bankDetails,
           // declaration: formData.declaration,
         };
+
+        // Only include GST fields if hasGST is true
+        if (businessDetails.hasGST) {
+          backendPayload.gstNumber = businessDetails.gstNumber;
+          backendPayload.gstCertificate = businessDetails.gstCertificate;
+          backendPayload.gstCertificateId = businessDetails.gstCertificateId;
+        } else {
+          // Include selfDeclared only for non-GST flow
+          backendPayload.selfDeclared = businessDetails.selfDeclared;
+        }
+
         console.log("Final Backend Payload (for reference):", backendPayload);
 
       } catch (error) {

@@ -1,32 +1,45 @@
 import { fileSchema } from "@/schema/fileSchema";
 import z from "zod";
 
-// New schema for file IDs (string, since only the ID from the media gallery is passed)
+// Schema for file IDs and URLs (both required for backend payload)
 export const FileIdSchema = z.string().trim().min(1, "A document ID is required for this field");
+export const FileUrlSchema = z.string().url("A valid document URL is required");
 
 export const BusinessDetailsSchema = z.object({
   hasGST: z.boolean(),
   gstNumber: z.string().trim().length(15, "Valid 15-digit GST number is required"),
-  // RENAMED and TYPE CHANGED to ID
+
+  // 1. GST Certificate
   gstCertificateId: FileIdSchema.optional().nullable(),
+  gstCertificate: FileUrlSchema.optional().nullable(),
+
   businessName: z.string().trim().min(1, "Valid business name is required"),
   addressLine1: z.string().trim().min(5, "Address Line 1 is required"),
   addressLine2: z.string().optional(),
   pinCode: z.string().regex(/^[0-9]{5,6}$/, "Valid pin code is required"),
   city: z.string().trim().min(2, "City is required"),
   state: z.string().trim().min(2, "State is required"),
-  // TYPE CHANGED to ID
-  panCard: FileIdSchema.optional().nullable(),
-  // RENAMED and TYPE CHANGED to ID
-  registrationCertificate: FileIdSchema.optional().nullable(),
+
+  // 2. Business PAN Card
+  panCardId: FileIdSchema.optional().nullable(),
+  panCard: FileUrlSchema.optional().nullable(),
+
+  // 3. Business Registration Certificate
+  registrationCertificateId: FileIdSchema.optional().nullable(),
+  registrationCertificate: FileUrlSchema.optional().nullable(),
+
   authorisedPersonName: z.string().trim().min(2, "Authorised person's name is required"),
-  authorisedPersonEmail: z.email("Invalid email address"),
+  authorisedPersonEmail: z.string().email("Invalid email address"),
   authorisedPersonPhoneNumber: z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits"),
-  // TYPE CHANGED to ID
-  authorisedPersonPanCard: FileIdSchema.optional().nullable(),
-  // TYPE CHANGED to ID
-  authorisedPersonAadharCard: FileIdSchema.optional().nullable(),
-  // RENAMED
+
+  // 4. Authorised Person PAN Card
+  authorisedPersonPanCardId: FileIdSchema.optional().nullable(),
+  authorisedPersonPanCard: FileUrlSchema.optional().nullable(),
+
+  // 5. Authorised Person Aadhar Card
+  authorisedPersonAadharCardId: FileIdSchema.optional().nullable(),
+  authorisedPersonAadharCard: FileUrlSchema.optional().nullable(),
+
   selfDeclared: z.boolean().refine((val) => val === true, "You must agree to the self-declaration"),
 });
 
@@ -34,26 +47,36 @@ export const BusinessDetailsSchema = z.object({
 export const businessDetailsWithGSTSchema = BusinessDetailsSchema.omit({
   selfDeclared: true,
 }).extend({
-  // Make file IDs mandatory for the with-GST flow
+  // Make file IDs and URLs mandatory for the with-GST flow
   gstCertificateId: FileIdSchema,
-  panCard: FileIdSchema,
-  registrationCertificate: FileIdSchema,
-  authorisedPersonPanCard: FileIdSchema,
-  authorisedPersonAadharCard: FileIdSchema,
-  hasGST: z.literal(true), // Explicitly ensure hasGST is true
+  gstCertificate: FileUrlSchema,
+  panCardId: FileIdSchema,
+  panCard: FileUrlSchema,
+  registrationCertificateId: FileIdSchema,
+  registrationCertificate: FileUrlSchema,
+  authorisedPersonPanCardId: FileIdSchema,
+  authorisedPersonPanCard: FileUrlSchema,
+  authorisedPersonAadharCardId: FileIdSchema,
+  authorisedPersonAadharCard: FileUrlSchema,
+  hasGST: z.literal(true),
 });
 
 // Schema for businesses WITHOUT GST (Requires all business/person details + declaration)
 export const businessDetailsWithoutGSTSchema = BusinessDetailsSchema.omit({
     gstNumber: true,
     gstCertificateId: true,
+    gstCertificate: true,
 }).extend({
-    // Make file IDs mandatory for non-GST flow (based on UI sections being shown)
-    panCard: FileIdSchema,
-    registrationCertificate: FileIdSchema,
-    authorisedPersonPanCard: FileIdSchema,
-    authorisedPersonAadharCard: FileIdSchema,
-    hasGST: z.literal(false), // Explicitly ensure hasGST is false
+    // Make file IDs and URLs mandatory for non-GST flow
+    panCardId: FileIdSchema,
+    panCard: FileUrlSchema,
+    registrationCertificateId: FileIdSchema,
+    registrationCertificate: FileUrlSchema,
+    authorisedPersonPanCardId: FileIdSchema,
+    authorisedPersonPanCard: FileUrlSchema,
+    authorisedPersonAadharCardId: FileIdSchema,
+    authorisedPersonAadharCard: FileUrlSchema,
+    hasGST: z.literal(false),
 });
 
 
@@ -72,15 +95,13 @@ export const BrandDetailsSchema = z.array(SingleBrandSchema).min(1, "At least on
 
 
 export const BankDetailsSchema = z.object({
-  // RENAMED: from bankAccountNumber to accountNumber
   accountNumber: z.string().min(8, "Invalid account number").max(18, "Invalid account number"),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC Code"),
   accountHolderName: z.string().min(2, "Account holder name is required"),
-  // RENAMED: from cancellationProof to bankProofDocumentId
-  bankProofDocumentId: FileIdSchema.optional().nullable(),
-}).extend({
-  // Ensure it is required
-  bankProofDocumentId: FileIdSchema, 
+  
+  // 6. Bank Proof Document - Both ID and URL required
+  bankProofDocumentId: FileIdSchema,
+  bankProofDocument: FileUrlSchema,
 });
 
 

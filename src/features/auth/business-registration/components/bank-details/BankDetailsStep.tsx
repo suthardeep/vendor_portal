@@ -58,15 +58,16 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
           </label>
           <p className="text-xs text-body-content/60 mb-2">Upload a clear image of cancelled cheque or passbook front page</p>
           <MediaPicker
-            // UPDATED KEY: cancellationProof -> bankProofDocumentId
             value={createMinimalMediaItem(data.bankProofDocumentId, "Cancelled Cheque/Proof")}
-            onChange={(items) => onChange({
-              ...data,
-              // UPDATED KEY: cancellationProof -> bankProofDocumentId
-              bankProofDocumentId: items.length > 0 ? items[items.length - 1].id : "",
-            })}
+            onChange={(items) => {
+              const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+              onChange({
+                ...data,
+                bankProofDocumentId: selectedItem?.id || "",
+                bankProofDocument: selectedItem?.url || "",
+              });
+            }}
             maxFiles={1}
-            // UPDATED ERROR KEY: cancellationProof -> bankProofDocumentId
             containerClassName={errors.bankProofDocumentId ? "h-auto p-0 border-error" : "h-auto p-0"}
             previewGridClassName="grid-cols-1"
             itemClassName="aspect-video h-20"

@@ -11,7 +11,15 @@ export const TokenUtil = {
     return LocalStorageUtil.getItem<string>(TOKEN_KEY);
   },
 
+  hasToken(): boolean {
+    return !!this.getToken();
+  },
+
   removeToken(): void {
     LocalStorageUtil.removeItem(TOKEN_KEY);
+  },
+
+  clearToken(): void {
+    this.removeToken();
   },
 };

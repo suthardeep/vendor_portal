@@ -3,7 +3,6 @@ import { z } from "zod";
 export const RegistrationSchema = z.object({
   fullName: z.string().trim().min(2, "Full name is required"),
   email: z.string().trim().email("Invalid email address"),
-  // Validation strictly checks if true
   agreed: z.boolean().refine((val) => val === true, "You must agree to the Terms & Privacy Policy"),
 });
 

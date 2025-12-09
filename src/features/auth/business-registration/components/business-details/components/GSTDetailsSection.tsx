@@ -31,10 +31,14 @@ const GSTDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange,
         </label>
         <MediaPicker
           value={createMinimalMediaItem(data.gstCertificateId ?? "", "GST Certificate")}
-          onChange={(items) => onChange({
-            ...data,
-            gstCertificateId: items.length > 0 ? items[items.length - 1].id : "",
-          })}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              gstCertificateId: selectedItem?.id || "",
+              gstCertificate: selectedItem?.url || "",
+            });
+          }}
           maxFiles={1}
           containerClassName={errors.gstCertificateId ? "h-auto p-0 border-error" : "h-auto p-0"}
           previewGridClassName="grid-cols-1"

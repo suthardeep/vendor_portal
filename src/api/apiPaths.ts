@@ -8,6 +8,12 @@ export const apiPaths = {
     verifyOtp:"auth/verify-otp"
   },
 
+  registration:{
+    sendOtp:"vendor/email/send-otp" ,
+    resendOtp:"vendor/email/resend-otp" ,
+    verifyOtp:"vendor/email/verify-otp" ,
+  } ,
+
 
 onboarding:{
   businessDetails:"vendor/business-details" ,
@@ -19,7 +25,12 @@ onboarding:{
   careers: "career",
   events: "events",
   highlight: "highlight",
-  upload: "upload"
+  upload: "upload" ,
+
+  profile:{
+    updateProfile:"vendor/profile" ,
+    getProfile:"vendor/profile" 
+  }
 
 
 
