@@ -115,7 +115,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         {/* Menu - BLURRED */}
         <div className={cn(
           "flex-1",
-          showOverlay && "blur-sm"
+  showOverlay && "blur-sm pointer-events-none"
         )}>
           <SidebarMenu
             menuItems={menuItems}

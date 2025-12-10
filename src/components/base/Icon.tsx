@@ -63,6 +63,9 @@ import {
   ChevronUp,
   Triangle,
   Folder,
+  ArrowRight,
+  CircleArrowDown
+  
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -135,6 +138,8 @@ const lucideIconRegistry = {
 
    ChevronUp ,
    Triangle ,
+   ArrowRight ,
+   CircleArrowDown
 }
 
 export type LucideIconName = keyof typeof lucideIconRegistry;

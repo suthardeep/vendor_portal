@@ -12,11 +12,15 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/store/useAuthStore";
 // Import API Query Hooks
 import { useSendOtpMutation, useVerifyOtpMutation, useRegisterProfileMutation } from "./api/queryHooks";
+import { ROUTES } from "@/constants/routes";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const Registration: React.FC = () => {
   const navigate = useNavigate();
   const { setUser, user } = useAuthStore();
+    const queryClient = useQueryClient();
+
 
   // --- Form State ---
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -176,7 +180,7 @@ const Registration: React.FC = () => {
       };
 
       registerMutation.mutate(registrationPayload, {
-        onSuccess: (res) => {
+        onSuccess: async(res) => {
             console.log("Payload sent:", registrationPayload);
             
             // Update Zustand store with email and fullName
@@ -187,11 +191,14 @@ const Registration: React.FC = () => {
               emailVerified: true,
             });
             
-            toast.success(res.message || "Registration Successful");
-            navigate({ to: "/business-registration", search: { step: 1 } });
+            toast.success( "Registration Successful");
+            await queryClient.invalidateQueries({ queryKey: ['profile'] }); // or whatever your profile query key is
+
         },
         onError: (error) => {
             const errorMessage = (error as { message?: string })?.message || "Registration failed. Please try again.";
+                            navigate({ to: ROUTES.DASHBOARD });
+
             toast.error(errorMessage);
         },
       });

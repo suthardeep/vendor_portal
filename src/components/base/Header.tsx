@@ -43,7 +43,7 @@ return (
                     <Icon 
                       name="ChevronRight" 
                       size={20}  
-                      className="text-white" 
+                      className="text-base-content"
                     />
                   )}
                   <span
@@ -53,7 +53,6 @@ return (
                     )}
                     style={{
                       opacity: index === breadcrumbs.length - 1 ? 1 : 0.6,
-                      color: "white",
                     }}
                     onClick={() => crumb.onClick?.()}
                     onMouseEnter={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.8")}

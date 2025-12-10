@@ -12,7 +12,7 @@ import { ROUTES } from "@/constants/routes";
 export const router = createRouter({
   routeTree,
   context: {
-    isLoggedIn: false,
+    isLoggedIn: TokenUtil.hasToken(),
     queryClient,
   },
   scrollRestoration: true,
@@ -27,13 +27,37 @@ const AuthInitializer = () => {
   const { user, setUser, clearUser } = useAuthStore();
   const hasToken = TokenUtil.hasToken();
   
-  // Only fetch profile if we have a token and no user in store
-  const shouldFetchProfile = hasToken && !user;
+  // Only fetch profile if we have a token and are on auth pages (login/registration)
+  const currentPath = window.location.pathname;
+  const isOnAuthPage = currentPath.includes('/login') || currentPath.includes('/registration');
+  const isOnBusinessRegistration = currentPath.includes('/business-registration');
+  
+  // Only run profile fetch for navigation logic on auth pages or business registration
+  const shouldFetchProfile = hasToken && (isOnAuthPage || isOnBusinessRegistration);
   const { data: profileData, isLoading, isError } = useGetProfile(shouldFetchProfile);
 
+  // Update router context when token status changes
   useEffect(() => {
-    // If no token, do nothing (user needs to login)
+    router.update({
+      context: {
+        isLoggedIn: hasToken,
+        queryClient,
+      },
+    });
+  }, [hasToken]);
+
+  useEffect(() => {
+    // If no token and not on auth pages, let route protection handle redirect
     if (!hasToken) {
+      // Only handle redirect if we're on auth pages
+      if (isOnAuthPage && !currentPath.includes('/login')) {
+        router.navigate({ to: ROUTES.LOGIN });
+      }
+      return;
+    }
+
+    // If we're not fetching profile (on protected routes), let route protection handle it
+    if (!shouldFetchProfile) {
       return;
     }
 
@@ -42,24 +66,41 @@ const AuthInitializer = () => {
       return;
     }
 
-    // If profile fetch failed, clear token and user
+    // If profile fetch failed, token is invalid - clear everything and redirect to login
     if (isError) {
-      console.error("Failed to fetch profile, clearing token");
+      console.error("🚫 [APP INIT] Failed to fetch profile, token invalid - clearing auth data");
+      TokenUtil.clearToken();
       clearUser();
+      // Update router context
+      router.update({
+        context: {
+          isLoggedIn: false,
+          queryClient,
+        },
+      });
+      router.navigate({ to: ROUTES.LOGIN });
       return;
     }
 
-    // If we got profile data, store it
+    // If we got profile data, store it and handle navigation
     if (profileData?.data) {
       const userData = profileData.data;
       setUser(userData);
 
-      // Navigation logic based on onboarding status
-      const currentPath = window.location.pathname;
-      const isOnAuthPage = currentPath.includes('/login') || currentPath.includes('/registration') || currentPath.includes('/business-registration');
+      // Only handle navigation if we're on auth pages or business registration
+      if (!isOnAuthPage && !isOnBusinessRegistration) {
+        return;
+      }
       
-      // Only redirect if user is on auth pages
-      if (!isOnAuthPage) {
+      // If user just registered, let them proceed to business registration without interference
+      const justRegistered = sessionStorage.getItem('justRegistered');
+      if (justRegistered) {
+        sessionStorage.removeItem('justRegistered'); // Clear the flag
+        return;
+      }
+      
+      // If user is on business registration, let them stay there (don't auto-redirect)
+      if (isOnBusinessRegistration) {
         return;
       }
 
@@ -75,43 +116,50 @@ const AuthInitializer = () => {
         return;
       }
 
-      // Find first incomplete step and redirect
+      // Check business registration steps (steps 2, 3, 4) for incomplete ones
       if (userData.onboarding?.steps) {
-        const firstIncompleteStep = userData.onboarding.steps.find((step: any) => !step.completed);
+        const businessSteps = userData.onboarding.steps.filter((step: any) => 
+          step.step >= 2 && step.step <= 4
+        );
         
-        if (firstIncompleteStep) {
-          const stepNumber = firstIncompleteStep.step;
+        // Find first incomplete business step
+        const firstIncompleteBusinessStep = businessSteps.find((step: any) => !step.completed);
+        
+        if (firstIncompleteBusinessStep) {
+          const stepNumber = firstIncompleteBusinessStep.step;
           
-          // Map step numbers to routes
+          // Map API step numbers to business registration form steps
           switch (stepNumber) {
-            case 1:
-              router.navigate({ to: ROUTES.REGISTRATION });
-              break;
-            case 2:
+            case 2: // Business Details
               router.navigate({ to: "/business-registration", search: { step: 1 } });
               break;
-            case 3:
+            case 3: // Brand Details
               router.navigate({ to: "/business-registration", search: { step: 2 } });
               break;
-            case 4:
+            case 4: // Bank Details
               router.navigate({ to: "/business-registration", search: { step: 3 } });
-              break;
-            case 5:
-              router.navigate({ to: "/business-registration", search: { step: 4 } });
               break;
             default:
               router.navigate({ to: ROUTES.DASHBOARD });
           }
-        } else {
-          // No incomplete steps found, go to dashboard
-          router.navigate({ to: ROUTES.DASHBOARD });
+          return;
+        }
+        
+        // If all business steps are complete but step 5 (verification) is not
+        const verificationStep = userData.onboarding.steps.find((step: any) => step.step === 5);
+        if (verificationStep && !verificationStep.completed) {
+          router.navigate({ to: "/business-registration", search: { step: 4 } }); // Declaration step
+          return;
         }
       }
-    }
-  }, [hasToken, profileData, isLoading, isError, setUser, clearUser, user]);
 
-  // Show loading state while initializing
-  if (hasToken && isLoading) {
+      // Default fallback - go to dashboard
+      router.navigate({ to: ROUTES.DASHBOARD });
+    }
+  }, [hasToken, profileData, isLoading, isError, setUser, clearUser, user, shouldFetchProfile, isOnAuthPage, isOnBusinessRegistration, currentPath]);
+
+  // Show loading state while initializing (only for auth pages)
+  if (hasToken && isLoading && shouldFetchProfile) {
     return <AppShimmer />;
   }
 

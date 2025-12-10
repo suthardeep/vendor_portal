@@ -1,3 +1,4 @@
+import Dashboard from "@/AnaylyticsDashboard";
 import { IssueDetailsRow } from "@/components/base/IssueDetailRow";
 import { Table } from "@/components/table/Table";
 import { ColumnDef } from "@/components/table/table.types";
@@ -238,64 +239,12 @@ function RouteComponent() {
 
   return (
     <div>
-      <Table
-        data={productList}
-        columns={columns}
-        selectable={true}
-        title="Promoted Products"
-        
-        filters={[
-          {
-            key: "status",
-            label: "Status",
-            options: [
-              { label: "Not Started", value: "Not Started" },
-              { label: "Completed", value: "Completed" },
-              { label: "Live", value: "Live" },
-            ],
-          },
-          {
-            key: "category",
-            label: "Category",
-            options: [
-              { label: "Electronics", value: "Electronics" },
-              { label: "Home Decor", value: "Home Decor" },
-              { label: "Accessories", value: "Accessories" },
-            ],
-          },
+     
+
+
 
         
-        ]}
-        actions={[
-          { label: "Add Product", icon: "Plus", onClick: () => {}, variant: "primary" },
-        ]}
-        rowActions={[
-          { label: "View", icon: "Eye", onClick: () => {} },
-          { label: "Duplicate", icon: "Copy", onClick: () => {} },
-          { label: "Archive", icon: "Archive", onClick: () => {} },
-        ]}
-        pagination={{ pageSize: 8 }}
-
-        expandedRowConfig={{
-  shouldExpand: (row) => !!(row.issueDetails || row.specialNotes),
-  render: (row) => (
-  <IssueDetailsRow 
-        issueDetails={row.issueDetails!}
-        attachmentUrl={row.attachmentUrl}
-      />
-  )
-}}
-
-
-// breadcrumb={{
-//     heading: "Categories",  
-//     items: ['Clothing', 'Electronics', 'Home Appliances'],
-//     showSeparator: false,
-//     onItemClick: (item, index) => console.log(item)
-//   }}
-
-        
-      />
+    <Dashboard></Dashboard>
     </div>
   );
 }
