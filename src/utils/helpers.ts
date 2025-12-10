@@ -97,6 +97,92 @@ export const getFileExtension = (file: File) => {
   return extension;
 };
 
+// return image | video | pdf | document | other
+export const getFileType = (text: string)=>{
+  if (!text || typeof text !== "string") return "other";
+
+  // If input looks like a mime type (e.g. "image/png"), use that
+  // if (text.includes("/")) {
+  //   const [type] = text.split("/");
+  //   if (type === "image") return "image";
+  //   if (type === "video") return "video";
+  //   if (type === "application" || type === "text") return "document";
+  //   return "other";
+  // }
+
+  const ext = text.split(".").pop()?.toLowerCase() || "";
+
+  if(ext === 'pdf'){
+    return "pdf"
+  }
+
+  const imageExts = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "heic", "tiff"]);
+  const videoExts = new Set(["mp4", "mov", "avi", "mkv", "webm", "flv", "wmv", "3gp", "mpeg"]);
+  const docExts = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "odt", "csv"]);
+
+  if (imageExts.has(ext)) return "image";
+  if (videoExts.has(ext)) return "video";
+  if (docExts.has(ext)) return "document";
+  return "other";
+}
+
+// return mimetype (image/png , application/pdf etc)
+export const getMimeType = (text: string) => {
+  if (!text || typeof text !== "string") {
+    return "application/octet-stream";
+  }
+
+  // If already a mime type like "image/png"
+  if (text.includes("/") && !text.includes(".")) {
+    return text.toLowerCase();
+  }
+
+  // Extract extension from filename / URL
+  const ext = text.split("?")[0].split("#")[0].split(".").pop()?.toLowerCase();
+
+  if (!ext) return "application/octet-stream";
+
+  const mimeMap: Record<string, string> = {
+    // Images
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    webp: "image/webp",
+    bmp: "image/bmp",
+    svg: "image/svg+xml",
+    heic: "image/heic",
+    tiff: "image/tiff",
+
+    // Videos
+    mp4: "video/mp4",
+    mov: "video/quicktime",
+    avi: "video/x-msvideo",
+    mkv: "video/x-matroska",
+    webm: "video/webm",
+    flv: "video/x-flv",
+    wmv: "video/x-ms-wmv",
+    mpeg: "video/mpeg",
+    "3gp": "video/3gpp",
+
+    // Documents
+    pdf: "application/pdf",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    txt: "text/plain",
+    rtf: "application/rtf",
+    odt: "application/vnd.oasis.opendocument.text",
+    csv: "text/csv",
+    json: "application/json",
+  };
+
+  return mimeMap[ext] || "application/octet-stream"; // default fallback
+};
+
 export function sendBack(router: AppRouter, fallBackRoute?: string) {
   router.history.canGoBack()
     ? router.history.back()

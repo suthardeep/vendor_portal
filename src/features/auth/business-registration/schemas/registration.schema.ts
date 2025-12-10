@@ -2,8 +2,8 @@ import { fileSchema } from "@/schema/fileSchema";
 import z from "zod";
 
 // Schema for file IDs and URLs (both required for backend payload)
-export const FileIdSchema = z.string().trim().min(1, "A document ID is required for this field");
-export const FileUrlSchema = z.string().url("A valid document URL is required");
+export const FileIdSchema = z.string().trim().min(1, "A valid document is required for this field");
+export const FileUrlSchema = z.string().url("A valid document is required");
 
 export const BusinessDetailsSchema = z.object({
   hasGST: z.boolean(),
@@ -87,6 +87,7 @@ selectedCategories: z
   .array(z.string())
   .min(1, "At least one category is required"),
   brandDocumentIds: z.array(z.string()).max(5, "Max 5 documents"),
+  brandDocuments: z.array(z.string()).max(5, "Max 5 documents"),
   website: z.string().optional(),
   socialMedia: z.string().optional(),
 });

@@ -4,8 +4,8 @@ export const apiPaths = {
     verifyTokens: "auth/verify-tokens",
     logout: "auth/logout",
 
-    sendOtp:"auth/send-otp" ,
-    verifyOtp:"auth/verify-otp"
+    sendOtp: "auth/send-otp",
+    verifyOtp: "auth/verify-otp",
   },
 
   registration:{
@@ -22,18 +22,21 @@ onboarding:{
   submitVerification:"vendor/submit-verification"
 } ,
   dashboard: "dashboard",
-  careers: "career",
-  events: "events",
-  highlight: "highlight",
-  upload: "upload" ,
-
-  profile:{
+  media:{
+    upload: "media/upload",
+    bulkUpload: "media/bulk-upload",
+    vendorList: "media/vendor/list",
+    vendorFolders: "media/vendor/groups",
+    list: "media/list",
+    folders: "media/groups",
+    deleteMany: "media/delete",
+    changeFolder: "media/change-folder",
+    fetchByid: "media",
+    delete: "media"
+  },
+    profile:{
     updateProfile:"vendor/profile" ,
     getProfile:"vendor/profile" 
   }
 
-
-
-
 } as const;
-

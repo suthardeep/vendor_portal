@@ -12,5 +12,8 @@ export const useGetProfile = (enabled: boolean = true) => {
     enabled,
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount:false,
+    refetchOnReconnect:false,
+    refetchOnWindowFocus:false,
   });
 };

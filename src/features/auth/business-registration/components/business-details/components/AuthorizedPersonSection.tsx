@@ -1,18 +1,12 @@
 import { Input } from "@/components/base/Input";
 import { BusinessDetailsType } from "../../../schemas/registration.schema";
 import { MobileNumberInput } from "@/components/base/MobileNumberInput";
-import {Checkbox}  from "@/components/base/Checkbox";
+import { Checkbox } from "@/components/base/Checkbox";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useState } from "react";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
-import { MediaItem } from "@/components/media-picker/MediaGallery";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
-
-// Helper function to create a minimal MediaItem for the picker's value prop
-const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
-  if (!id) return [];
-  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
-};
+import { MediaItem } from "@/components/media-picker/types/media.types";
 
 const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
   // Fetch user object from the global store
@@ -28,7 +22,7 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         authorisedPersonName: user?.fullName ?? "", // Mapping user.fullName to name
         authorisedPersonEmail: user?.email ?? "",
         // Mapping user.phone to authorisedPersonPhoneNumber. Stripping '+91' if present.
-        authorisedPersonPhoneNumber: user?.phone?.replace('+91', '') ?? "", 
+        authorisedPersonPhoneNumber: user?.phone?.replace("+91", "") ?? "",
       });
     } else {
       onChange({
@@ -78,58 +72,48 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         fullWidth
         required
       />
-      
-      {/* Start PAN Card MediaPicker Integration */}
-      <div className="w-full">
-        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
-          <span className="label-text font-semibold text-base-content">Upload PAN Card</span>
-          <span className="text-error">*</span>
-        </label>
-        <MediaPicker
-          value={createMinimalMediaItem(data.authorisedPersonPanCardId ?? "", "Authorised Person PAN")}
-          onChange={(items) => {
-            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
-            onChange({
-              ...data,
-              authorisedPersonPanCardId: selectedItem?.id || "",
-              authorisedPersonPanCard: selectedItem?.url || "",
-            });
-          }}
-          maxFiles={1}
-          containerClassName={errors.authorisedPersonPanCardId ? "h-auto p-0 border-error" : "h-auto p-0"}
-          previewGridClassName="grid-cols-1"
-          itemClassName="aspect-video h-20"
-          maxHeight="max-h-none"
-        />
-        {errors.authorisedPersonPanCardId && <p className="text-xs text-error mt-1">{errors.authorisedPersonPanCardId}</p>}
-      </div>
-      {/* End PAN Card MediaPicker Integration */}
 
-      {/* Start Aadhar Card MediaPicker Integration */}
-      <div className="w-full">
-        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
-          <span className="label-text font-semibold text-base-content">Upload Aadhar Card</span>
-          <span className="text-error">*</span>
-        </label>
-        <MediaPicker
-          value={createMinimalMediaItem(data.authorisedPersonAadharCardId ?? "", "Authorised Person Aadhar")}
-          onChange={(items) => {
-            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
-            onChange({
-              ...data,
-              authorisedPersonAadharCardId: selectedItem?.id || "",
-              authorisedPersonAadharCard: selectedItem?.url || "",
-            });
-          }}
-          maxFiles={1}
-          containerClassName={errors.authorisedPersonAadharCardId ? "h-auto p-0 border-error" : "h-auto p-0"}
-          previewGridClassName="grid-cols-1"
-          itemClassName="aspect-video h-20"
-          maxHeight="max-h-none"
-        />
-        {errors.authorisedPersonAadharCardId && <p className="text-xs text-error mt-1">{errors.authorisedPersonAadharCardId}</p>}
-      </div>
-      {/* End Aadhar Card MediaPicker Integration */}
+      <MediaPicker
+        // value={[{id: data.authorisedPersonPanCardId ?? '', s3Url: data.authorisedPersonPanCard ?? ''}]}
+        label="Upload PAN Card"
+        ids={data.authorisedPersonPanCardId}
+        urls={data.authorisedPersonPanCard}
+        onChange={(items) => {
+          const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+          onChange({
+            ...data,
+            authorisedPersonPanCardId: selectedItem?.id || "",
+            authorisedPersonPanCard: selectedItem?.s3Url || "",
+          });
+        }}
+        maxFiles={1}
+        itemClassName="max-h-[20dvh] w-full"
+        orientation="vertical"
+        required
+        error={errors.authorisedPersonPanCardId}
+        // iconConfig={{size:"xs"}}
+        // gridConfig={}
+      />
+
+      <MediaPicker
+        // value={[{id: data.authorisedPersonAadharCardId ?? '', s3Url: data.authorisedPersonAadharCard ?? ''}]}
+        label="Upload Aadhar Card"
+        ids={data.authorisedPersonAadharCardId}
+        urls={data.authorisedPersonAadharCard}
+        onChange={(items) => {
+          const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+          onChange({
+            ...data,
+            authorisedPersonAadharCardId: selectedItem?.id || "",
+            authorisedPersonAadharCard: selectedItem?.s3Url || "",
+          });
+        }}
+        maxFiles={1}
+        itemClassName="max-h-[20dvh] w-full"
+        orientation="vertical"
+        required
+        error={errors.authorisedPersonAadharCardId}
+      />
     </div>
   );
 };

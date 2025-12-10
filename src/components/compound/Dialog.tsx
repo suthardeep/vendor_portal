@@ -56,11 +56,11 @@ const Dialog: React.FC<DialogProps> = (props) => {
             <div className={cn("flex shrink-0 items-center justify-between", paddingClass)}>
               <div className="flex flex-col">
                 {title && typeof title === "string" ? (
-                  <h5 className="text-body-content font-medium">{title}</h5>
+                  <h5 className="text-black font-medium">{title}</h5>
                 ) : (
                   title
                 )}
-                {subTitle && <p className="text-body-content/10 mt-0.5">{subTitle}</p>}
+                {subTitle && <p className="text-black mt-0.5">{subTitle}</p>}
               </div>
               <span className="hover:bg-error/80 group  rounded-lg p-2">
               <Icon name={"X"} className="group-hover:text-white w-6 h-6" onClick={close} />

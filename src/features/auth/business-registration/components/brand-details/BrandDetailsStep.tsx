@@ -3,49 +3,65 @@ import { BrandDetailsStepProps } from "../../types/registration.types";
 import StepContainer from "../StepContainer";
 import { Input } from "@/components/base/Input";
 import { RadioGroup } from "@/components/base/RadioGroup";
-import {Dropdown} from "@/components/base/Dropdown";
-import {Separator}  from "@/components/base/Separator";
+import { Dropdown } from "@/components/base/Dropdown";
+import { Separator } from "@/components/base/Separator";
 import { SingleBrandType } from "../../schemas/registration.schema";
 import { Button } from "@/components/base/Button";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
-import { MediaItem } from "@/components/media-picker/MediaGallery";
 import { cn } from "@/utils/helpers";
-import { useBrandDetailsRegistration } from "../../api/queryHooks";
+// import { useBrandDetailsRegistration } from "../../api/queryHooks";
 
 export const initialBrandState: SingleBrandType = {
   brandName: "",
   natureOfBusiness: "Brand Owner",
-  selectedCategories: [], 
-  brandDocumentIds: [], 
-  website: "", 
+  selectedCategories: [],
+  brandDocumentIds: [],
+  brandDocuments: [],
+  website: "",
   socialMedia: "",
 };
 
-const convertIdsToMediaItems = (ids: (string | null | undefined)[]): MediaItem[] => {
-  return ids
-    .filter((id): id is string => !!id)
-    .map(id => ({
-      id,
-      name: `Document ${id.substring(0, 4)}`,
-      type: 'file',
-      createdAt: new Date().toISOString()
-    }));
-};
+// to update one value at a time
+type BrandChangeSingle = (index: number, field: keyof SingleBrandType, value: any) => void;
+
+// to update multiple values at a time
+type BrandChangeMulti = (index: number, updates: Partial<SingleBrandType>) => void;
+
+// const getMinimalMediaItem = (documentId: string[] = [], documentUrls: string[] = []) => {
+//   const maxLen = Math.max(documentId?.length || 0, documentUrls?.length || 0);
+//   const result: { id: string; s3Url: string }[] = [];
+
+//   for (let i = 0; i < maxLen; i++) {
+//     const id = documentId?.[i] ?? "";
+//     const s3Url = documentUrls?.[i] ?? "";
+//     // include only if at least one of the values exists
+//     if (id || s3Url) result.push({ id, s3Url });
+//   }
+
+//   return result;
+// };
 
 const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, errors }) => {
-  const handleBrandChange = (index: number, field: keyof SingleBrandType, value: any) => {
-    const updatedBrands = [...data];
-    updatedBrands[index] = { ...updatedBrands[index], [field]: value };
-    onChange(updatedBrands);
+  const handleBrandChange: BrandChangeSingle & BrandChangeMulti = (
+    index: number,
+    fieldOrUpdates: any,
+    value?: any
+  ) => {
+    const updatedBrands = data.map(
+      (brand, i) =>
+        i !== index
+          ? brand
+          : typeof fieldOrUpdates === "object"
+            ? { ...brand, ...fieldOrUpdates } // multi-field update
+            : { ...brand, [fieldOrUpdates]: value } // single-field update
+    );
+
+    onChange(updatedBrands); // pass array (matches prop type)
   };
 
   const handleAddBrand = () => {
     onChange([...data, { ...initialBrandState }]);
   };
-
-
-
-
 
   const handleRemoveBrand = (index: number) => {
     if (data.length === 1) return;
@@ -59,10 +75,10 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
     { label: "Home & Kitchen", value: "Home & Kitchen" },
     { label: "Beauty", value: "Beauty" },
   ];
-  
+
   const getSingleCategoryValue = (brand: SingleBrandType): string => {
     return brand.selectedCategories?.[0] || "";
-  }
+  };
 
   return (
     <StepContainer>
@@ -125,38 +141,41 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
                 placeholder="Select Category"
                 options={categoryOptions}
                 // Use helper to get the single selected value for UI
-                value={getSingleCategoryValue(brand)} 
+                value={getSingleCategoryValue(brand)}
                 onChange={(val) => {
                   // CONVERSION LOGIC: Store the single string value as a single-element array
                   handleBrandChange(index, "selectedCategories", val ? [val] : []);
                 }}
                 // Note: Error key points to selectedCategories now
-                error={brandErrors.selectedCategories?.message || brandErrors.selectedCategories} 
+                error={brandErrors.selectedCategories?.message || brandErrors.selectedCategories}
                 searchable
                 required
               />
 
-              {/* Start Documents MediaPicker Integration */}
-              <div className="w-full">
-                <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
-                  <span className="label-text font-semibold text-base-content">Upload Documents</span>
-                  <span className="text-error">*</span>
-                </label>
-                <p className="text-xs text-body-content/60 mb-2">Upload brand authorization letter or trademark certificate</p>
-                <MediaPicker
-                  // Convert array of IDs to array of minimal MediaItems
-                  value={convertIdsToMediaItems(brand.brandDocumentIds)}
-                  // Convert array of MediaItems back to array of IDs
-                  onChange={(items) => handleBrandChange(index, "brandDocumentIds", items.map(item => item.id))}
-                  maxFiles={5}
-                  containerClassName={brandErrors.brandDocumentIds ? "h-auto p-0 border-error" : "h-auto p-0"}
-                  previewGridClassName="grid-cols-4 gap-2"
-                  itemClassName="h-20"
-                  maxHeight="max-h-[120px]"
-                />
-                {brandErrors.brandDocumentIds && <p className="text-xs text-error mt-1">{brandErrors.brandDocumentIds}</p>}
-              </div>
-              {/* End Documents MediaPicker Integration */}
+              <MediaPicker
+                // Convert array of IDs to array of minimal MediaItems
+                // value={getMinimalMediaItem(data[index].brandDocumentIds, data[index].brandDocuments)}
+                label="Upload Brand Documents"
+                ids={data[index].brandDocumentIds}
+                urls={data[index].brandDocuments}
+                // Convert array of MediaItems back to array of IDs
+                onChange={(items) => {
+                  console.log("Items in BrandDetailsStep.tsx : ", items);
+                  const ids = items.map((item) => item.id);
+                  const urls = items.map((item) => item.s3Url);
+                  console.log("Ids : ", ids);
+                  console.log("Urls : ", urls);
+
+                  // to update both data together 
+                  handleBrandChange(index, { brandDocumentIds: ids, brandDocuments: urls });
+                }}
+                maxFiles={5}
+                itemClassName="max-h-[20dvh] w-full"
+                iconConfig={{size:"xs"}}
+                orientation="grid"
+                required
+                error={brandErrors.brandDocumentIds}
+              />
 
               <Input
                 label="Website"

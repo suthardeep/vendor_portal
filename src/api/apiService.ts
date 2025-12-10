@@ -78,7 +78,7 @@ interface ApiServiceProps {
   endpoint: string;
   headers?: Record<string, string>;
   data?: any;
-  params?: Record<string , string|number|boolean>;
+  params?: any;
   config?: AxiosRequestConfig;
 }
 

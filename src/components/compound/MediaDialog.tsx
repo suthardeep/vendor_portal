@@ -102,13 +102,13 @@ export const MediaDialog = () => {
         {files.length > 1 && (
           <>
             <button
-              onClick={prevFile}
+              onClick={(e:any) => {e.stopPropagation(); prevFile();}}
               className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <Icon name="ChevronLeft" className="w-8 h-8" />   
             </button>
             <button
-              onClick={nextFile}
+              onClick={(e:any) => {e.stopPropagation(); nextFile();}}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <Icon name="ChevronRight" className="w-8 h-8" />

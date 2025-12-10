@@ -1,5 +1,5 @@
 // ⚠️ TOGGLE THIS FLAG TO ENABLE/DISABLE MOCK DATA
-export const USE_MOCK_FILE_DATA = true;
+export const USE_MOCK_FILE_DATA = false;
 
 /**
  * Generates a random UUID v4

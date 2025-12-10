@@ -1,13 +1,6 @@
 import { Input } from "@/components/base/Input";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
-import { MediaItem } from "@/components/media-picker/MediaGallery";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
-
-// Helper function to create a minimal MediaItem for the picker's value prop
-const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
-  if (!id) return [];
-  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
-};
 
 const GSTDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
   return (
@@ -22,32 +15,26 @@ const GSTDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange,
         fullWidth
         required
       />
-      
-      {/* Start MediaPicker Integration */}
-      <div className="w-full">
-        <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
-          <span className="label-text font-semibold text-base-content">Upload GST Certificate</span>
-          <span className="text-error">*</span>
-        </label>
-        <MediaPicker
-          value={createMinimalMediaItem(data.gstCertificateId ?? "", "GST Certificate")}
-          onChange={(items) => {
-            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
-            onChange({
-              ...data,
-              gstCertificateId: selectedItem?.id || "",
-              gstCertificate: selectedItem?.url || "",
-            });
-          }}
-          maxFiles={1}
-          containerClassName={errors.gstCertificateId ? "h-auto p-0 border-error" : "h-auto p-0"}
-          previewGridClassName="grid-cols-1"
-          itemClassName="aspect-video h-20"
-          maxHeight="max-h-none"
-        />
-        {errors.gstCertificateId && <p className="text-xs text-error mt-1">{errors.gstCertificateId}</p>}
-      </div>
-      {/* End MediaPicker Integration */}
+
+      <MediaPicker
+        // value={[{id: data.gstCertificateId ?? '', s3Url: data.gstCertificate ?? ''}]}
+        label="Upload GST Certificate"
+        required
+        ids={data.gstCertificateId}
+        urls={data.gstCertificate}
+        onChange={(items) => {
+          const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+          onChange({
+            ...data,
+            gstCertificateId: selectedItem?.id || "",
+            gstCertificate: selectedItem?.s3Url || "",
+          });
+        }}
+        maxFiles={1}
+        itemClassName="max-h-[25dvh] w-full"
+        orientation="vertical"
+        error={errors.gstCertificateId}
+      />
     </div>
   );
 };

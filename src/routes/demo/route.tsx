@@ -1,4 +1,4 @@
-import DemoProductPage from '@/components/media-picker/Demo'
+import DemoProductPage from '@/components/media-picker/components/Demo'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/demo')({

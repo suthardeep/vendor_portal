@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import { BankDetailsStepProps } from "../../types/registration.types";
 import StepContainer from "../StepContainer";
 import { Input } from "@/components/base/Input";
-import {Icon} from "@/components/base/Icon";
+import { Icon } from "@/components/base/Icon";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
-import { MediaItem } from "@/components/media-picker/MediaGallery";
-
-// Helper function to create a minimal MediaItem for the picker's value prop
-const createMinimalMediaItem = (id: string, name: string): MediaItem[] => {
-  if (!id) return [];
-  return [{ id, name, type: 'file', createdAt: new Date().toISOString() }];
-};
 
 const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, errors }) => {
-  const [isDocumentVerified, setIsDocumentVerified] = useState(false);
+  // const [isDocumentVerified, setIsDocumentVerified] = useState(false);
   return (
     <StepContainer>
       <div className="space-y-4">
@@ -50,39 +43,30 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
           fullWidth
         />
 
-        {/* Start Cancellation Proof MediaPicker Integration */}
-        <div className="w-full">
-          <label className="label pt-0 pb-1.5 flex items-center justify-start gap-1">
-            <span className="label-text font-semibold text-base-content">Upload cancelled cheque/bank proof</span>
-            <span className="text-error">*</span>
-          </label>
-          <p className="text-xs text-body-content/60 mb-2">Upload a clear image of cancelled cheque or passbook front page</p>
-          <MediaPicker
-            value={createMinimalMediaItem(data.bankProofDocumentId, "Cancelled Cheque/Proof")}
-            onChange={(items) => {
-              const selectedItem = items.length > 0 ? items[items.length - 1] : null;
-              onChange({
-                ...data,
-                bankProofDocumentId: selectedItem?.id || "",
-                bankProofDocument: selectedItem?.url || "",
-              });
-            }}
-            maxFiles={1}
-            containerClassName={errors.bankProofDocumentId ? "h-auto p-0 border-error" : "h-auto p-0"}
-            previewGridClassName="grid-cols-1"
-            itemClassName="aspect-video h-20"
-            maxHeight="max-h-none"
-          />
-          {errors.bankProofDocumentId && <p className="text-xs text-error mt-1">{errors.bankProofDocumentId}</p>}
-        </div>
-        {/* End Cancellation Proof MediaPicker Integration */}
+        <MediaPicker
+          // value={[{id:data.bankProofDocumentId ?? "", s3Url: data.bankProofDocument ?? "" }]}
+          label="Upload cancelled cheque/bank proof"
+          ids={data.bankProofDocumentId}
+          urls={data.bankProofDocument}
+          onChange={(items) => {
+            const selectedItem = items.length > 0 ? items[items.length - 1] : null;
+            onChange({
+              ...data,
+              bankProofDocumentId: selectedItem?.id || "",
+              bankProofDocument: selectedItem?.s3Url || "",
+            });
+          }}
+          maxFiles={1}
+          required
+          error={errors.bankProofDocumentId}
+        />
 
-        {!isDocumentVerified && (
+        {/* A visual indicator that bank is verified (Static for demo) */}
+        {/* {!isDocumentVerified && (
           <div className="flex justify-end">
-            {/* A visual indicator that bank is verified (Static for demo) */}
             
           </div>
-        )}
+        )} */}
       </div>
     </StepContainer>
   );
