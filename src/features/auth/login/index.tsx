@@ -94,17 +94,14 @@ const Login: React.FC = () => {
   };
 
   const handleResendOtp = () => {
-    // 1. Validate Mobile
     const result = LoginSchema.safeParse({ phone }); 
     if (!result.success) {
       toast.error("Invalid phone number.");
       return;
     }
     
-    // 2. API Call (Resend OTP)
     resendOtpMutation.mutate(
-        { phone: phone }, 
-        {
+       { phone: `+91${phone}` },        {
             onSuccess: (data) => {
                 toast.success(data.message || "OTP resent successfully");
             },

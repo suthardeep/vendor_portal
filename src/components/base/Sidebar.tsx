@@ -96,18 +96,14 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       onNavigate?.(path);
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "sidebar flex flex-col h-full rounded-lg overflow-hidden bg-base-1 relative",
-          "shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.06),0px_4px_6px_-1px_rgba(0,0,0,0.1)]",
-          containerClassName
-        )}
-        {...props}
-      >
-        {/* Header - Above overlay */}
-        <div className={cn(showOverlay && "relative z-[1001")}>
+   return (
+      <div className={cn(
+        "sidebar flex flex-col h-full rounded-lg overflow-hidden bg-base-1 relative",
+        "shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.06),0px_4px_6px_-1px_rgba(0,0,0,0.1)]",
+        containerClassName
+      )}>
+        {/* Header - NOT blurred */}
+        <div className={cn(showOverlay && "relative z-[1001]")}>
           <SidebarHeader 
             logo={logo}
             logoAlt={logoAlt}
@@ -116,15 +112,21 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           />
         </div>
 
-        <SidebarMenu
-          menuItems={menuItems}
-          expandedItems={expandedItems}
-          internalActivePath={internalActivePath}
-          onToggleExpand={toggleExpand}
-          onNavigate={handleNavigation}
-        />
+        {/* Menu - BLURRED */}
+        <div className={cn(
+          "flex-1",
+          showOverlay && "blur-sm"
+        )}>
+          <SidebarMenu
+            menuItems={menuItems}
+            expandedItems={expandedItems}
+            internalActivePath={internalActivePath}
+            onToggleExpand={toggleExpand}
+            onNavigate={handleNavigation}
+          />
+        </div>
 
-        {/* Profile - Above overlay */}
+        {/* Profile - NOT blurred */}
         <div className={cn(showOverlay && "relative z-[1001]")}>
           <SidebarProfile
             userName={userName}
@@ -136,6 +138,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         </div>
       </div>
     );
+ 
   }
 );
 

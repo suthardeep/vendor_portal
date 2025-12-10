@@ -26,6 +26,8 @@ import {Icon} from "@/components/base/Icon";
 import { showValidationErrors } from "@/utils/helpers";
 import DeclarationStep from "./components/declaration/DeclarationStep";
 import { toast } from "@/components/toast/Sonner";
+import { useAuthStore } from "@/store/useAuthStore";
+import { prefillFormFromProfile } from "./utils/prefillFormData";
 
 
 const BASE_STEPS: SidebarStep[] = [
@@ -47,6 +49,9 @@ const BusinessRegistrationForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [errors, setErrors] = useState<Record<string, any>>({});
+  
+  // Get user data from auth store for prefilling
+  const { user } = useAuthStore();
   
   // 1. INITIALIZE ALL MUTATION HOOKS
   const businessMutation = useBusinessRegistrationMutation();
@@ -79,42 +84,73 @@ const BusinessRegistrationForm: React.FC = () => {
     setCurrentStep(step);
   }, [step]);
 
-  const [formData, setFormData] = useState<FormData>({
-    businessDetails: {
-      hasGST: true,
-      gstNumber: "",
-      gstCertificateId: "",
-      gstCertificate: "",
-      businessName: "",
-      addressLine1: "",
-      addressLine2: "",
-      pinCode: "",
-      city: "",
-      state: "",
-      panCardId: "",
-      panCard: "",
-      registrationCertificateId: "",
-      registrationCertificate: "",
-      authorisedPersonName: "",
-      authorisedPersonEmail: "",
-      authorisedPersonPhoneNumber: "",
-      authorisedPersonPanCardId: "",
-      authorisedPersonPanCard: "",
-      authorisedPersonAadharCardId: "",
-      authorisedPersonAadharCard: "",
-      selfDeclared: false,
-    },
-    brandDetails: [initialBrandState],
-    bankDetails: {
-      accountNumber: "",
-      ifscCode: "",
-      accountHolderName: "",
-      bankProofDocumentId: "",
-      bankProofDocument: "",
-    },
-    declaration: {
-      agreed: false,
-    },
+  // Update completed steps based on profile onboarding data
+  useEffect(() => {
+    if (user?.onboarding?.steps) {
+      const completedStepNumbers = user.onboarding.steps
+        .filter(step => step.completed)
+        .map(step => {
+          // Map API step numbers to form step numbers
+          switch (step.step) {
+            case 2: return 1; // Business Details -> Step 1
+            case 3: return 2; // Brand Details -> Step 2  
+            case 4: return 3; // Bank Details -> Step 3
+            case 5: return 4; // Declaration -> Step 4
+            default: return null;
+          }
+        })
+        .filter(stepNum => stepNum !== null) as number[];
+      
+      setCompletedSteps(completedStepNumbers);
+      console.log('✅ [PREFILL] Set completed steps:', completedStepNumbers);
+    }
+  }, [user?.onboarding?.steps]);
+
+  // Initialize form data - prefill from profile if available
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (user && user.businessDetails) {
+      console.log('🔄 [PREFILL] Prefilling form data from profile');
+      return prefillFormFromProfile(user);
+    }
+    
+    // Default empty form
+    return {
+      businessDetails: {
+        hasGST: true,
+        gstNumber: "",
+        gstCertificateId: "",
+        gstCertificate: "",
+        businessName: "",
+        addressLine1: "",
+        addressLine2: "",
+        pinCode: "",
+        city: "",
+        state: "",
+        panCardId: "",
+        panCard: "",
+        registrationCertificateId: "",
+        registrationCertificate: "",
+        authorisedPersonName: "",
+        authorisedPersonEmail: "",
+        authorisedPersonPhoneNumber: "",
+        authorisedPersonPanCardId: "",
+        authorisedPersonPanCard: "",
+        authorisedPersonAadharCardId: "",
+        authorisedPersonAadharCard: "",
+        selfDeclared: false,
+      },
+      brandDetails: [initialBrandState],
+      bankDetails: {
+        accountNumber: "",
+        ifscCode: "",
+        accountHolderName: "",
+        bankProofDocumentId: "",
+        bankProofDocument: "",
+      },
+      declaration: {
+        agreed: false,
+      },
+    };
   });
 
   useEffect(() => {

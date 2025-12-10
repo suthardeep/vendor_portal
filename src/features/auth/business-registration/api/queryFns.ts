@@ -6,9 +6,6 @@ import { addMockFileData } from "../utils/mockFileData";
 export const businessRegistration = (data: BusinessDetailsType) => {
     const processedData = addMockFileData(data);
     
-    console.log('📋 [DEBUG] Original data:', data);
-    console.log('📋 [DEBUG] Processed data after mock:', processedData);
-    
     const payload: any = {
         businessDetails: {
             name: processedData.businessName,
@@ -35,15 +32,13 @@ export const businessRegistration = (data: BusinessDetailsType) => {
     
     if (processedData.hasGST) {
         payload.gstNumber = processedData.gstNumber;
-        payload.gstCertificateUrl = processedData.gstCertificate;
+        payload.gstCertificate = processedData.gstCertificate;
         payload.gstCertificateId = processedData.gstCertificateId;
         payload.selfDeclared = false;
     } else {
         payload.selfDeclared = processedData.selfDeclared;
         console.log('📦 [API] Excluded GST fields from payload (hasGST = false)');
     }
-    
-    console.log('📤 [API] Final payload being sent:', payload);
     
     return apiService({
         method: "POST",

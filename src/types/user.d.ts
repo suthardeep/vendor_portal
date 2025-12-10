@@ -27,6 +27,37 @@ export interface Onboarding {
   canProceedToVerification: boolean;
 }
 
+export interface BusinessDetails {
+  name: string;
+  addressLine1: string;
+  addressLine2?: string;
+  pinCode: string;
+  city: string;
+  state: string;
+  panCard: string;
+  panCardId: string;
+  registrationCertificate: string;
+  registrationCertificateId: string;
+}
+
+export interface AuthorisedPersonDetails {
+  name: string;
+  mobileNumber: string;
+  email: string;
+  panCard: string;
+  panCardId: string;
+  aadharCard: string;
+  aadharCardId: string;
+}
+
+export interface BankDetails {
+  accountNumber: string;
+  ifscCode: string;
+  accountHolderName: string;
+  bankProofDocumentId?: string;
+  bankProofDocument?: string;
+}
+
 export interface User {
   id?: string;
   aavakUserId: string;
@@ -34,10 +65,16 @@ export interface User {
   email: string | null;
   fullName: string | null;
   businessName?: string | null;
-  taxId?: string | null;
+  businessDetails?: BusinessDetails;
+  authorisedPersonDetails?: AuthorisedPersonDetails;
   gstNumber?: string | null;
+  gstCertificate?: string | null;
+  gstCertificateId?: string | null;
+  selfDeclared?: boolean;
+  taxId?: string | null;
   panNumber?: string | null;
   brands?: Brand[];
+  bankDetails?: BankDetails;
   businessAddress?: string | null;
   verificationStatus?: string;
   platforms: string[];
