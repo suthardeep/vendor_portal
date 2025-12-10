@@ -57,6 +57,8 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
             });
           }}
           maxFiles={1}
+          itemClassName="max-h-[20dvh] w-full"
+          orientation="vertical"
           required
           error={errors.bankProofDocumentId}
         />
