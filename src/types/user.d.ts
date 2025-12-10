@@ -56,6 +56,9 @@ export interface BankDetails {
   accountHolderName: string;
   bankProofDocumentId?: string;
   bankProofDocument?: string;
+  // API response uses different field names
+  bankProofId?: string;
+  bankProof?: string;
 }
 
 export interface User {

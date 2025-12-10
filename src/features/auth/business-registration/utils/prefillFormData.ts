@@ -60,8 +60,8 @@ export const prefillFormFromProfile = (profileData: User): FormData => {
       accountNumber: bankDetails?.accountNumber || "",
       ifscCode: bankDetails?.ifscCode || "",
       accountHolderName: bankDetails?.accountHolderName || "",
-      bankProofDocumentId: bankDetails?.bankProofDocumentId || "",
-      bankProofDocument: bankDetails?.bankProofDocument || "",
+      bankProofDocumentId: (bankDetails as any)?.bankProofId || "",
+      bankProofDocument: (bankDetails as any)?.bankProof || "",
     },
     
     declaration: {
