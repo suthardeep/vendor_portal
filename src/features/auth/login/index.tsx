@@ -19,6 +19,7 @@ import {TokenUtil} from '@/utils/tokenUtil'
 
 import { useSendOtpMutation, useVerifyOtpMutation } from "./api/queryHooks";
 import { useAuthStore } from "@/store/useAuthStore"; // NEW: Import Auth Store
+import { getProfile } from "@/api/profile/queryFns"; // Import profile API
 
 
 const Login: React.FC = () => {
@@ -113,7 +114,7 @@ const Login: React.FC = () => {
     );
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // 1. Validate OTP presence
     const otpResult = z.object({ otp: z.string().length(6, "OTP must be 6 digits") }).safeParse({ otp });
     
@@ -128,28 +129,123 @@ const Login: React.FC = () => {
     verifyOtpMutation.mutate(
       { phone: phone, otp: otp }, 
       {
-        onSuccess: (res) => {
-            
-            const userData = res.data.user;
-            
-            // 3. Store Access Token
+        onSuccess: async (res) => {
+            try {
+              // 3. Store Access Token FIRST
+              console.log("✅ [LOGIN] Login successful, access token:", res.data.access_token);
+              TokenUtil.setToken(res.data.access_token); 
+              
+              // Set flag to prevent AppInitializer from interfering with navigation
+              sessionStorage.setItem('justLoggedIn', 'true');
+              
+              toast.success("Login Successful!");
+              
+              // 4. Immediately call profile API to get complete user data with onboarding info
+              console.log("🔍 [LOGIN] Fetching complete profile data...");
+              const profileResponse = await getProfile();
+              
+              if (profileResponse?.data) {
+                const completeUserData = profileResponse.data;
+                console.log("👤 [LOGIN] Complete user data received:", completeUserData);
+                
+                // 5. Store complete user data in store
+                setUser(completeUserData);
+                
+                // 6. Navigate based on complete profile data
+                console.log("🧭 [LOGIN] Navigating based on profile data...");
+                console.log("📊 [LOGIN] User profile details:", {
+                  emailVerified: completeUserData.emailVerified,
+                  fullName: completeUserData.fullName,
+                  email: completeUserData.email,
+                  onboardingCompleted: completeUserData.onboarding?.isCompleted,
+                  currentStep: completeUserData.onboarding?.currentStep
+                });
+                
+               
+                // Check if user has completed basic profile setup
+                const hasFullName = completeUserData.fullName && completeUserData.fullName !== null;
+                const hasEmail = completeUserData.email && completeUserData.email !== null;
+                const isEmailVerified = completeUserData.emailVerified === true;
+                const hasBasicProfile = hasFullName && hasEmail && isEmailVerified;
 
+                console.log("🔍 [LOGIN] Profile validation:", {
+                  hasFullName,
+                  hasEmail,
+                  isEmailVerified,
+                  hasBasicProfile,
+                  fullName: completeUserData.fullName,
+                  email: completeUserData.email,
+                  emailVerified: completeUserData.emailVerified
+                });
 
+                
+                if (!hasBasicProfile) {
+                  console.log("📧 [LOGIN] Profile incomplete, redirecting to registration");
+                  navigate({ to: ROUTES.REGISTRATION }); 
+                  return;
+                }
+                
+                // Check onboarding completion
+                if (completeUserData.onboarding?.isCompleted || completeUserData.verificationStatus) {
+                  console.log("✅ [LOGIN] Onboarding completed, going to dashboard");
+                  navigate({ to: ROUTES.DASHBOARD });
+                  return;
+                }
 
-            console.log("accessToken" , res.data.access_token)
-            TokenUtil.setToken(res.data.access_token); 
-            
-            // 4. Store user details in Zustand store
-            setUser(userData); // NEW: Storing user data
-            
-            toast.success("Login Successful!");
-            console.log("Logged in user:", userData.phone);
-            
-            // 5. Conditional Navigation
-            if (userData.emailVerified === false) {
-                navigate({ to: ROUTES.REGISTRATION }); 
-            } else {
-                navigate({ to: ROUTES.DASHBOARD });
+              
+                
+                if (completeUserData.onboarding?.steps) {
+                  const businessSteps = completeUserData.onboarding.steps.filter((step: any) => 
+                    step.step >= 2 && step.step <= 4
+                  );
+                  
+                  // Find first incomplete business step
+                  const firstIncompleteBusinessStep = businessSteps.find((step: any) => !step.completed);
+                  
+                  if (firstIncompleteBusinessStep) {
+                    const stepNumber = firstIncompleteBusinessStep.step;
+                    console.log(`🔄 [LOGIN] Incomplete step ${stepNumber}, going to business registration`);
+                    
+                    // Map API step numbers to business registration form steps
+                    switch (stepNumber) {
+                      case 2: // Business Details
+                        navigate({ to: "/business-registration", search: { step: 1 } });
+                        break;
+                      case 3: // Brand Details
+                        navigate({ to: "/business-registration", search: { step: 2 } });
+                        break;
+                      case 4: // Bank Details
+                        navigate({ to: "/business-registration", search: { step: 3 } });
+                        break;
+                      default:
+                        navigate({ to: ROUTES.DASHBOARD });
+                    }
+                    return;
+                  }
+                  
+                  // If all business steps are complete but step 5 (verification) is not
+                  const verificationStep = completeUserData.onboarding.steps.find((step: any) => step.step === 5);
+                  if (verificationStep && !verificationStep.completed) {
+                    console.log("📋 [LOGIN] Need verification, going to declaration step");
+                    navigate({ to: "/business-registration", search: { step: 4 } }); // Declaration step
+                    return;
+                  }
+                }
+                
+                // If we reach here, it means the user has basic profile but no onboarding steps
+                console.log("🆕 [LOGIN] New user with basic profile, going to registration to complete setup");
+                navigate({ to: ROUTES.REGISTRATION });
+                
+              } else {
+                throw new Error("Profile API returned no data");
+              }
+              
+            } catch (profileError) {
+              console.error("🚫 [LOGIN] Failed to fetch profile after login:", profileError);
+              // If profile fetch fails, clear token and show error
+              TokenUtil.clearToken();
+              toast.error("Login successful but failed to load profile. Please try again.");
+              setErrors({ otp: "Failed to load profile data" });
             }
         },
         onError: (error) => {

@@ -32,8 +32,9 @@ const AuthInitializer = () => {
   const isOnAuthPage = currentPath.includes('/login') || currentPath.includes('/registration');
   const isOnBusinessRegistration = currentPath.includes('/business-registration');
   
-  // Only run profile fetch for navigation logic on auth pages or business registration
-  const shouldFetchProfile = hasToken && (isOnAuthPage || isOnBusinessRegistration);
+  // Run profile fetch when we have token and are on auth pages, business registration, or dashboard
+  const isOnDashboard = currentPath.includes('/dashboard');
+  const shouldFetchProfile = hasToken && (isOnAuthPage || isOnBusinessRegistration || isOnDashboard);
   const { data: profileData, isLoading, isError } = useGetProfile(shouldFetchProfile);
 
   // Update router context when token status changes
@@ -49,19 +50,16 @@ const AuthInitializer = () => {
   useEffect(() => {
     // If no token and not on auth pages, let route protection handle redirect
     if (!hasToken) {
-      // Only handle redirect if we're on auth pages
       if (isOnAuthPage && !currentPath.includes('/login')) {
         router.navigate({ to: ROUTES.LOGIN });
       }
       return;
     }
 
-    // If we're not fetching profile (on protected routes), let route protection handle it
     if (!shouldFetchProfile) {
       return;
     }
 
-    // If we have token but profile is loading, wait
     if (isLoading) {
       return;
     }
@@ -87,12 +85,10 @@ const AuthInitializer = () => {
       const userData = profileData.data;
       setUser(userData);
 
-      // Only handle navigation if we're on auth pages or business registration
-      if (!isOnAuthPage && !isOnBusinessRegistration) {
+      if (!isOnAuthPage && !isOnBusinessRegistration && !isOnDashboard) {
         return;
       }
       
-      // If user just registered, let them proceed to business registration without interference
       const justRegistered = sessionStorage.getItem('justRegistered');
       if (justRegistered) {
         sessionStorage.removeItem('justRegistered'); // Clear the flag
@@ -104,14 +100,28 @@ const AuthInitializer = () => {
         return;
       }
 
-      // If email not verified, redirect to registration
-      if (userData.emailVerified === false) {
+      // Check if user just logged in - let login component handle navigation
+      const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+      if (justLoggedIn) {
+        console.log("🔄 [APP INIT] User just logged in, letting login component handle navigation");
+        sessionStorage.removeItem('justLoggedIn'); // Clear the flag
+        return;
+      }
+
+      // Check if user has completed basic profile setup
+      const hasFullName = userData.fullName && userData.fullName !== null;
+      const hasEmail = userData.email && userData.email !== null;
+      const isEmailVerified = userData.emailVerified === true;
+      const hasBasicProfile = hasFullName && hasEmail && isEmailVerified;
+      
+      if (!hasBasicProfile) {
+        console.log("🚫 [APP INIT] Profile incomplete, redirecting to registration");
         router.navigate({ to: ROUTES.REGISTRATION });
         return;
       }
 
       // Check if onboarding is completed
-      if (userData.onboarding?.isCompleted) {
+      if (userData.onboarding?.isCompleted || userData.verificationStatus==='under_review') {
         router.navigate({ to: ROUTES.DASHBOARD });
         return;
       }
@@ -144,6 +154,9 @@ const AuthInitializer = () => {
           }
           return;
         }
+
+
+        
         
         // If all business steps are complete but step 5 (verification) is not
         const verificationStep = userData.onboarding.steps.find((step: any) => step.step === 5);
@@ -158,7 +171,6 @@ const AuthInitializer = () => {
     }
   }, [hasToken, profileData, isLoading, isError, setUser, clearUser, user, shouldFetchProfile, isOnAuthPage, isOnBusinessRegistration, currentPath]);
 
-  // Show loading state while initializing (only for auth pages)
   if (hasToken && isLoading && shouldFetchProfile) {
     return <AppShimmer />;
   }

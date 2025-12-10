@@ -64,7 +64,8 @@ import {
   Triangle,
   Folder,
   ArrowRight,
-  CircleArrowDown
+  CircleArrowDown ,
+  AlertCircle
   
 } from "lucide-react";
 
@@ -139,7 +140,8 @@ const lucideIconRegistry = {
    ChevronUp ,
    Triangle ,
    ArrowRight ,
-   CircleArrowDown
+   CircleArrowDown ,
+   AlertCircle
 }
 
 export type LucideIconName = keyof typeof lucideIconRegistry;

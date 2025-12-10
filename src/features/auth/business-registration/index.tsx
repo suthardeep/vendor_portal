@@ -28,6 +28,8 @@ import DeclarationStep from "./components/declaration/DeclarationStep";
 import { toast } from "@/components/toast/Sonner";
 import { useAuthStore } from "@/store/useAuthStore";
 import { prefillFormFromProfile } from "./utils/prefillFormData";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { ROUTES } from "@/constants/routes";
 
 
 const BASE_STEPS: SidebarStep[] = [
@@ -51,7 +53,10 @@ const BusinessRegistrationForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, any>>({});
   
   // Get user data from auth store for prefilling
-  const { user } = useAuthStore();
+  const { user , setUser } = useAuthStore();
+
+
+
   
   // 1. INITIALIZE ALL MUTATION HOOKS
   const businessMutation = useBusinessRegistrationMutation();
@@ -79,6 +84,8 @@ const BusinessRegistrationForm: React.FC = () => {
 
   const { step, tab } = Route.useSearch();
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     setCurrentStep(step);
@@ -249,8 +256,25 @@ const BusinessRegistrationForm: React.FC = () => {
       }else if(step == 3){
         await bankMutation.mutateAsync(formData.bankDetails as BankDetailsType)
       }else if(step==4){
-        // API call for final verification/submission
-        await verificationMutation.mutateAsync()
+          await verificationMutation.mutateAsync()
+            .then(() => {
+                setUser({
+              ...user!,
+              verificationStatus:'under_review'
+              
+            });
+
+             queryClient.invalidateQueries({ queryKey: ['profile'] });
+
+             navigate({
+              to:ROUTES.DASHBOARD
+             })
+               
+            })
+            .catch((error) => {
+              console.error("Verification mutation failed:", error);
+            });
+
       }
 
       return true;

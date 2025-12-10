@@ -192,7 +192,7 @@ const Registration: React.FC = () => {
             });
             
             toast.success( "Registration Successful");
-            await queryClient.invalidateQueries({ queryKey: ['profile'] }); // or whatever your profile query key is
+            await queryClient.invalidateQueries({ queryKey: ['profile'] });
 
         },
         onError: (error) => {

@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import { BankDetailsType, BrandDetailsType, BusinessDetailsType } from "../schemas/registration.schema";
 
 
+
+
 export const useBusinessRegistrationMutation = () =>{
     return useMutation({
         mutationFn:(data:BusinessDetailsType) => businessRegistration(data)
