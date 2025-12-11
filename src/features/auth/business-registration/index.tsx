@@ -116,11 +116,9 @@ const BusinessRegistrationForm: React.FC = () => {
   // Initialize form data - prefill from profile if available
   const [formData, setFormData] = useState<FormData>(() => {
     if (user && user.businessDetails) {
-      console.log('🔄 [PREFILL] Prefilling form data from profile');
       return prefillFormFromProfile(user);
     }
     
-    // Default empty form
     return {
       businessDetails: {
         hasGST: true,

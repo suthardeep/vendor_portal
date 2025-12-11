@@ -27,15 +27,147 @@ const AuthInitializer = () => {
   const { user, setUser, clearUser } = useAuthStore();
   const hasToken = TokenUtil.hasToken();
   
-  // Only fetch profile if we have a token and are on auth pages (login/registration)
   const currentPath = window.location.pathname;
-  const isOnAuthPage = currentPath.includes('/login') || currentPath.includes('/registration');
-  const isOnBusinessRegistration = currentPath.includes('/business-registration');
   
-  // Run profile fetch when we have token and are on auth pages, business registration, or dashboard
-  const isOnDashboard = currentPath.includes('/dashboard');
-  const shouldFetchProfile = hasToken && (isOnAuthPage || isOnBusinessRegistration || isOnDashboard);
+  // Always fetch profile if we have a token (for centralized navigation)
+  const shouldFetchProfile = hasToken;
   const { data: profileData, isLoading, isError } = useGetProfile(shouldFetchProfile);
+
+  // Helper function to check if user is on a valid route for their current state
+  const isUserOnValidRoute = (userData: any, path: string) => {
+    const hasBasicProfile = userData.fullName && 
+                           userData.email && 
+                           userData.fullName !== null && 
+                           userData.email !== null &&
+                           userData.emailVerified === true;
+    
+    console.log("🔍 [APP INIT] Checking route validity:", {
+      path,
+      hasBasicProfile,
+      onboardingCompleted: userData.onboarding?.isCompleted,
+      currentStep: userData.onboarding?.currentStep
+    });
+    
+    // If profile incomplete, only registration and login are valid
+    if (!hasBasicProfile) {
+      const isValid = path.includes('/registration') || path.includes('/login');
+      console.log(`📧 [APP INIT] Profile incomplete, route ${path} valid: ${isValid}`);
+      return isValid;
+    }
+    
+    // If onboarding complete OR under review, dashboard and other app routes are valid
+    if (userData.onboarding?.isCompleted || userData.verificationStatus === 'under_review') {
+      const isValid = path.includes('/dashboard') || 
+                     path.includes('/orders') || 
+                     path.includes('/products') ||
+                     path.includes('/profile') ||
+                     path.includes('/settings');
+      console.log(`✅ [APP INIT] Onboarding complete/under review, route ${path} valid: ${isValid}`);
+      return isValid;
+    }
+    
+    // If onboarding incomplete but profile complete, only business registration is valid
+    if (path.includes('/business-registration')) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlStep = parseInt(urlParams.get('step') || '1');
+      const currentStep = userData.onboarding?.currentStep || 1;
+      
+      // Allow if they're on their current step or any previous step
+      const isValid = urlStep <= Math.max(currentStep, 1);
+      console.log(`🔄 [APP INIT] Business registration step ${urlStep}, current step ${currentStep}, valid: ${isValid}`);
+      return isValid;
+    }
+    
+    // Allow registration page always (user might want to update profile)
+    if (path.includes('/registration')) {
+      console.log(`📝 [APP INIT] Registration page always valid`);
+      return true;
+    }
+    
+    // Dashboard is NOT valid if onboarding is incomplete
+    if (path.includes('/dashboard')) {
+      console.log(`🚫 [APP INIT] Dashboard not valid - onboarding incomplete`);
+      return false;
+    }
+    
+    console.log(`❌ [APP INIT] Route ${path} is invalid for current state`);
+    return false; // Invalid route for current state
+  };
+
+  // Helper function to get correct route for user's current state
+  const getCorrectRouteForUser = (userData: any) => {
+    const hasBasicProfile = userData.fullName && 
+                           userData.email && 
+                           userData.fullName !== null && 
+                           userData.email !== null &&
+                           userData.emailVerified === true;
+    
+    // If profile incomplete, go to registration
+    if (!hasBasicProfile) {
+      return ROUTES.REGISTRATION;
+    }
+    
+    // If onboarding complete OR under review, go to dashboard
+    if (userData.onboarding?.isCompleted || userData.verificationStatus === 'under_review') {
+      return ROUTES.DASHBOARD;
+    }
+    
+    // If onboarding incomplete, go to appropriate business registration step
+    if (userData.onboarding?.steps) {
+      const incompleteStep = userData.onboarding.steps.find((step: any) => !step.completed);
+      
+      if (incompleteStep) {
+        switch (incompleteStep.step) {
+          case 2: return "/business-registration?step=1";
+          case 3: return "/business-registration?step=2"; 
+          case 4: return "/business-registration?step=3";
+          case 5: return "/business-registration?step=4";
+          default: return "/business-registration?step=1";
+        }
+      }
+    }
+    
+    // Default fallback
+    return ROUTES.DASHBOARD;
+  };
+
+  // Smart navigation logic - only redirect when necessary
+  const determineNavigationAction = (userData: any, currentPath: string) => {
+    // Skip navigation for recent user actions ONLY if they're on a valid route
+    const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+    const justRegistered = sessionStorage.getItem('justRegistered');
+    
+    if (justLoggedIn || justRegistered) {
+      console.log("🔄 [APP INIT] Recent user action detected");
+      sessionStorage.removeItem('justLoggedIn');
+      sessionStorage.removeItem('justRegistered');
+      
+      // But still check if they're on a valid route
+      const isOnValidRoute = isUserOnValidRoute(userData, currentPath);
+      
+      if (isOnValidRoute) {
+        console.log("✅ [APP INIT] Recent action + valid route, skipping navigation");
+        return null;
+      } else {
+        console.log("🚫 [APP INIT] Recent action but INVALID route, will redirect");
+        // Continue to check and redirect if needed
+      }
+    }
+    
+    // Check if user is on a valid route for their state
+    const isOnValidRoute = isUserOnValidRoute(userData, currentPath);
+    
+    if (isOnValidRoute) {
+      console.log(`✅ [APP INIT] User is on valid route: ${currentPath}`);
+      return null; // Don't redirect
+    }
+    
+    // User is on invalid route, determine correct route
+    const correctRoute = getCorrectRouteForUser(userData);
+    console.log(`🔄 [APP INIT] User on invalid route ${currentPath}, should be on ${correctRoute}`);
+    
+    return correctRoute;
+  };
 
   // Update router context when token status changes
   useEffect(() => {
@@ -48,28 +180,25 @@ const AuthInitializer = () => {
   }, [hasToken]);
 
   useEffect(() => {
-    // If no token and not on auth pages, let route protection handle redirect
+    // No token - redirect to login if not already there
     if (!hasToken) {
-      if (isOnAuthPage && !currentPath.includes('/login')) {
+      if (!currentPath.includes('/login')) {
+        console.log("🚫 [APP INIT] No token, redirecting to login");
         router.navigate({ to: ROUTES.LOGIN });
       }
       return;
     }
 
-    if (!shouldFetchProfile) {
-      return;
-    }
-
+    // Token exists but profile is loading - wait
     if (isLoading) {
       return;
     }
 
-    // If profile fetch failed, token is invalid - clear everything and redirect to login
+    // Profile fetch failed - token is invalid
     if (isError) {
-      console.error("🚫 [APP INIT] Failed to fetch profile, token invalid - clearing auth data");
+      console.error("🚫 [APP INIT] Profile API failed, token invalid - clearing auth data");
       TokenUtil.clearToken();
       clearUser();
-      // Update router context
       router.update({
         context: {
           isLoggedIn: false,
@@ -80,96 +209,35 @@ const AuthInitializer = () => {
       return;
     }
 
-    // If we got profile data, store it and handle navigation
+    // Profile data received - store it and determine navigation
     if (profileData?.data) {
       const userData = profileData.data;
       setUser(userData);
 
-      if (!isOnAuthPage && !isOnBusinessRegistration && !isOnDashboard) {
-        return;
-      }
       
-      const justRegistered = sessionStorage.getItem('justRegistered');
-      if (justRegistered) {
-        sessionStorage.removeItem('justRegistered'); // Clear the flag
-        return;
-      }
+      // Determine if navigation is needed using smart logic
+      const targetRoute = determineNavigationAction(userData, currentPath);
       
-      // If user is on business registration, let them stay there (don't auto-redirect)
-      if (isOnBusinessRegistration) {
-        return;
-      }
-
-      // Check if user just logged in - let login component handle navigation
-      const justLoggedIn = sessionStorage.getItem('justLoggedIn');
-      if (justLoggedIn) {
-        console.log("🔄 [APP INIT] User just logged in, letting login component handle navigation");
-        sessionStorage.removeItem('justLoggedIn'); // Clear the flag
-        return;
-      }
-
-      // Check if user has completed basic profile setup
-      const hasFullName = userData.fullName && userData.fullName !== null;
-      const hasEmail = userData.email && userData.email !== null;
-      const isEmailVerified = userData.emailVerified === true;
-      const hasBasicProfile = hasFullName && hasEmail && isEmailVerified;
-      
-      if (!hasBasicProfile) {
-        console.log("🚫 [APP INIT] Profile incomplete, redirecting to registration");
-        router.navigate({ to: ROUTES.REGISTRATION });
-        return;
-      }
-
-      // Check if onboarding is completed
-      if (userData.onboarding?.isCompleted || userData.verificationStatus==='under_review') {
-        router.navigate({ to: ROUTES.DASHBOARD });
-        return;
-      }
-
-      // Check business registration steps (steps 2, 3, 4) for incomplete ones
-      if (userData.onboarding?.steps) {
-        const businessSteps = userData.onboarding.steps.filter((step: any) => 
-          step.step >= 2 && step.step <= 4
-        );
+      if (targetRoute && targetRoute !== currentPath) {
         
-        // Find first incomplete business step
-        const firstIncompleteBusinessStep = businessSteps.find((step: any) => !step.completed);
-        
-        if (firstIncompleteBusinessStep) {
-          const stepNumber = firstIncompleteBusinessStep.step;
-          
-          // Map API step numbers to business registration form steps
-          switch (stepNumber) {
-            case 2: // Business Details
-              router.navigate({ to: "/business-registration", search: { step: 1 } });
-              break;
-            case 3: // Brand Details
-              router.navigate({ to: "/business-registration", search: { step: 2 } });
-              break;
-            case 4: // Bank Details
-              router.navigate({ to: "/business-registration", search: { step: 3 } });
-              break;
-            default:
-              router.navigate({ to: ROUTES.DASHBOARD });
+        // Use setTimeout to prevent navigation conflicts
+        setTimeout(() => {
+          if (targetRoute.includes('?')) {
+            const [path, search] = targetRoute.split('?');
+            const searchParams = new URLSearchParams(search);
+            const step = searchParams.get('step');
+            router.navigate({ 
+              to: path, 
+              search: step ? { step: parseInt(step) } : undefined 
+            });
+          } else {
+            router.navigate({ to: targetRoute });
           }
-          return;
-        }
-
-
-        
-        
-        // If all business steps are complete but step 5 (verification) is not
-        const verificationStep = userData.onboarding.steps.find((step: any) => step.step === 5);
-        if (verificationStep && !verificationStep.completed) {
-          router.navigate({ to: "/business-registration", search: { step: 4 } }); // Declaration step
-          return;
-        }
+        }, 100);
+      } else {
       }
-
-      // Default fallback - go to dashboard
-      router.navigate({ to: ROUTES.DASHBOARD });
     }
-  }, [hasToken, profileData, isLoading, isError, setUser, clearUser, user, shouldFetchProfile, isOnAuthPage, isOnBusinessRegistration, currentPath]);
+  }, [hasToken, profileData, isLoading, isError, setUser, clearUser, currentPath]);
 
   if (hasToken && isLoading && shouldFetchProfile) {
     return <AppShimmer />;

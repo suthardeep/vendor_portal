@@ -59,6 +59,9 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
     onChange(updatedBrands); // pass array (matches prop type)
   };
 
+
+  console.log("BRAND-DATA" , data)
+
   const handleAddBrand = () => {
     onChange([...data, { ...initialBrandState }]);
   };

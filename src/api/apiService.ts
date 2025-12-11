@@ -23,7 +23,6 @@ const createApiInstance = (): AxiosInstance => {
     (config) => {
       const token = TokenUtil.getToken?.();
 
-      console.log("token" , token)
       if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;

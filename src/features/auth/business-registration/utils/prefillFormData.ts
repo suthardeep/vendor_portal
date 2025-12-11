@@ -54,6 +54,8 @@ export const prefillFormFromProfile = (profileData: User): FormData => {
       brandDocumentIds: brand.brandDocumentIds || [],
       website: brand.website || "",
       socialMedia: brand.socialMedia || "",
+      brandDocuments:brand.brandDocuments || []
+      
     })),
     
     bankDetails: {

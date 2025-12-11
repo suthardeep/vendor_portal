@@ -90,6 +90,7 @@ selectedCategories: z
   brandDocuments: z.array(z.string()).max(5, "Max 5 documents"),
   website: z.string().optional(),
   socialMedia: z.string().optional(),
+  
 });
 
 export const BrandDetailsSchema = z.array(SingleBrandSchema).min(1, "At least one brand is required");

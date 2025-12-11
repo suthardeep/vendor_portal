@@ -12,6 +12,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/store/useAuthStore";
 // Import API Query Hooks
 import { useSendOtpMutation, useVerifyOtpMutation, useRegisterProfileMutation } from "./api/queryHooks";
+import { getProfile } from "@/api/profile/queryFns"; // Import profile API
+import { queryClient } from "@/lib/queryClient";
 import { ROUTES } from "@/constants/routes";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -180,24 +182,51 @@ const Registration: React.FC = () => {
       };
 
       registerMutation.mutate(registrationPayload, {
-        onSuccess: async(res) => {
-            console.log("Payload sent:", registrationPayload);
-            
-            // Update Zustand store with email and fullName
-            setUser({
-              ...user!,
-              email: formData.email,
-              fullName: formData.fullName,
-              emailVerified: true,
-            });
-            
-            toast.success( "Registration Successful");
-            await queryClient.invalidateQueries({ queryKey: ['profile'] });
-
+        onSuccess: async (res) => {
+            try {
+              console.log("✅ [REGISTRATION] Registration successful, payload sent:", registrationPayload);
+              
+              toast.success("Registration Successful");
+              
+              // Set flag to prevent AppInitializer from interfering with navigation
+              sessionStorage.setItem('justRegistered', 'true');
+              
+              // Immediately call profile API to get complete user data with onboarding info
+              console.log("🔍 [REGISTRATION] Fetching complete profile data...");
+              const profileResponse = await getProfile();
+              
+              if (profileResponse?.data) {
+                const completeUserData = profileResponse.data;
+                console.log("👤 [REGISTRATION] Complete user data received:", completeUserData);
+                
+                // Store complete user data in store
+                setUser(completeUserData);
+                
+                // After registration, always go to business registration step 1
+                console.log("🧭 [REGISTRATION] Navigating to business registration step 1");
+                navigate({ to: "/business-registration", search: { step: 1 } });
+                
+              } else {
+                throw new Error("Profile API returned no data");
+              }
+              
+            } catch (profileError) {
+              console.error("🚫 [REGISTRATION] Failed to fetch profile after registration:", profileError);
+              // If profile fetch fails, still navigate but with basic user data
+              setUser({
+                ...user!,
+                email: formData.email,
+                fullName: formData.fullName,
+                emailVerified: true,
+              });
+              
+              toast.warning("Registration successful but failed to load complete profile. Continuing...");
+              navigate({ to: "/business-registration", search: { step: 1 } });
+            }
         },
         onError: (error) => {
             const errorMessage = (error as { message?: string })?.message || "Registration failed. Please try again.";
-                            navigate({ to: ROUTES.DASHBOARD });
+            toast.error(errorMessage);
 
             toast.error(errorMessage);
         },
