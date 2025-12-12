@@ -169,10 +169,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const cleanedValue = value.length > 0 ? value : getMediaPickerValue(ids, urls);
   const mediaDialog = useMediaDialogStore();
-  // console.log("Ids: ", ids)
-  // console.log("Urls: ", urls)
-  // console.log("Cleaned Value: ", cleanedValue)
-  // console.log("getMediaPickerValue(ids, urls): ", getMediaPickerValue(ids, urls))
+
 
   const handleRemove = (id: string) => {
     onChange(cleanedValue.filter((i) => i.id !== id));

@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "@/utils/helpers";
-// Tree-shakeable: import only what you use
 import {
   Save,
   Search,
@@ -21,6 +20,7 @@ import {
   Archive,
   Upload,
   ChevronDown,
+  ChevronUp,
   EyeOff,
   Eye,
   CheckCircle2,
@@ -38,9 +38,11 @@ import {
   Bike,
   ImageIcon,
   ChevronsRight,
+  ChevronsLeft,
   Trash2,
   Move,
   BarChart3,
+  BarChart2,
   Home,
   Package,
   Tag,
@@ -52,7 +54,6 @@ import {
   TrendingUp,
   IndianRupee,
   TrendingDown,
-  ChevronsLeft,
   Star,
   SquareChevronRight,
   Copy,
@@ -60,21 +61,37 @@ import {
   User,
   Key,
   LogOut,
-  ChevronUp,
-  Triangle,
   Folder,
   ArrowRight,
-  CircleArrowDown ,
-  AlertCircle
-  
+  CircleArrowDown,
+  AlertCircle,
+  Triangle,
+  Store,
+  LayoutGrid,
+  PlayCircle,
+  CircleDollarSign,
+  Percent,
+  Megaphone,
+  UserCog,
+  CheckSquare,
+  Inbox,
+  FileTextIcon,
+  Heart,
+  Circle,
+  ClipboardList,
+  Users,
+  Truck,
+  ShoppingCart,
+  Map,
+  Palette,
+  MapPin,
+  Globe,
+  LucideIcon,
+  LucideProps,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
-import { Chevron } from "react-day-picker";
 
-// ============================================================================
-// TYPES
-// ============================================================================
 
 const lucideIconRegistry = {
   Save,
@@ -96,6 +113,7 @@ const lucideIconRegistry = {
   Archive,
   Upload,
   ChevronDown,
+  ChevronUp,
   EyeOff,
   Eye,
   CheckCircle2,
@@ -113,71 +131,78 @@ const lucideIconRegistry = {
   Bike,
   ImageIcon,
   ChevronsRight,
+  ChevronsLeft,
   Trash2,
   Move,
   BarChart3,
+  BarChart2,
   Home,
   Package,
   Tag,
   Wallet,
   Target,
-  Box ,
-  Bell ,
-  MoreVertical ,
-  TrendingUp ,
-  IndianRupee  ,
-  TrendingDown ,
-  ChevronsLeft ,
-  Star ,
-  SquareChevronRight ,
-  Copy ,
-  SlidersHorizontal ,
-     User ,
-   Key ,
-    LogOut ,
-   Folder,
-
-   ChevronUp ,
-   Triangle ,
-   ArrowRight ,
-   CircleArrowDown ,
-   AlertCircle
-}
+  Box,
+  Bell,
+  MoreVertical,
+  TrendingUp,
+  IndianRupee,
+  TrendingDown,
+  Star,
+  SquareChevronRight,
+  Copy,
+  SlidersHorizontal,
+  User,
+  Key,
+  LogOut,
+  Folder,
+  ArrowRight,
+  CircleArrowDown,
+  AlertCircle,
+  Triangle,
+  Store,
+  Grid: LayoutGrid,
+  LayoutGrid,
+  PlayCircle,
+  CircleDollarSign,
+  Percent,
+  Megaphone,
+  BarChart: BarChart2,
+  UserCog,
+  CheckSquare,
+  Inbox,
+  FileTextIcon,
+  Heart,
+  Circle,
+  ClipboardList,
+  Users,
+  Truck,
+  ShoppingCart,
+  Map,
+  Palette,
+  MapPin,
+  Globe,
+} satisfies Record<string, LucideIcon>;
 
 export type LucideIconName = keyof typeof lucideIconRegistry;
 
-// All icon names (Lucide + Custom)
 export type IconName = LucideIconName | CustomIconName;
 
-// Universal icon component type
 type IconComponent = React.ComponentType<any>;
 
 type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
-interface IconBaseProps extends React.HTMLAttributes<HTMLSpanElement> {
+interface IconBaseProps extends Omit<LucideProps, "size"> {
   name: IconName;
   size?: Size | number;
-  // Lucide-specific props that work with both types
-  strokeWidth?: number;
-  fill?: string;
-  color?: string;
-  stroke?: string;
 }
 
-// ============================================================================
-// REGISTRY
-// ============================================================================
 
-const iconRegistry: Record<string, IconComponent | string> = { // string for custom SVGs
-  // Lucide icons - only what's imported
+
+const iconRegistry: Record<string, IconComponent | string> = {
   ...(lucideIconRegistry as Record<LucideIconName, IconComponent>),
-  // Custom SVG icons
-  ...(customIconRegistry as Record<CustomIconName,  IconComponent|string>), // Type assertion to satisfy TS, svg are treated as string by default
+  ...(customIconRegistry as Record<CustomIconName, IconComponent | string>),
 };
 
-// ============================================================================
-// UTILITIES
-// ============================================================================
 
 const getIconSize = (size: Size): number => {
   const sizeMap: Record<Size, number> = {
@@ -190,19 +215,11 @@ const getIconSize = (size: Size): number => {
   return sizeMap[size];
 };
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
 
 export default function Icon({
   name,
   size = "md",
   className,
-  strokeWidth,
-  fill,
-  color,
-  stroke,
-  style,
   ...props
 }: IconBaseProps) {
   const Component = iconRegistry[name];
@@ -214,40 +231,7 @@ export default function Icon({
 
   const iconSize = typeof size === "string" ? getIconSize(size) : size;
 
-  // Build props for the icon component
-  const iconProps: Record<string, any> = {
-    size: iconSize,
-    className: cn(className),
-    // Common attributes
-    ...props,
-  };
-
-  // Add Lucide-specific props if provided
-  if (strokeWidth !== undefined) {
-    iconProps.strokeWidth = strokeWidth;
-  }
-  if (fill !== undefined) {
-    iconProps.fill = fill;
-  }
-  if (color !== undefined) {
-    iconProps.color = color;
-  }
-  if (stroke !== undefined) {
-    iconProps.stroke = stroke;
-  }
-
-  // // Merge styles
-  // const mergedStyle: React.CSSProperties = {
-  //   width: iconSize,
-  //   height: iconSize,
-  //   ...style,
-  // };
-
-  return (
-    // <span style={mergedStyle} {...props}>
-      <Component {...iconProps} />
-    // </span>
-  );
+  return <Component size={iconSize} className={cn(className)} {...props} />;
 }
 
-export {Icon}
+export { Icon };

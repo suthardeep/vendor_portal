@@ -8,17 +8,17 @@ const MEDIA_FILE_QUERY_KEY = "media-file";
 const GC_TIME = 1000 * 60 * 5;
 const STALE_TIME = 1000 * 60 * 5;
 
-export const useFoldersApi = (search: string) => {
+export const useFoldersApi = (search: string , enabled:boolean) => {
   return useQuery<FolderResponse>({
     queryKey: [MEDIA_FOLDER_QUERY_KEY, search],
     queryFn: ()=> fetchFolders(search),
     gcTime: GC_TIME,
+    enabled ,
     staleTime: STALE_TIME,
     retry: false,
     refetchOnWindowFocus:false,
     refetchOnMount:false,
     refetchOnReconnect:false,
-    // select: (data: any ) => {console.log("Data in folder api : ", data); return data}
   });
 };
 

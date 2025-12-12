@@ -24,6 +24,7 @@ import { useFoldersApi, useFilesApi, useUploadFiles } from "@/components/media-p
 import { MediaItem } from "@/components/media-picker/types/media.types";
 import { Button } from "@/components/base/Button";
 import { Checkbox } from "@/components/base/Checkbox";
+import { FolderShimmer } from "./FolderShimmer";
 
 interface MediaGalleryProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export const MediaGallery = ({
   const [folderError, setFolderError] = useState("");
 
   // --- Queries ---
-  const { data: folderData, isLoading: loadingFolders } = useFoldersApi(searchQuery);
+  const { data: folderData, isLoading: loadingFolders } = useFoldersApi(searchQuery , isOpen);
   const folders = folderData?.data?.groups || [];
 
   const {
@@ -351,13 +352,11 @@ export const MediaGallery = ({
               )}
             </div>
 
-            {/* Grid Content */}
             <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-              {isLoading && !files.length ? (
-                <div className="flex items-center justify-center h-full">
-                  <p>Loading...</p>
-                </div>
-              ) : displayItems.length === 0 ? (
+             {isLoading && !currentFolder ? (
+          <FolderShimmer />
+        ) : displayItems.length === 0 ? (
+
                 <div className="flex flex-col items-center justify-center h-full text-gray-400 py-16">
                   <div className="w-24 h-24 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
                     <FileIcon className="w-12 h-12 opacity-40" />
