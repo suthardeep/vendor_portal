@@ -2,7 +2,7 @@ import { LoginSchema } from "../schemas/login.schema"
 import z from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useLoginMutation } from "../api/queryHooks"; // NOTE: This hook is obsolete, but updating the file anyway.
+// import { useLoginMutation } from "../api/queryHooks"; // NOTE: This hook is obsolete, but updating the file anyway.
 // import { redirect } from "@tanstack/react-router";
 // import { ROUTES } from "@/constants/routes";
 // import { showErrorToasts } from "@/utils/helpers";
@@ -22,7 +22,7 @@ export const useLogin = ()=>{
         });
 
 
-   const mutation = useLoginMutation();
+//    const mutation = useLoginMutation();
 
 
 
@@ -60,7 +60,7 @@ export const useLogin = ()=>{
             handleSubmit ,
             errors ,
             isSubmitting ,
-            isPending:mutation.isPending ,
+            // isPending:mutation.isPending ,
             onSubmit
             
          }

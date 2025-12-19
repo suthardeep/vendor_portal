@@ -67,35 +67,35 @@ const Inventory = () => {
       data={newOrderData}
         title="New Orders"
         searchable
-        filters={[
-          {
-            key: "status",
-            label: "Status",
-            options: [
-              { label: "Not Started", value: "Not Started" },
-              { label: "Completed", value: "Completed" },
-              { label: "Live", value: "Live" },
-            ],
-          },
-          {
-            key: "category",
-            label: "Category",
-            options: [
-              { label: "Electronics", value: "Electronics" },
-              { label: "Home Decor", value: "Home Decor" },
-              { label: "Accessories", value: "Accessories" },
-            ],
-          },
+        // filters={[
+        //   {
+        //     key: "status",
+        //     label: "Status",
+        //     options: [
+        //       { label: "Not Started", value: "Not Started" },
+        //       { label: "Completed", value: "Completed" },
+        //       { label: "Live", value: "Live" },
+        //     ],
+        //   },
+        //   {
+        //     key: "category",
+        //     label: "Category",
+        //     options: [
+        //       { label: "Electronics", value: "Electronics" },
+        //       { label: "Home Decor", value: "Home Decor" },
+        //       { label: "Accessories", value: "Accessories" },
+        //     ],
+        //   },
 
          
-        ]}
+        // ]}
      
         rowActions={[
           { label: "View", icon: "Eye", onClick: () => {} },
           
         ]}
         
-        pagination={{ pageSize: 8 }}
+        // pagination={{ pageSize: 8 }}
       ></Table>
 
   )

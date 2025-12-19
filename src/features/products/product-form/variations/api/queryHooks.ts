@@ -7,6 +7,7 @@ export const useGetVariationsQuery = (productId: string) => {
   return useQuery<VariationsApiResponse>({
     queryKey: ["variations", productId],
     queryFn: () => getVariations(productId),
+    retry: false,
     enabled: !!productId,
   });
 };

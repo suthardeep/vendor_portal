@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const basicDetailsSchema = z.object({
   description: z.string().min(10, "Description is too short"),
-  bulletPoints: z.array(z.string()).max(5, "Max 5 bullet points"),
-  // Media is usually an array of objects/strings, handled by MediaPicker
+  bulletPoints: z.array(z.string()).min(1, "At least one bullet point is required").max(5, "Max 5 bullet points"),
+  // Validating that we have at least one media item
   media: z.array(z.any()).min(1, "At least one image is required"),
   
   modelNumber: z.string().optional(),
@@ -16,12 +16,14 @@ export const basicDetailsSchema = z.object({
   
   tags: z.array(z.string()),
   
-  // New Fields requested
-  targetGender: z.enum(["Male", "Female", "Unisex", "Kids"]).optional(),
-  targetAgeGroup: z.string().optional(), // e.g., "18-24"
+  // New Fields
+  targetGender: z.enum(["Male", "Female", "Other"]).optional(),
+  targetAgeGroup: z.string().optional(), 
   
-  // Inventory
-  totalStockQty: z.string().refine((val) => !isNaN(Number(val)), "Must be a number"),
+  // Inventory (Handled as string in form for input handling, converted later)
+  totalStockQty: z.string().refine((val) => !isNaN(Number(val)) && val !== "", {
+    message: "Must be a valid number"
+  }),
 
   hsnCode: z.string().min(1, "HSN Code is required"),
   gstTaxSlab: z.string().min(1, "Tax Slab is required"),

@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/helpers";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 
 const cardVariants = cva(
   "w-full max-w-full rounded-lg p-4 transition-all duration-200",
@@ -57,7 +57,7 @@ export interface StatsCardProps {
   subtitle?: string;
   percentage?: number;
   trend?: "increase" | "decrease" | "neutral";
-  iconName?: string;
+  iconName?: IconName;
   iconBgColor?: string;
   iconColor?: string;
   iconSize?: "sm" | "md" | "lg";

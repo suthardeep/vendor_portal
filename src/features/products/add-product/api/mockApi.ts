@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { CatalogProduct, CategoryOption, ProductHeaderData } from "../types/addProduct.types";
+import { CatalogProduct, CategoryOption } from "../types/addProduct.types";
+import { ProductHeaderData } from "../../product-form/product-header/types/productHeader.types";
 
 // Mock Data
 const MOCK_CATEGORIES: CategoryOption[] = [

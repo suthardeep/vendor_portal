@@ -2,23 +2,51 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "@/components/toast/Sonner";
 
-// Components
+// --- Components ---
 import { Input } from "@/components/base/Input";
 import { Textarea } from "@/components/base/Textarea";
 import { Dropdown } from "@/components/base/Dropdown";
+import { DropdownWithChips } from "@/components/base/DropdownWithChips";
+import { Switch } from "@/components/base/Switch";
 import { Button } from "@/components/base/Button";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
+import { Icon } from "@/components/base/Icon";
+import { Separator } from "@/components/base/Separator";
 
-// Shared API
-// import { useProductDetailsQuery } from "../../api/queryHooks"; // Shared hook (GetById)
+// --- Types & API ---
 import { basicDetailsSchema } from "./schemas/basicDetails.schema";
 import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
-import { useProductDetailsQuery } from "../product-header/api/queryHooks";
+import { useGetBasicDetailsQuery, useSaveBasicDetailsMutation } from "./api/queryHooks";
+import { BasicDetailsFormValues, SaveBasicDetailsPayload } from "./types/basicDetails.types";
+
+// --- Constants ---
+const TAX_SLABS = [
+  { label: "0%", value: "0" },
+  { label: "5%", value: "5" },
+  { label: "12%", value: "12" },
+  { label: "18%", value: "18" },
+  { label: "28%", value: "28" },
+];
+
+const MOCK_TAGS = [
+  { id: "summer", name: "Summer Collection", color: "#FF6B6B" },
+  { id: "men", name: "Men Clothes", color: "#4ECDC4" },
+  { id: "tshirt", name: "T-Shirt", color: "#45B7D1" },
+  { id: "winter", name: "Winter Sale", color: "#96CEB4" },
+  { id: "women", name: "Women Fashion", color: "#FFEAA7" },
+];
+
+const GENDER_OPTIONS = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+  { label: "Other", value: "Other" },
+];
 
 interface Props {
   productId: string;
 }
 
+// Local State Interface (Form View Model)
 interface BasicDetailsState {
   description: string;
   bulletPoints: string[];
@@ -26,23 +54,24 @@ interface BasicDetailsState {
   modelNumber: string;
   modelName: string;
   isFragile: boolean;
+  targetGender: string;
+  targetAgeGroup: string;
   manufacturerName: string;
   packerDetails: string;
   importerDetails: string;
   tags: string[];
+  totalStockQty: string; // Kept as string for Input handling
   hsnCode: string;
   gstTaxSlab: string;
   cessCode: string;
-  targetGender: string;
-  targetAgeGroup: string;
-  totalStockQty: string;
 }
 
 export const BasicProductDetails = ({ productId }: Props) => {
   const navigate = useNavigate();
 
-  // 1. Fetch existing data
-  const { data: productData, isLoading } = useProductDetailsQuery(productId);
+  // 1. API Hooks
+  const { data: apiData, isLoading } = useGetBasicDetailsQuery(productId);
+  const saveMutation = useSaveBasicDetailsMutation(productId);
 
   // 2. Local State
   const [formData, setFormData] = useState<BasicDetailsState>({
@@ -52,49 +81,89 @@ export const BasicProductDetails = ({ productId }: Props) => {
     modelNumber: "",
     modelName: "",
     isFragile: false,
+    targetGender: "",
+    targetAgeGroup: "",
     manufacturerName: "",
     packerDetails: "",
     importerDetails: "",
     tags: [],
+    totalStockQty: "",
     hsnCode: "",
     gstTaxSlab: "",
     cessCode: "",
-    targetGender: "",
-    targetAgeGroup: "",
-    totalStockQty: "",
   });
 
+  const [bulletInput, setBulletInput] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 3. Prefill Form
+  // 3. Prefill Logic
   useEffect(() => {
-    if (productData) {
-      setFormData((prev) => ({
-        ...prev,
-        ...productData, // Spread API data onto state
-      }));
+    if (apiData) {
+      setFormData({
+        description: apiData.description || "",
+        bulletPoints: apiData.bulletPoints || [],
+        media: apiData.media || [],
+        modelNumber: apiData.modelNumber || "",
+        modelName: apiData.modelName || "",
+        isFragile: apiData.isFragile || false,
+        targetGender: apiData.targetGender || "",
+        targetAgeGroup: apiData.targetAgeGroup || "",
+        manufacturerName: apiData.manufacturerName || "",
+        packerDetails: apiData.packerDetails || "",
+        importerDetails: apiData.importerDetails || "",
+        tags: apiData.tags || [],
+        totalStockQty: apiData.totalStockQty ? String(apiData.totalStockQty) : "",
+        hsnCode: apiData.hsnCode || "",
+        gstTaxSlab: apiData.gstTaxSlab || "",
+        cessCode: apiData.cessCode || "",
+      });
     }
-  }, [productData]);
+  }, [apiData]);
 
   // 4. Handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    clearError(name);
   };
 
   const handleValueChange = (key: keyof BasicDetailsState, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
+    clearError(key);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const clearError = (key: string) => {
+    if (errors[key]) {
+      setErrors((prev) => {
+        const newErr = { ...prev };
+        delete newErr[key];
+        return newErr;
+      });
+    }
+  };
+
+  const addBulletPoint = () => {
+    if (bulletInput.trim() && formData.bulletPoints.length < 5) {
+      setFormData((prev) => ({
+        ...prev,
+        bulletPoints: [...prev.bulletPoints, bulletInput.trim()],
+      }));
+      setBulletInput("");
+    }
+  };
+
+  const removeBulletPoint = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      bulletPoints: prev.bulletPoints.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setErrors({});
 
-    // Manual Zod Validation
+    // Zod Validation
     const result = basicDetailsSchema.safeParse(formData);
 
     if (!result.success) {
@@ -103,134 +172,291 @@ export const BasicProductDetails = ({ productId }: Props) => {
         if (issue.path[0]) fieldErrors[issue.path[0] as string] = issue.message;
       });
       setErrors(fieldErrors);
-      setIsSubmitting(false);
-      toast.error("Please check the form for errors");
+      toast.error("Please fix the errors in the form.");
       return;
     }
 
-    try {
-      // Simulate API Call (Replace with mutation later)
-      console.log("Saving payload:", result.data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    const validData = result.data as BasicDetailsFormValues;
 
-      toast.success("Details saved successfully");
+    // Prepare Payload for API
+    const payload: SaveBasicDetailsPayload = {
+      ...validData,
+      // Map Media objects to IDs for backend storage
+      mediaIds: validData.media.map((m) => m.id),
+      // Ensure number conversion
+      totalStockQty: Number(validData.totalStockQty),
+    };
 
-      // Navigate to Variations Step
-      navigate({ to: `/products/product-form/${productId}/variations` });
-    } catch (error) {
-      toast.error("Failed to save details");
-    } finally {
-      setIsSubmitting(false);
-    }
+    saveMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success("Product details saved successfully");
+        navigate({ to: `/products/product-form/${productId}/variations` });
+      },
+      onError: (err) => {
+        toast.error(err.message || "Failed to save details");
+      },
+    });
   };
 
-  if (isLoading) return <div>Loading product details...</div>;
+  if (isLoading) return <div className="p-10 text-center">Loading details...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-      {/* Left Column */}
+      {/* --- LEFT COLUMN (General Info) --- */}
       <div className="lg:col-span-2 space-y-6">
         {/* General Details Box */}
-        <div className="bg-base-1 rounded-xl p-5 shadow-sm space-y-4 border border-base-content/10">
-          <Textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            label="Description"
-            error={errors.description}
-            rows={4}
-            required
-          />
+        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+          <h3 className="p-5 font-semibold text-base text-base-content">General Details</h3>
+          <Separator className="p-0 m-0" />
 
-          <MediaPicker
-            ids={formData.media.map((file: MinimalMediaProps) => file.id)}
-            urls={formData.media.map((file: MinimalMediaProps) => file.s3Url)}
-            value={formData.media}
-            onChange={(items) => handleValueChange("media", items)}
-            label="Product Images"
-            error={errors.media}
-            orientation="grid"
-            maxFiles={5}
-          />
+          <div className="w-full p-5 space-y-5">
+            <Textarea
+              name="description"
+              label="Description"
+              placeholder="Detailed product description..."
+              value={formData.description}
+              onChange={handleInputChange}
+              rows={4}
+              fullWidth
+              required
+              error={errors.description}
+            />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Bullet Points */}
+            <div className="space-y-2">
+              <Input
+                label="Bullet Points"
+                placeholder="Type and press enter (Max 5)"
+                value={bulletInput}
+                required
+                onChange={(e) => setBulletInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addBulletPoint();
+                  }
+                }}
+                helperText={
+                  formData.bulletPoints.length < 5
+                    ? `You can add up to ${5 - formData.bulletPoints.length} more points`
+                    : "Maximum bullet points reached."
+                }
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={addBulletPoint}
+                    className="text-primary hover:cursor-pointer hover:text-primary-focus transition-colors"
+                    disabled={formData.bulletPoints.length >= 5}
+                  >
+                    <Icon name="Plus" size={18} />
+                  </button>
+                }
+                fullWidth
+                error={errors.bulletPoints}
+              />
+
+              {formData.bulletPoints.length > 0 && (
+                <ul className="space-y-2 mt-2">
+                  {formData.bulletPoints.map((point, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center gap-2 text-sm bg-base-2 p-2 rounded-lg animate-in fade-in"
+                    >
+                      <span className="text-primary">•</span>
+                      <span className="flex-1 text-body-content/80">{point}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBulletPoint(index)}
+                        className="text-error hover:text-error/80 p-1"
+                      >
+                        <Icon name="X" size={14} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <MediaPicker
+              label="Upload Videos/Images"
+              // Pass IDs and URLs derived from the state objects
+              ids={formData.media.map((m) => m.id)}
+              urls={formData.media.map((m) => m.s3Url || "")}
+              value={formData.media}
+              onChange={(items) => handleValueChange("media", items)}
+              maxFiles={5}
+              itemClassName="max-h-[16dvh] w-full"
+              containerClassName={
+                formData.media.length > 0 ? "p-2 border border-body-content/20 rounded-2xl" : ""
+              }
+              iconConfig={{ size: "xs" }}
+              orientation="grid"
+              // gridConfig={{ cols: 3, gap: "gap-4" }}
+              error={errors.media}
+              required
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                name="modelNumber"
+                label="Model Number"
+                value={formData.modelNumber}
+                onChange={handleInputChange}
+                fullWidth
+              />
+              <Input
+                name="modelName"
+                label="Model Name"
+                value={formData.modelName}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </div>
+
+            <Switch
+              label="Is this a fragile product?"
+              checked={formData.isFragile}
+              onCheckedChange={(checked) => handleValueChange("isFragile", checked)}
+              labelPosition="right"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Manufacturer Details */}
+        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+          <h3 className="p-5 font-semibold text-base text-base-content">Manufacture Details</h3>
+          <Separator className="p-0 m-0" />
+
+          <div className="p-5 space-y-4">
+            <Input
+              name="manufacturerName"
+              label="Manufacturer Name"
+              value={formData.manufacturerName}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <Input
+              name="packerDetails"
+              label="Packer Details"
+              value={formData.packerDetails}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <Input
+              name="importerDetails"
+              label="Importer Details"
+              value={formData.importerDetails}
+              onChange={handleInputChange}
+              fullWidth
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* --- RIGHT COLUMN (Tags, Audience, Legal) --- */}
+      <div className="lg:col-span-1 space-y-6">
+        {/* Target Audience */}
+        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+          <h3 className="p-5 font-semibold text-base text-base-content">Target Audience</h3>
+          <Separator className="p-0 m-0" />
+          <div className="p-5 space-y-4">
             <Dropdown
               label="Target Gender"
-              options={[
-                { label: "Male", value: "Male" },
-                { label: "Female", value: "Female" },
-                { label: "Unisex", value: "Unisex" },
-              ]}
+              options={GENDER_OPTIONS}
               value={formData.targetGender}
               onChange={(val) => handleValueChange("targetGender", val)}
               placeholder="Select Gender"
+              fullWidth
               error={errors.targetGender}
             />
             <Input
               name="targetAgeGroup"
-              value={formData.targetAgeGroup}
-              onChange={handleInputChange}
               label="Target Age Group"
               placeholder="e.g. 18-35"
+              value={formData.targetAgeGroup}
+              onChange={handleInputChange}
+              fullWidth
               error={errors.targetAgeGroup}
             />
           </div>
         </div>
 
-        {/* Manufacturer Info (Optional, but kept for completeness based on schema) */}
-        <div className="bg-base-1 rounded-xl p-5 shadow-sm space-y-4 border border-base-content/10">
-          <h3 className="font-semibold text-base-content">Manufacturer Details</h3>
-          <Input
-            name="manufacturerName"
-            value={formData.manufacturerName}
-            onChange={handleInputChange}
-            label="Manufacturer Name"
-            fullWidth
-          />
+        {/* Tags */}
+        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+          <h3 className="p-5 font-semibold text-base text-base-content">Tags</h3>
+          <Separator className="p-0 m-0" />
+          <div className="p-5">
+            <DropdownWithChips
+              label="Add Tags"
+              placeholder="Select or type tags"
+              options={MOCK_TAGS}
+              value={formData.tags}
+              onChange={(tags) => handleValueChange("tags", tags)}
+              allowCustomInput
+              fullWidth
+              error={errors.tags}
+            />
+          </div>
+        </div>
+
+        {/* Inventory & Legal */}
+        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+          <h3 className="p-5 font-semibold text-base text-base-content">Inventory & Legal</h3>
+          <Separator className="p-0 m-0" />
+
+          <div className="p-5 space-y-4">
+            <Input
+              name="totalStockQty"
+              label="Total Stock Qty"
+              type="number"
+              value={formData.totalStockQty}
+              onChange={handleInputChange}
+              fullWidth
+              required
+              error={errors.totalStockQty}
+            />
+
+            <Separator />
+
+            <Input
+              name="hsnCode"
+              label="HSN Code"
+              value={formData.hsnCode}
+              onChange={handleInputChange}
+              fullWidth
+              required
+              error={errors.hsnCode}
+            />
+
+            <Dropdown
+              label="GST Tax Slab"
+              options={TAX_SLABS}
+              value={formData.gstTaxSlab}
+              onChange={(val) => handleValueChange("gstTaxSlab", val)}
+              placeholder="Select Slab"
+              fullWidth
+              required
+              error={errors.gstTaxSlab}
+            />
+
+            <Input
+              name="cessCode"
+              label="CESS Code"
+              value={formData.cessCode}
+              onChange={handleInputChange}
+              fullWidth
+            />
+          </div>
         </div>
       </div>
 
-      {/* Right Column */}
-      <div className="lg:col-span-1 space-y-6">
-        <div className="bg-base-1 rounded-xl p-5 shadow-sm space-y-4 border border-base-content/10">
-          <h3 className="font-semibold text-base-content">Inventory & Legal</h3>
-          <Input
-            name="totalStockQty"
-            value={formData.totalStockQty}
-            onChange={handleInputChange}
-            label="Total Stock Qty"
-            type="number"
-            error={errors.totalStockQty}
-            required
-          />
-          <Input
-            name="hsnCode"
-            value={formData.hsnCode}
-            onChange={handleInputChange}
-            label="HSN Code"
-            error={errors.hsnCode}
-            required
-          />
-          <Dropdown
-            label="GST Tax Slab"
-            options={[
-              { label: "5%", value: "5" },
-              { label: "12%", value: "12" },
-              { label: "18%", value: "18" },
-            ]}
-            value={formData.gstTaxSlab}
-            onChange={(val) => handleValueChange("gstTaxSlab", val)}
-            error={errors.gstTaxSlab}
-          />
-        </div>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="col-span-full flex justify-end gap-3 pt-4">
-        <Button variant="outline" type="button" onClick={() => navigate({ to: ".." })}>
+      {/* --- FOOTER ACTION --- */}
+      <div className="col-span-full flex justify-end gap-3 pt-4 pb-10">
+        <Button className="w-40" variant="outline" type="button" onClick={() => navigate({ to: ".." })}>
           Previous
         </Button>
-        <Button type="submit" isLoading={isSubmitting}>
+        <Button className="w-40" type="submit" isLoading={saveMutation.isPending}>
           Save & Next
         </Button>
       </div>

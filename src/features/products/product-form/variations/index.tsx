@@ -10,7 +10,7 @@ const VariationsAndCombinations = () => {
   const { productId } = useParams({ from: "/_app/products/product-form/$productId/variations" });
   
   // 1 = Create Combinations, 2 = Fill Details
-  const [internalStep, setInternalStep] = useState<1 | 2>(1);
+  const [internalStep, setInternalStep] = useState<1 | 2>(2);
 
   // Use the typed query hook
   const { data: variationsData, isLoading, refetch } = useGetVariationsQuery(productId);

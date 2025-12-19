@@ -13,7 +13,7 @@ import { cn } from "@/utils/helpers";
 
 export const initialBrandState: SingleBrandType = {
   brandName: "",
-  natureOfBusiness: "Brand Owner",
+  natureOfBusiness: "brandowner",
   selectedCategories: [],
   brandDocumentIds: [],
   brandDocuments: [],

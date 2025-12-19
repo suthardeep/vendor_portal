@@ -54,7 +54,7 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
           variant={variant}
           icon={filter.icon}
           containerClassName={containerClassName}
-          clearable={false}
+          // clearable={false}
         />
       );
 

@@ -116,7 +116,8 @@ export const Table = <T extends Record<string, any>>({
   const paginatedData = useMemo(() => {
     if (!pagination) return sortedData;
 
-    const pageSize = pagination.pageSize || 10;
+    // const pageSize = pagination.pageSize || 10; - ERROR _RESOLVE LATER
+    const pageSize = 10;  
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
 
@@ -176,13 +177,14 @@ export const Table = <T extends Record<string, any>>({
           </table>
         </div>
 
-        {/* Pagination */}
-        {pagination && !loading && data.length > 0 && (
+        {/* Pagination  */}
+        {/* COMMENTED TEMPORARILY- RESOLVE ERROR AND UNCOMMENT AGAIN */}
+        {/* {pagination && !loading && data.length > 0 && (
           <TablePagination
            meta={pagination}
             showTotal={pagination.showTotal}
           />
-        )}
+        )} */}
 
 
         {showFooter && <TableFooter actions={footerActions} />}

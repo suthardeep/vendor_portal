@@ -1,4 +1,4 @@
-import { ProductHeader } from "@/features/products/product-form/components/ProductHeader";
+import { ProductHeader } from "@/features/products/product-form/product-header/ProductHeader";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/products/product-form/$productId")({

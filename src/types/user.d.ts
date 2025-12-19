@@ -1,11 +1,13 @@
-export interface Brand {
-  website: string;
-  brandName: string;
-  socialMedia: string;
-  brandDocumentIds: string[];
-  natureOfBusiness: string;
-  selectedCategories: string[];
-}
+// export interface Brand {
+//   website: string;
+//   brandName: string;
+//   socialMedia: string;
+//   brandDocumentIds: string[];
+//   natureOfBusiness: string;
+//   selectedCategories: string[];
+// }
+
+import { BrandDetailsType } from "@/features/auth/business-registration/schemas/registration.schema";
 
 export interface OnboardingStep {
   step: number;
@@ -76,7 +78,7 @@ export interface User {
   selfDeclared?: boolean;
   taxId?: string | null;
   panNumber?: string | null;
-  brands?: Brand[];
+  brands?: BrandDetailsType[];
   bankDetails?: BankDetails;
   businessAddress?: string | null;
   verificationStatus?: string;

@@ -30,11 +30,11 @@ const LogoutDialog: React.FC<LogoutProps> = (props) => {
       title="Logout?"
       actions={{
         primary: {
-          label: "Logout",
+          children: "Logout",
           onClick: handleLogout,
         },
         secondary: {
-          label: "Cancel",
+          children: "Cancel",
           onClick: close,
           variant: "ghost",
         },

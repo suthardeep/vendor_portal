@@ -62,7 +62,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 <Dropdown
                   value={pendingFilters[filter.key]}
                   onChange={(value) => onFilterChange(filter.key, value)}
-                  options={filter.options}
+                  // options={filter.options ?? []}
+                  options={[]}
                   placeholder={`Select ${filter.label}`}
                   inputSize="md"
                   variant="outlined"
