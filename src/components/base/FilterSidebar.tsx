@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { cn } from "@/utils/helpers";
 import Icon from "../base/Icon";
-import {Dropdown} from "@/components/base/Dropdown";
+import { Dropdown } from "@/components/base/DropDown";
 import { Button } from "../base/Button";
-import { ActionButton, BreadcrumbConfig, FilterConfig } from "../table/table.types";
+import {
+  ActionButton,
+  BreadcrumbConfig,
+  FilterConfig,
+} from "../table/table.types";
 
 // Filter Sidebar Component
 interface FilterSidebarProps {
@@ -101,4 +105,4 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   );
 };
 
-export  {FilterSidebar};
+export { FilterSidebar };

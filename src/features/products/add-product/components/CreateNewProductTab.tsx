@@ -3,12 +3,16 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "@/components/toast/Sonner";
 
 import { Input } from "@/components/base/Input";
-import { Dropdown } from "@/components/base/Dropdown";
+import { Dropdown } from "@/components/base/DropDown";
 import { Switch } from "@/components/base/Switch";
 import { Button } from "@/components/base/Button";
 
 import { createProductSchema } from "../schemas/addProduct.schema";
-import { useCategoriesQuery, useCreateProductMutation, useBrandsQuery } from "../api/queryHooks";
+import {
+  useCategoriesQuery,
+  useCreateProductMutation,
+  useBrandsQuery,
+} from "../api/queryHooks";
 import { BrandData } from "../types/addProduct.types";
 
 // Define local state interface matching the form fields
@@ -44,7 +48,8 @@ export const CreateNewProductTab = () => {
   // 2. Queries (Dependent on State)
 
   // Level 0: Main Categories (Always fetch)
-  const { data: mainCategoriesData, isLoading: loadingMain } = useCategoriesQuery("MAIN");
+  const { data: mainCategoriesData, isLoading: loadingMain } =
+    useCategoriesQuery("MAIN");
 
   // Level 1: Sub Categories (Fetch when main selected)
   const { data: subCategoriesData, isLoading: loadingSub } = useCategoriesQuery(
@@ -54,14 +59,17 @@ export const CreateNewProductTab = () => {
   );
 
   // Level 2: Child Categories (Fetch when sub selected)
-  const { data: childCategoriesData, isLoading: loadingChild } = useCategoriesQuery(
-    "CHILD",
-    formData.subCategoryId,
-    !!formData.subCategoryId
-  );
+  const { data: childCategoriesData, isLoading: loadingChild } =
+    useCategoriesQuery(
+      "CHILD",
+      formData.subCategoryId,
+      !!formData.subCategoryId
+    );
 
   // Brands (Fetch if switch is on)
-  const { data: brandsData, isLoading: loadingBrands } = useBrandsQuery(formData.hasBrandName);
+  const { data: brandsData, isLoading: loadingBrands } = useBrandsQuery(
+    formData.hasBrandName
+  );
 
   const transformedBrandsData = brandsData?.data.map((brand: BrandData) => ({
     label: brand.brandName,
@@ -133,7 +141,10 @@ export const CreateNewProductTab = () => {
     const validData = result.data;
 
     // Determine the most specific category ID
-    const finalCategoryId = validData.childCategoryId || validData.subCategoryId || validData.mainCategoryId;
+    const finalCategoryId =
+      validData.childCategoryId ||
+      validData.subCategoryId ||
+      validData.mainCategoryId;
 
     mutation.mutate(
       {
@@ -162,9 +173,14 @@ export const CreateNewProductTab = () => {
     data?.data?.data?.map((c: any) => ({ label: c.name, value: c.id })) || [];
 
   return (
-    <form className="flex flex-col justify-between gap-4 pb-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col justify-between gap-4 pb-4"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-6 mb-4">
-        <h2 className="text-lg font-medium text-base-content">Create a New Product</h2>
+        <h2 className="text-lg font-medium text-base-content">
+          Create a New Product
+        </h2>
 
         <Input
           name="productName"
@@ -192,32 +208,34 @@ export const CreateNewProductTab = () => {
           />
 
           {/* Show Sub Category if options exist (and main is selected) */}
-          {formData.mainCategoryId && mapCategories(subCategoriesData).length > 0 && (
-            <Dropdown
-              label="Sub Category"
-              options={mapCategories(subCategoriesData)}
-              value={formData.subCategoryId}
-              onChange={handleSubCategoryChange}
-              isLoading={loadingSub}
-              placeholder="Select Sub Category"
-              required
-              fullWidth
-            />
-          )}
+          {formData.mainCategoryId &&
+            mapCategories(subCategoriesData).length > 0 && (
+              <Dropdown
+                label="Sub Category"
+                options={mapCategories(subCategoriesData)}
+                value={formData.subCategoryId}
+                onChange={handleSubCategoryChange}
+                isLoading={loadingSub}
+                placeholder="Select Sub Category"
+                required
+                fullWidth
+              />
+            )}
 
           {/* Show Child Category if options exist (and sub is selected) */}
-          {formData.subCategoryId && mapCategories(childCategoriesData).length > 0 && (
-            <Dropdown
-              label="Child Category"
-              options={mapCategories(childCategoriesData)}
-              value={formData.childCategoryId}
-              onChange={(val) => handleValueChange("childCategoryId", val)}
-              isLoading={loadingChild}
-              placeholder="Select Child Category"
-              required
-              fullWidth
-            />
-          )}
+          {formData.subCategoryId &&
+            mapCategories(childCategoriesData).length > 0 && (
+              <Dropdown
+                label="Child Category"
+                options={mapCategories(childCategoriesData)}
+                value={formData.childCategoryId}
+                onChange={(val) => handleValueChange("childCategoryId", val)}
+                isLoading={loadingChild}
+                placeholder="Select Child Category"
+                required
+                fullWidth
+              />
+            )}
         </div>
 
         <Input
@@ -235,14 +253,18 @@ export const CreateNewProductTab = () => {
           <Switch
             label="Does this product offers variety of options?"
             checked={formData.hasVariants}
-            onCheckedChange={(checked) => handleValueChange("hasVariants", checked)}
+            onCheckedChange={(checked) =>
+              handleValueChange("hasVariants", checked)
+            }
             size="sm"
           />
 
           <Switch
             label="Does this product has a brand name?"
             checked={formData.hasBrandName}
-            onCheckedChange={(checked) => handleValueChange("hasBrandName", checked)}
+            onCheckedChange={(checked) =>
+              handleValueChange("hasBrandName", checked)
+            }
             size="sm"
           />
         </div>
@@ -263,10 +285,19 @@ export const CreateNewProductTab = () => {
       </div>
 
       <div className="flex justify-end items-center gap-2">
-        <Button className="min-w-52" variant="outline" type="button" onClick={() => navigate({ to: ".." })}>
+        <Button
+          className="min-w-52"
+          variant="outline"
+          type="button"
+          onClick={() => navigate({ to: ".." })}
+        >
           Cancel
         </Button>
-        <Button className="min-w-52" type="submit" isLoading={mutation.isPending}>
+        <Button
+          className="min-w-52"
+          type="submit"
+          isLoading={mutation.isPending}
+        >
           Create
         </Button>
       </div>

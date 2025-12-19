@@ -5,7 +5,7 @@ import { toast } from "@/components/toast/Sonner";
 // --- Components ---
 import { Input } from "@/components/base/Input";
 import { Textarea } from "@/components/base/Textarea";
-import { Dropdown } from "@/components/base/Dropdown";
+import { Dropdown } from "@/components/base/DropDown";
 import { DropdownWithChips } from "@/components/base/DropdownWithChips";
 import { Switch } from "@/components/base/Switch";
 import { Button } from "@/components/base/Button";
@@ -16,8 +16,14 @@ import { Separator } from "@/components/base/Separator";
 // --- Types & API ---
 import { basicDetailsSchema } from "./schemas/basicDetails.schema";
 import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
-import { useGetBasicDetailsQuery, useSaveBasicDetailsMutation } from "./api/queryHooks";
-import { BasicDetailsFormValues, SaveBasicDetailsPayload } from "./types/basicDetails.types";
+import {
+  useGetBasicDetailsQuery,
+  useSaveBasicDetailsMutation,
+} from "./api/queryHooks";
+import {
+  BasicDetailsFormValues,
+  SaveBasicDetailsPayload,
+} from "./types/basicDetails.types";
 
 // --- Constants ---
 const TAX_SLABS = [
@@ -112,7 +118,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
         packerDetails: apiData.packerDetails || "",
         importerDetails: apiData.importerDetails || "",
         tags: apiData.tags || [],
-        totalStockQty: apiData.totalStockQty ? String(apiData.totalStockQty) : "",
+        totalStockQty: apiData.totalStockQty
+          ? String(apiData.totalStockQty)
+          : "",
         hsnCode: apiData.hsnCode || "",
         gstTaxSlab: apiData.gstTaxSlab || "",
         cessCode: apiData.cessCode || "",
@@ -121,7 +129,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
   }, [apiData]);
 
   // 4. Handlers
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     clearError(name);
@@ -198,15 +208,21 @@ export const BasicProductDetails = ({ productId }: Props) => {
     });
   };
 
-  if (isLoading) return <div className="p-10 text-center">Loading details...</div>;
+  if (isLoading)
+    return <div className="p-10 text-center">Loading details...</div>;
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in"
+    >
       {/* --- LEFT COLUMN (General Info) --- */}
       <div className="lg:col-span-2 space-y-6">
         {/* General Details Box */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">General Details</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">
+            General Details
+          </h3>
           <Separator className="p-0 m-0" />
 
           <div className="w-full p-5 space-y-5">
@@ -263,7 +279,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
                       className="flex items-center gap-2 text-sm bg-base-2 p-2 rounded-lg animate-in fade-in"
                     >
                       <span className="text-primary">•</span>
-                      <span className="flex-1 text-body-content/80">{point}</span>
+                      <span className="flex-1 text-body-content/80">
+                        {point}
+                      </span>
                       <button
                         type="button"
                         onClick={() => removeBulletPoint(index)}
@@ -287,7 +305,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
               maxFiles={5}
               itemClassName="max-h-[16dvh] w-full"
               containerClassName={
-                formData.media.length > 0 ? "p-2 border border-body-content/20 rounded-2xl" : ""
+                formData.media.length > 0
+                  ? "p-2 border border-body-content/20 rounded-2xl"
+                  : ""
               }
               iconConfig={{ size: "xs" }}
               orientation="grid"
@@ -316,7 +336,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
             <Switch
               label="Is this a fragile product?"
               checked={formData.isFragile}
-              onCheckedChange={(checked) => handleValueChange("isFragile", checked)}
+              onCheckedChange={(checked) =>
+                handleValueChange("isFragile", checked)
+              }
               labelPosition="right"
               required
             />
@@ -325,7 +347,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Manufacturer Details */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Manufacture Details</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">
+            Manufacture Details
+          </h3>
           <Separator className="p-0 m-0" />
 
           <div className="p-5 space-y-4">
@@ -358,7 +382,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
       <div className="lg:col-span-1 space-y-6">
         {/* Target Audience */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Target Audience</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">
+            Target Audience
+          </h3>
           <Separator className="p-0 m-0" />
           <div className="p-5 space-y-4">
             <Dropdown
@@ -384,7 +410,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Tags */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Tags</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">
+            Tags
+          </h3>
           <Separator className="p-0 m-0" />
           <div className="p-5">
             <DropdownWithChips
@@ -402,7 +430,9 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Inventory & Legal */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Inventory & Legal</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">
+            Inventory & Legal
+          </h3>
           <Separator className="p-0 m-0" />
 
           <div className="p-5 space-y-4">
@@ -453,10 +483,19 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
       {/* --- FOOTER ACTION --- */}
       <div className="col-span-full flex justify-end gap-3 pt-4 pb-10">
-        <Button className="w-40" variant="outline" type="button" onClick={() => navigate({ to: ".." })}>
+        <Button
+          className="w-40"
+          variant="outline"
+          type="button"
+          onClick={() => navigate({ to: ".." })}
+        >
           Previous
         </Button>
-        <Button className="w-40" type="submit" isLoading={saveMutation.isPending}>
+        <Button
+          className="w-40"
+          type="submit"
+          isLoading={saveMutation.isPending}
+        >
           Save & Next
         </Button>
       </div>

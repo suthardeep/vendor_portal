@@ -1,8 +1,8 @@
 // FilterRenderer.tsx - Auto-adjusting width filters
 import React from "react";
 import { cn } from "@/utils/helpers";
-import {Icon} from "../base/Icon";
-import {Dropdown} from "../base/Dropdown";
+import { Icon } from "../base/Icon";
+import { Dropdown } from "../base/DropDown";
 import { FilterConfig } from "./table.types";
 
 interface FilterRendererProps {
@@ -61,7 +61,7 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
     case "date":
       return (
         <div className={cn("relative inline-block", containerClassName)}>
-          <div 
+          <div
             className={cn(
               "flex items-center gap-4 cursor-pointer rounded-md border-1 transition-all",
               "bg-base-1",
@@ -70,14 +70,16 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
             )}
             onClick={() => dateInputRef.current?.showPicker()}
           >
-            <span className={cn(
-              "whitespace-nowrap",
-              TEXT_SIZE_MAP[size],
-              "text-base-content/50"
-            )}>
+            <span
+              className={cn(
+                "whitespace-nowrap",
+                TEXT_SIZE_MAP[size],
+                "text-base-content/50"
+              )}
+            >
               {value ? new Date(value).toLocaleDateString() : filter.label}
             </span>
-            
+
             {filter.icon && (
               <Icon
                 name={filter.icon}
@@ -86,7 +88,7 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
               />
             )}
           </div>
-          
+
           <input
             ref={dateInputRef}
             type="date"
@@ -102,12 +104,12 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
     case "daterange":
       const startInputRef = React.useRef<HTMLInputElement>(null);
       const endInputRef = React.useRef<HTMLInputElement>(null);
-      
+
       return (
         <div className={cn("flex gap-4", containerClassName)}>
           {/* Start Date */}
           <div className="relative inline-block">
-            <div 
+            <div
               className={cn(
                 "flex items-center gap-2 cursor-pointer rounded-md border-1 transition-all",
                 "bg-base-1",
@@ -116,14 +118,18 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
               )}
               onClick={() => startInputRef.current?.showPicker()}
             >
-              <span className={cn(
-                "whitespace-nowrap",
-                TEXT_SIZE_MAP[size],
-                "text-base-content/50"
-              )}>
-                {value?.start ? new Date(value.start).toLocaleDateString() : "Start Date"}
+              <span
+                className={cn(
+                  "whitespace-nowrap",
+                  TEXT_SIZE_MAP[size],
+                  "text-base-content/50"
+                )}
+              >
+                {value?.start
+                  ? new Date(value.start).toLocaleDateString()
+                  : "Start Date"}
               </span>
-              
+
               {filter.icon && (
                 <Icon
                   name={filter.icon}
@@ -132,7 +138,7 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
                 />
               )}
             </div>
-            
+
             <input
               ref={startInputRef}
               type="date"
@@ -143,12 +149,12 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
               className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
             />
           </div>
-          
+
           <span className="text-base-content/50 self-center">→</span>
-          
+
           {/* End Date */}
           <div className="relative inline-block">
-            <div 
+            <div
               className={cn(
                 "flex items-center gap-2 cursor-pointer rounded-md border-1 transition-all",
                 "bg-base-1",
@@ -157,21 +163,25 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
               )}
               onClick={() => endInputRef.current?.showPicker()}
             >
-              <span className={cn(
-                "whitespace-nowrap",
-                TEXT_SIZE_MAP[size],
-                "text-base-content/50"
-              )}>
-                {value?.end ? new Date(value.end).toLocaleDateString() : "End Date"}
+              <span
+                className={cn(
+                  "whitespace-nowrap",
+                  TEXT_SIZE_MAP[size],
+                  "text-base-content/50"
+                )}
+              >
+                {value?.end
+                  ? new Date(value.end).toLocaleDateString()
+                  : "End Date"}
               </span>
-              
+
               <Icon
                 name="Calendar"
                 size={iconSizes[size]}
                 className="text-base-content flex-shrink-0"
               />
             </div>
-            
+
             <input
               ref={endInputRef}
               type="date"
@@ -206,7 +216,11 @@ export const FilterRenderer: React.FC<FilterRendererProps> = ({
                 TEXT_SIZE_MAP[size],
                 "text-base-content/50"
               )}
-              style={{ width: value ? `${Math.max(value.length * 8 + 20, 100)}px` : '120px' }}
+              style={{
+                width: value
+                  ? `${Math.max(value.length * 8 + 20, 100)}px`
+                  : "120px",
+              }}
             />
             {filter.icon && (
               <Icon

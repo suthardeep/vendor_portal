@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "@/components/toast/Sonner";
 
-import { Dropdown } from "@/components/base/Dropdown";
+import { Dropdown } from "@/components/base/DropDown";
 import { Input } from "@/components/base/Input";
 import { Textarea } from "@/components/base/Textarea";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
@@ -92,7 +92,9 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
         onSuccess: () => {
           toast.success("Variations saved successfully");
           // Navigate to Pricing & Shipping
-          navigate({ to: `/products/product-form/${productId}/pricing-shipping` });
+          navigate({
+            to: `/products/product-form/${productId}/pricing-shipping`,
+          });
         },
         onError: () => {
           toast.error("Failed to save variations");
@@ -105,8 +107,8 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
 
   const getColorDotClass = (color: string) => {
     // Handle cases where color might be undefined or an object
-    if (!color || typeof color !== 'string') return "bg-gray-400";
-    
+    if (!color || typeof color !== "string") return "bg-gray-400";
+
     const colorMap: { [key: string]: string } = {
       blue: "bg-blue-500",
       green: "bg-green-500",
@@ -137,15 +139,16 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
           "unitQuantity",
           "mediaIds",
           "mediaUrls",
-          "id",      // Exclude ID
-          "_id",     // Exclude ID
+          "id", // Exclude ID
+          "_id", // Exclude ID
         ].includes(k)
     );
 
     for (const key of keys) {
       const value = combo[key];
       // Handle potential object values (like {name: 'Red', value: '#F00'})
-      const displayValue = typeof value === 'object' && value.name ? value.name : String(value);
+      const displayValue =
+        typeof value === "object" && value.name ? value.name : String(value);
 
       if (key === "size") {
         parts.push(displayValue.replace("Custom size ", ""));
@@ -161,7 +164,9 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
     <div className="w-full bg-base-1 rounded-2xl">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Combination details</h2>
+        <h2 className="text-lg font-semibold text-gray-900">
+          Combination details
+        </h2>
       </div>
 
       {/* Combinations List */}
@@ -170,36 +175,45 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
           // Use original combination data for title generation
           const originalCombo = combinations[index] || {};
           const title = formatCombinationTitle(originalCombo);
-          
+
           // Safe access for color/size display in header
-          const colorVal = originalCombo.color || originalCombo.colour || originalCombo.Color;
+          const colorVal =
+            originalCombo.color || originalCombo.colour || originalCombo.Color;
           const sizeVal = originalCombo.size || originalCombo.Size;
-          const displayColor = typeof colorVal === 'object' ? colorVal.name : colorVal;
-          const displaySize = typeof sizeVal === 'object' ? sizeVal.name : sizeVal;
+          const displayColor =
+            typeof colorVal === "object" ? colorVal.name : colorVal;
+          const displaySize =
+            typeof sizeVal === "object" ? sizeVal.name : sizeVal;
 
           return (
             <div key={index} className="px-6 py-6">
               {/* Combination Header */}
               <div className="flex items-center gap-3 mb-4">
-                <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-                
+                <h3 className="text-base font-semibold text-gray-900">
+                  {title}
+                </h3>
+
                 <div className="flex items-center gap-2">
                   {originalCombo.unit && (
-                      <span className="text-sm text-gray-600">{originalCombo.unit}</span>
+                    <span className="text-sm text-gray-600">
+                      {originalCombo.unit}
+                    </span>
                   )}
-                  
+
                   {displayColor && (
                     <>
-                        <div className={`w-4 h-4 rounded-full ${getColorDotClass(String(displayColor))}`} />
-                        <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
-                            {String(displayColor).replace("Custom ", "")}
-                        </span>
+                      <div
+                        className={`w-4 h-4 rounded-full ${getColorDotClass(String(displayColor))}`}
+                      />
+                      <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
+                        {String(displayColor).replace("Custom ", "")}
+                      </span>
                     </>
                   )}
-                  
+
                   {displaySize && (
                     <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
-                        {String(displaySize).replace("Custom size ", "")}
+                      {String(displaySize).replace("Custom size ", "")}
                     </span>
                   )}
                 </div>
@@ -211,19 +225,25 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
                 <Input
                   label="Aavak SKU"
                   value={data.aavakSku}
-                  onChange={(e) => handleInputChange(index, "aavakSku", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "aavakSku", e.target.value)
+                  }
                   placeholder="Enter SKU"
                 />
                 <Input
                   label="Seller SKU (Optional)"
                   value={data.sellerSku}
-                  onChange={(e) => handleInputChange(index, "sellerSku", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "sellerSku", e.target.value)
+                  }
                   placeholder="Enter SKU"
                 />
                 <Input
                   label="EAN/UPC (Optional)"
                   value={data.eanUpc}
-                  onChange={(e) => handleInputChange(index, "eanUpc", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "eanUpc", e.target.value)
+                  }
                   placeholder="Enter EAN/UPC"
                 />
               </div>
@@ -233,7 +253,9 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
                 <Textarea
                   label="Description"
                   value={data.description}
-                  onChange={(e) => handleInputChange(index, "description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "description", e.target.value)
+                  }
                   placeholder="Product description"
                   rows={5}
                 />
@@ -246,7 +268,9 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
                   maxFiles={5}
                   itemClassName="max-h-[15dvh] w-full"
                   containerClassName={
-                    data?.mediaUrls?.length ? "p-2 border border-body-content/20 rounded-2xl" : ""
+                    data?.mediaUrls?.length
+                      ? "p-2 border border-body-content/20 rounded-2xl"
+                      : ""
                   }
                   iconConfig={{ size: "xs" }}
                   orientation="grid"
@@ -258,7 +282,9 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
                 <Input
                   label="Target by Age"
                   value={data.targetAge}
-                  onChange={(e) => handleInputChange(index, "targetAge", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "targetAge", e.target.value)
+                  }
                   placeholder="Enter age"
                 />
                 <Dropdown
@@ -266,12 +292,16 @@ const VariationStep2: React.FC<VariationStep2Props> = ({
                   placeholder="Select gender"
                   options={genderOptions}
                   value={data.targetGender}
-                  onChange={(value) => handleInputChange(index, "targetGender", value)}
+                  onChange={(value) =>
+                    handleInputChange(index, "targetGender", value)
+                  }
                 />
                 <Input
                   label="Unit Quantity"
                   value={data.unitQuantity}
-                  onChange={(e) => handleInputChange(index, "unitQuantity", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "unitQuantity", e.target.value)
+                  }
                   placeholder="23"
                   type="number"
                 />
