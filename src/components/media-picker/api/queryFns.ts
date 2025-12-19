@@ -1,14 +1,18 @@
 import apiService from "@/api/apiService";
 import { apiPaths } from "@/api/apiPaths";
-import { MediaFileParams, UploadMediaProps } from "../types/media.api";
-import { FolderResponse, MediaItem, PaginatedResponse } from "../types/media.types";
+import { MediaFileParams, UploadMediaProps, FolderSearchParams } from "../types/media.api";
+import { MediaItem, PaginatedResponse } from "../types/media.types";
 
-export const fetchFolders = (search: string) => {
+export const fetchFolders = (params: FolderSearchParams) => {
   return apiService({
     method: "GET",
     endpoint: apiPaths.media.vendorFolders,
-    params: {search}
-  }) as Promise<FolderResponse>;;
+    params: {
+      search: params.search,
+      page: params.page,
+      limit: params.limit
+    }
+  }) as Promise<PaginatedResponse<string>>;
 };
 
 export const fetchFiles = (params: MediaFileParams) => {
@@ -28,11 +32,11 @@ export const uploadFiles = (data: UploadMediaProps) => {
   const formData = new FormData();
 
   data.files.forEach((item) => {
-    // Note: dont do file[0]... here as the backend expects multiple "files" keys and not array
     formData.append(`files`, item);
   });
 
   formData.append(`uploader`, "vendor");
+  formData.append(`platformType`, "vendor");
   formData.append(`group`, data.group);
 
   return apiService({

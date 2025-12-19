@@ -5,7 +5,7 @@ export const apiPaths = {
     logout: "auth/logout",
 
     sendOtp: "auth/send-otp",
-    verifyOtp: "auth/verify-otp",
+    verifyOtp: "vendor/auth/verify-otp",
   },
 
   registration:{
@@ -25,8 +25,8 @@ onboarding:{
   media:{
     upload: "media/upload",
     bulkUpload: "media/bulk-upload",
-    vendorList: "media/vendor/list",
-    vendorFolders: "media/vendor/groups",
+    vendorList: "media/my-list",
+    vendorFolders: "media/my-groups",
     list: "media/list",
     folders: "media/groups",
     deleteMany: "media/delete",
@@ -37,6 +37,17 @@ onboarding:{
     profile:{
     updateProfile:"vendor/profile" ,
     getProfile:"vendor/profile" 
+  },
+  products: {
+    create: "products", // POST
+    getById: (id: string) => `products/${id}`, // GET
+    categories: "categories", // GET (supports level & parentId)
+    brands: "brands", // GET
+  },
+  variations: {
+    generate: "variations/generate", // POST
+    get: (productId: string) => `products/${productId}/variations`, // GET
+    update: (productId: string) => `products/${productId}/variations`, // PUT
   }
 
 } as const;

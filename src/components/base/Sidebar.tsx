@@ -98,8 +98,8 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
 
    return (
       <div className={cn(
-        "sidebar flex flex-col h-full rounded-lg overflow-hidden bg-base-1 relative",
-        "shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.06),0px_4px_6px_-1px_rgba(0,0,0,0.1)]",
+        "sidebar w-75 flex flex-col h-[96%] rounded-lg overflow-hidden bg-base-1 fixed",
+        "shadow-card",
         containerClassName
       )}>
         {/* Header - NOT blurred */}

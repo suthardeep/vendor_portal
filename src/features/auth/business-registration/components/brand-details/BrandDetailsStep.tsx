@@ -17,6 +17,8 @@ export const initialBrandState: SingleBrandType = {
   selectedCategories: [],
   brandDocumentIds: [],
   brandDocuments: [],
+  brandLogoId: "",
+  brandLogo: "",
   website: "",
   socialMedia: "",
 };
@@ -59,8 +61,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
     onChange(updatedBrands); // pass array (matches prop type)
   };
 
-
-  console.log("BRAND-DATA" , data)
+  console.log("BRAND-DATA", data);
 
   const handleAddBrand = () => {
     onChange([...data, { ...initialBrandState }]);
@@ -133,6 +134,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
                     { label: "Importer", value: "importer" },
                   ]}
                   value={brand.natureOfBusiness}
+                  error={brandErrors.natureOfBusiness}
                   onChange={(val) => handleBrandChange(index, "natureOfBusiness", val)}
                   orientation="horizontal"
                   required
@@ -163,26 +165,50 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, err
                 urls={data[index].brandDocuments}
                 // Convert array of MediaItems back to array of IDs
                 onChange={(items) => {
-                  console.log("Items in BrandDetailsStep.tsx : ", items);
                   const ids = items.map((item) => item.id);
                   const urls = items.map((item) => item.s3Url);
-                  console.log("Ids : ", ids);
-                  console.log("Urls : ", urls);
 
-                  // to update both data together 
+                  // to update both data together
                   handleBrandChange(index, { brandDocumentIds: ids, brandDocuments: urls });
                 }}
                 maxFiles={5}
-                itemClassName="max-h-[20dvh] w-full"
-                iconConfig={{size:"xs"}}
+                itemClassName="max-h-[16dvh] w-full"
+                containerClassName={
+                  data[index].brandDocuments.length ? "p-2 border border-body-content/20 rounded-2xl" : ""
+                }
+                iconConfig={{ size: "xs" }}
                 orientation="grid"
                 required
                 error={brandErrors.brandDocumentIds}
               />
 
+              <MediaPicker
+                label="Upload Brand Logo"
+                ids={data[index].brandLogoId}
+                urls={data[index].brandLogo}
+                // Convert array of MediaItems back to array of IDs
+                onChange={(items) => {
+                  const ids = items.map((item) => item.id);
+                  const urls = items.map((item) => item.s3Url);
+
+                  // to update both data together
+                  handleBrandChange(index, { brandLogoId: ids[0], brandLogo: urls[0] });
+                }}
+                maxFiles={1}
+                itemClassName="max-h-[16dvh] w-full"
+                // containerClassName={
+                //   data[index].brandDocuments.length ? "p-2 border border-body-content/20 rounded-2xl" : ""
+                // }
+                iconConfig={{ size: "xs" }}
+                orientation="horizontal"
+                required
+                error={brandErrors.brandLogoId}
+              />
+
               <Input
                 label="Website"
                 placeholder="Type here"
+                error={brandErrors.website}
                 value={brand.website}
                 onChange={(e) => handleBrandChange(index, "website", e.target.value)}
               />

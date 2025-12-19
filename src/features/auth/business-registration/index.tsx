@@ -309,6 +309,10 @@ const BusinessRegistrationForm: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if(!(completedSteps.includes(1) && completedSteps.includes(2) && completedSteps.includes(3))){
+      toast.error("Please complete all the steps before submitting.")
+      return;
+    }
     if (validateStep(currentStep)) {
       try {
         // Ensure the final step's API call is made
@@ -372,7 +376,7 @@ const BusinessRegistrationForm: React.FC = () => {
   };
 
   const handleSkip = () => {
-    setCompletedSteps((prev) => (prev.includes(currentStep) ? prev : [...prev, currentStep]));
+    // setCompletedSteps((prev) => (prev.includes(currentStep) ? prev : [...prev, currentStep]));
     handleStepChange(currentStep + 1);
   };
 

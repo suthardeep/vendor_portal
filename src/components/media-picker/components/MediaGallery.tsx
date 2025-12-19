@@ -72,43 +72,67 @@ export const MediaGallery = ({
   const [folderError, setFolderError] = useState("");
 
   // --- Queries ---
-  const { data: folderData, isLoading: loadingFolders } = useFoldersApi(searchQuery , isOpen);
-  const folders = folderData?.data?.groups || [];
+  const {
+    data: folderPages,
+    isLoading: loadingFolders,
+    fetchNextPage: fetchNextFolders,
+    hasNextPage: hasNextFolders,
+    isFetchingNextPage: isFetchingNextFolders,
+  } = useFoldersApi(searchQuery, isOpen && !currentFolder);
 
   const {
     data: filePages,
     isLoading: loadingFiles,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    fetchNextPage: fetchNextFiles,
+    hasNextPage: hasNextFiles,
+    isFetchingNextPage: isFetchingNextFiles,
   } = useFilesApi({ group: currentFolder || "", search: searchQuery });
 
   const uploadFilesMutation = useUploadFiles();
 
   // --- Derived Data ---
 
+  // Flatten folders from pages
+  const folders = useMemo(() => {
+    return folderPages?.pages.flatMap((page) => page.data.data) || [];
+  }, [folderPages]);
+
   // Flatten files from pages
   const files = useMemo(() => {
     return filePages?.pages.flatMap((page) => page.data.data) || [];
   }, [filePages]);
 
-  // Filter items logic
+  // Filter items logic - Deprecated
+  // const displayItems = useMemo(() => {
+  //   if (currentFolder) {
+  //     // Inside a folder: Show Files
+  //     if (searchQuery) {
+  //       return files.filter((item) => item.originalName.toLowerCase().includes(searchQuery.toLowerCase()));
+  //     }
+  //     return files;
+  //   } else {
+  //     // Root: Show Folders
+  //     let items = folders;
+  //     if (searchQuery) {
+  //       items = items.filter((folderName) => folderName.toLowerCase().includes(searchQuery.toLowerCase()));
+  //     }
+  //     return items;
+  //   }
+  // }, [currentFolder, files, folders, searchQuery]);
+
   const displayItems = useMemo(() => {
     if (currentFolder) {
       // Inside a folder: Show Files
-      if (searchQuery) {
-        return files.filter((item) => item.originalName.toLowerCase().includes(searchQuery.toLowerCase()));
-      }
+      // Note: Search is handled by API now for both, but we can keep client filter as fallback or remove if API is strict.
+      // Since 'files' comes from the API which already used 'searchQuery', we can just return files.
+      // However, to be safe during typing (debounce usually handles this), we assume 'files' is what we want.
       return files;
     } else {
       // Root: Show Folders
-      let items = folders;
-      if (searchQuery) {
-        items = items.filter((folderName) => folderName.toLowerCase().includes(searchQuery.toLowerCase()));
-      }
-      return items;
+      // 'folders' comes from API which used 'searchQuery', so no need to filter locally.
+      return folders;
     }
-  }, [currentFolder, files, folders, searchQuery]);
+  }, [currentFolder, files, folders]);
 
   // --- Handlers ---
 
@@ -212,6 +236,17 @@ export const MediaGallery = ({
   const selectedCount = selection.size;
   const isUploading = uploadFilesMutation.isPending;
   const isLoading = currentFolder ? loadingFiles : loadingFolders;
+  const showLoadMore = currentFolder ? hasNextFiles : hasNextFolders;
+  console.log("showLoadMore", showLoadMore, hasNextFiles, hasNextFolders)
+  const isFetchingMore = currentFolder ? isFetchingNextFiles : isFetchingNextFolders;
+
+  const handleLoadMore = () => {
+    if (currentFolder) {
+      fetchNextFiles();
+    } else {
+      fetchNextFolders();
+    }
+  };
 
   // Determine if "Select All" is checked
   // Note: displayItems can be strings (folders) or objects (files). casting needed.
@@ -353,10 +388,9 @@ export const MediaGallery = ({
             </div>
 
             <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-             {isLoading && !currentFolder ? (
-          <FolderShimmer />
-        ) : displayItems.length === 0 ? (
-
+              {isLoading && !isFetchingMore && displayItems.length === 0 ? (
+                <FolderShimmer />
+              ) : displayItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-gray-400 py-16">
                   <div className="w-24 h-24 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
                     <FileIcon className="w-12 h-12 opacity-40" />
@@ -367,7 +401,7 @@ export const MediaGallery = ({
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 pb-4">
+                  <div className="p-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 pb-4">
                     {currentFolder
                       ? // --- RENDER FILES ---
                         (displayItems as MediaItem[]).map((item) => {
@@ -452,17 +486,16 @@ export const MediaGallery = ({
                         ))}
                   </div>
 
-                  {/* Load More Button */}
-                  {currentFolder && hasNextPage && (
+                  {/* Unified Load More Button */}
+                  {showLoadMore && (
                     <div className="flex justify-center py-4">
                       <Button
-                        onClick={() => fetchNextPage()}
-                        disabled={isFetchingNextPage}
-                        isLoading={isFetchingNextPage}
-                        startIcon={isFetchingNextPage ? "Loader2" : "Plus"}
+                        onClick={handleLoadMore}
+                        disabled={isFetchingMore}
+                        isLoading={isFetchingMore}
+                        startIcon={isFetchingMore ? "Loader2" : "Plus"}
                       >
-                        {/* {isFetchingNextPage && <Loader2 className="w-4 h-4 animate-spin" />} */}
-                        {isFetchingNextPage ? "Loading more..." : "Load More"}
+                        {isFetchingMore ? "Loading more..." : "Load More"}
                       </Button>
                     </div>
                   )}

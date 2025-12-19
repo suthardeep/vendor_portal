@@ -18,22 +18,21 @@ export interface MinimalMediaProps {
   s3Url:string;
 }
 
+export interface MetaData {
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  currentRows: number;
+  totalRows: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 export interface PaginatedResponse<T> {
   statusCode: number;
   message: string;
   data: {
     data: T[];
-    total: number;
-    page: string | number;
-    limit: string | number;
-    totalPages: number;
-  };
-}
-
-export interface FolderResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    groups: string[];
+    meta: MetaData;
   };
 }

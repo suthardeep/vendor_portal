@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BankDetailsStepProps } from "../../types/registration.types";
 import StepContainer from "../StepContainer";
 import { Input } from "@/components/base/Input";
-import { Icon } from "@/components/base/Icon";
+// import { Icon } from "@/components/base/Icon";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
 
 const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, errors }) => {

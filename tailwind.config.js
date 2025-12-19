@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      boxShadow: {
+        card: '0px 2px 4px -2px rgba(0,0,0,0.06), 0px 4px 6px -1px rgba(0,0,0,0.1)',
+      },
       keyframes: {
         slideIn: {
           "0%": { transform: "translateY(100%)" },
@@ -45,6 +48,8 @@ module.exports = {
     },
   ],
   safelist: [
+    "boxShadow",
+    "shadow-card",
   //   "hover:bg-primary-500/90", 
   //  {
   //   pattern: /(bg|hover:bg|text|border)-(primary|secondary)-(50|100|200|300|400|500|600|700|800|900)(\/[0-9]{2})?/,

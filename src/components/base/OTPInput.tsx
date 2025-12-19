@@ -31,6 +31,7 @@ export interface OTPInputProps {
   value?: string;
   onChange?: (value: string) => void;
   onComplete?: (value: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   size?: "sm" | "md" | "lg";
   error?: string;
   containerClassName?: string;
@@ -59,6 +60,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
       value = "",
       onChange,
       onComplete,
+      onKeyDown,
       size = "md",
       error,
       containerClassName,
@@ -152,6 +154,11 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
       } else if (e.key === "ArrowRight" && index < length - 1) {
         inputRefs.current[index + 1]?.focus();
       }
+
+      if (onKeyDown) {
+        onKeyDown(e);
+      }
+
     };
 
     const handlePaste = (e: React.ClipboardEvent) => {

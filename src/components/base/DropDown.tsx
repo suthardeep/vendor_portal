@@ -176,7 +176,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         <Label 
           required={required} 
           className={cn(
-            error ? "text-error" : success ? "text-success" : "text-base-content/40",
+            error ? "text-error" : success ? "text-success" : "",
             labelClassName
           )}
         >
@@ -229,7 +229,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       {isOpen && (
         <div
           className={cn(
-            "absolute z-50 w-full mt-1 border border-base-content/40 rounded-lg shadow-lg bg-base-1",
+            "absolute z-1001 w-full mt-1 border border-base-content/40 rounded-lg shadow-lg bg-base-1",
             "top-full"
           )}
           style={{ maxHeight }}
@@ -254,7 +254,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
           )}
 
           <div className="overflow-y-auto" style={{ maxHeight: `calc(${maxHeight} - ${searchable ? '60px' : '0px'})` }}>
-            {sortedOptions.length === 0 ? (
+            {!isLoading && sortedOptions.length === 0 ? (
               <div className={cn("p-4 text-center text-base-content/40", TEXT_SIZE_MAP[inputSize])}>
                 {noOptionsText}
               </div>

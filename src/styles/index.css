@@ -572,6 +572,38 @@ input:-webkit-autofill {
 }
 
 
+@layer utilities {
+  .scroll-hint-y {
+    overflow-y: auto;
+
+    background:
+      linear-gradient(var(--color-base-1) 30%, transparent),
+      linear-gradient(transparent, var(--color-base-1) 70%),
+      linear-gradient(rgba(0, 0, 0, 0.15), transparent),
+      linear-gradient(transparent, rgba(0, 0, 0, 0.15));
+
+    background-repeat: no-repeat;
+
+    background-size:
+      100% 40px,
+      100% 40px,
+      100% 14px,
+      100% 14px;
+
+    background-position:
+      top,
+      bottom,
+      top,
+      bottom;
+
+    background-attachment:
+      local,
+      local,
+      scroll,
+      scroll;
+  }
+}
+
 
 @theme inline {
   --color-primary-900: var(--primary-900);

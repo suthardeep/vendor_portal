@@ -5,11 +5,11 @@ export type LoginStep = "INPUT_MOBILE" | "INPUT_OTP";
 
 
 export interface LoginResponseData {
-  access_token: string; 
-  refresh_token: string;
-  token_type: string;
-  expires_in: number;
-  user: User;
+  accessToken: string; 
+  refreshToken: string;
+  // token_type: string;
+  // expires_in: number;
+  // user: User;
 }
 
 export interface LoginResponse {

@@ -1,24 +1,30 @@
-import { useMutation, useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchFiles, fetchFolders, uploadFiles } from "./queryFns";
 import { MediaFileParams } from "../types/media.api";
-import { PaginatedResponse, MediaItem, FolderResponse } from "../types/media.types";
+import { PaginatedResponse, MediaItem } from "../types/media.types";
 
 const MEDIA_FOLDER_QUERY_KEY = "media-folder";
 const MEDIA_FILE_QUERY_KEY = "media-file";
 const GC_TIME = 1000 * 60 * 5;
 const STALE_TIME = 1000 * 60 * 5;
 
-export const useFoldersApi = (search: string , enabled:boolean) => {
-  return useQuery<FolderResponse>({
+export const useFoldersApi = (search: string , enabled: boolean) => {
+  return useInfiniteQuery<PaginatedResponse<string>>({
     queryKey: [MEDIA_FOLDER_QUERY_KEY, search],
-    queryFn: ()=> fetchFolders(search),
+    queryFn: ({ pageParam = 1 }) => 
+      fetchFolders({ search, page: pageParam as number, limit: 20 }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { currentPage, totalPages } = lastPage.data.meta;
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
     gcTime: GC_TIME,
-    enabled ,
+    enabled,
     staleTime: STALE_TIME,
     retry: false,
-    refetchOnWindowFocus:false,
-    refetchOnMount:false,
-    refetchOnReconnect:false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -29,16 +35,15 @@ export const useFilesApi = (params: Omit<MediaFileParams, 'page'>) => {
       fetchFiles({ ...params, page: pageParam as number, limit: 20 }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const currentPage = Number(lastPage.data.page);
-      const totalPages = lastPage.data.totalPages;
+      const { currentPage, totalPages } = lastPage.data.meta;
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
     gcTime: GC_TIME,
     staleTime: STALE_TIME,
     retry: false,
-    refetchOnWindowFocus:false,
-    refetchOnMount:false,
-    refetchOnReconnect:false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     enabled: !!params.group, // Only fetch if folder is selected
   });
 };
@@ -48,7 +53,7 @@ export const useUploadFiles = () => {
   return useMutation({
     mutationFn: uploadFiles,
     onSuccess: (_, variables) => {
-      // Invalidate folders in case a new one was created implicitly
+      // Invalidate folders
       queryClient.invalidateQueries({ queryKey: [MEDIA_FOLDER_QUERY_KEY] });
       // Invalidate specific folder files
       queryClient.invalidateQueries({ 

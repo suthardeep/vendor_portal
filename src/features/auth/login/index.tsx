@@ -59,6 +59,19 @@ const Login: React.FC = () => {
     }
   };
 
+  
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if(step === "INPUT_MOBILE"){
+        setStep("INPUT_OTP");
+        setErrors({});
+        handleGetOtp();
+      }else{
+        handleLogin();
+      }
+    }
+  };
+
   const handleGetOtp = () => {
     // 1. Validate Mobile
     const result = LoginSchema.safeParse({ phone }); 
@@ -129,11 +142,11 @@ const Login: React.FC = () => {
     verifyOtpMutation.mutate(
       { phone: phone, otp: otp }, 
       {
-        onSuccess: async (res) => {
+        onSuccess: async (data) => {
             try {
               // 3. Store Access Token FIRST
-              console.log("✅ [LOGIN] Login successful, access token:", res.data.access_token);
-              TokenUtil.setToken(res.data.access_token); 
+              // console.log("✅ [LOGIN] Login successful, access token:", );
+              TokenUtil.setToken(data?.accessToken); 
               
               // Set flag to prevent AppInitializer from interfering with navigation
               sessionStorage.setItem('justLoggedIn', 'true');
@@ -286,7 +299,8 @@ const Login: React.FC = () => {
               label="Mobile Number"
               placeholder="Enter number"
               value={phone} 
-              onChange={handlePhoneChange} 
+              onChange={handlePhoneChange}
+              onKeyDown={handleInputKeyDown}
               error={errors.phone} 
               maxLength={10}
               required
@@ -333,6 +347,7 @@ const Login: React.FC = () => {
                 setErrors((prev) => { const n = {...prev}; delete n.otp; return n; });
               }}
               onComplete={handleOtpComplete}
+              onKeyDown={handleInputKeyDown}
               error={errors.otp}
               disabled={isPending}
               // Adjusting size to match screenshot look

@@ -17,6 +17,10 @@ import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as AuthBusinessRegistrationIndexRouteImport } from './routes/_auth/business-registration/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppOrdersNewOrdersRouteRouteImport } from './routes/_app/orders/new-orders/route'
+import { Route as AppProductsAddProductIndexRouteImport } from './routes/_app/products/add-product/index'
+import { Route as AppProductsProductFormProductIdRouteRouteImport } from './routes/_app/products/product-form/$productId/route'
+import { Route as AppProductsProductFormProductIdVariationsRouteRouteImport } from './routes/_app/products/product-form/$productId/variations/route'
+import { Route as AppProductsProductFormProductIdBasicDetailsRouteRouteImport } from './routes/_app/products/product-form/$productId/basic-details/route'
 
 const DemoRouteRoute = DemoRouteRouteImport.update({
   id: '/demo',
@@ -57,6 +61,30 @@ const AppOrdersNewOrdersRouteRoute = AppOrdersNewOrdersRouteRouteImport.update({
   path: '/orders/new-orders',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppProductsAddProductIndexRoute =
+  AppProductsAddProductIndexRouteImport.update({
+    id: '/products/add-product/',
+    path: '/products/add-product/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppProductsProductFormProductIdRouteRoute =
+  AppProductsProductFormProductIdRouteRouteImport.update({
+    id: '/products/product-form/$productId',
+    path: '/products/product-form/$productId',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppProductsProductFormProductIdVariationsRouteRoute =
+  AppProductsProductFormProductIdVariationsRouteRouteImport.update({
+    id: '/variations',
+    path: '/variations',
+    getParentRoute: () => AppProductsProductFormProductIdRouteRoute,
+  } as any)
+const AppProductsProductFormProductIdBasicDetailsRouteRoute =
+  AppProductsProductFormProductIdBasicDetailsRouteRouteImport.update({
+    id: '/basic-details',
+    path: '/basic-details',
+    getParentRoute: () => AppProductsProductFormProductIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/demo': typeof DemoRouteRoute
@@ -65,6 +93,10 @@ export interface FileRoutesByFullPath {
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/registration': typeof AuthRegistrationIndexRoute
+  '/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
+  '/products/add-product': typeof AppProductsAddProductIndexRoute
+  '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRoutesByTo {
   '/demo': typeof DemoRouteRoute
@@ -73,6 +105,10 @@ export interface FileRoutesByTo {
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/registration': typeof AuthRegistrationIndexRoute
+  '/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
+  '/products/add-product': typeof AppProductsAddProductIndexRoute
+  '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -84,6 +120,10 @@ export interface FileRoutesById {
   '/_auth/business-registration/': typeof AuthBusinessRegistrationIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/registration/': typeof AuthRegistrationIndexRoute
+  '/_app/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
+  '/_app/products/add-product/': typeof AppProductsAddProductIndexRoute
+  '/_app/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/_app/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -94,6 +134,10 @@ export interface FileRouteTypes {
     | '/business-registration'
     | '/login'
     | '/registration'
+    | '/products/product-form/$productId'
+    | '/products/add-product'
+    | '/products/product-form/$productId/basic-details'
+    | '/products/product-form/$productId/variations'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/demo'
@@ -102,6 +146,10 @@ export interface FileRouteTypes {
     | '/business-registration'
     | '/login'
     | '/registration'
+    | '/products/product-form/$productId'
+    | '/products/add-product'
+    | '/products/product-form/$productId/basic-details'
+    | '/products/product-form/$productId/variations'
   id:
     | '__root__'
     | '/_app'
@@ -112,6 +160,10 @@ export interface FileRouteTypes {
     | '/_auth/business-registration/'
     | '/_auth/login/'
     | '/_auth/registration/'
+    | '/_app/products/product-form/$productId'
+    | '/_app/products/add-product/'
+    | '/_app/products/product-form/$productId/basic-details'
+    | '/_app/products/product-form/$productId/variations'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,17 +230,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrdersNewOrdersRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/products/add-product/': {
+      id: '/_app/products/add-product/'
+      path: '/products/add-product'
+      fullPath: '/products/add-product'
+      preLoaderRoute: typeof AppProductsAddProductIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/products/product-form/$productId': {
+      id: '/_app/products/product-form/$productId'
+      path: '/products/product-form/$productId'
+      fullPath: '/products/product-form/$productId'
+      preLoaderRoute: typeof AppProductsProductFormProductIdRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/products/product-form/$productId/variations': {
+      id: '/_app/products/product-form/$productId/variations'
+      path: '/variations'
+      fullPath: '/products/product-form/$productId/variations'
+      preLoaderRoute: typeof AppProductsProductFormProductIdVariationsRouteRouteImport
+      parentRoute: typeof AppProductsProductFormProductIdRouteRoute
+    }
+    '/_app/products/product-form/$productId/basic-details': {
+      id: '/_app/products/product-form/$productId/basic-details'
+      path: '/basic-details'
+      fullPath: '/products/product-form/$productId/basic-details'
+      preLoaderRoute: typeof AppProductsProductFormProductIdBasicDetailsRouteRouteImport
+      parentRoute: typeof AppProductsProductFormProductIdRouteRoute
+    }
   }
 }
+
+interface AppProductsProductFormProductIdRouteRouteChildren {
+  AppProductsProductFormProductIdBasicDetailsRouteRoute: typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  AppProductsProductFormProductIdVariationsRouteRoute: typeof AppProductsProductFormProductIdVariationsRouteRoute
+}
+
+const AppProductsProductFormProductIdRouteRouteChildren: AppProductsProductFormProductIdRouteRouteChildren =
+  {
+    AppProductsProductFormProductIdBasicDetailsRouteRoute:
+      AppProductsProductFormProductIdBasicDetailsRouteRoute,
+    AppProductsProductFormProductIdVariationsRouteRoute:
+      AppProductsProductFormProductIdVariationsRouteRoute,
+  }
+
+const AppProductsProductFormProductIdRouteRouteWithChildren =
+  AppProductsProductFormProductIdRouteRoute._addFileChildren(
+    AppProductsProductFormProductIdRouteRouteChildren,
+  )
 
 interface AppRouteRouteChildren {
   AppOrdersNewOrdersRouteRoute: typeof AppOrdersNewOrdersRouteRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppProductsProductFormProductIdRouteRoute: typeof AppProductsProductFormProductIdRouteRouteWithChildren
+  AppProductsAddProductIndexRoute: typeof AppProductsAddProductIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppOrdersNewOrdersRouteRoute: AppOrdersNewOrdersRouteRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppProductsProductFormProductIdRouteRoute:
+    AppProductsProductFormProductIdRouteRouteWithChildren,
+  AppProductsAddProductIndexRoute: AppProductsAddProductIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

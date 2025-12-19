@@ -257,7 +257,7 @@ const Registration: React.FC = () => {
           </div>
           <div>
             <div className="flex justify-between items-center">
-              <h1 className="mb-1 text-base-content text-2xl font-semibold sm:text-4xl">Registration</h1>
+              <h1 className="mb-1 text-base-content text-2xl font-semibold sm:text-4xl">Complete Your Profile</h1>
             </div>
             <p className="text-sm sm:text-base font-normal text-body-content/80">
               Establish your business and connect with millions throughout India.

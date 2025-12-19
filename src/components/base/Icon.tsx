@@ -88,6 +88,8 @@ import {
   Globe,
   LucideIcon,
   LucideProps,
+  Database,
+  PlusSquare,
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -181,6 +183,8 @@ const lucideIconRegistry = {
   Palette,
   MapPin,
   Globe,
+  Database,
+  PlusSquare,
 } satisfies Record<string, LucideIcon>;
 
 export type LucideIconName = keyof typeof lucideIconRegistry;

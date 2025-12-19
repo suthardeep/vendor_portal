@@ -4,7 +4,8 @@ import {
     SendOtpPayload, 
     SendOtpResponse, 
     VerifyOtpPayload, 
-    LoginResponse 
+    LoginResponse, 
+    LoginResponseData
 } from "../types/login";
 
 
@@ -17,7 +18,7 @@ export const sendOtp = (data: SendOtpPayload): Promise<SendOtpResponse> => {
 }
 
 
-export const verifyOtp = (data: VerifyOtpPayload): Promise<LoginResponse> => {
+export const verifyOtp = (data: VerifyOtpPayload): Promise<LoginResponseData> => {
     return apiService({
         method: "POST",
         data: data,

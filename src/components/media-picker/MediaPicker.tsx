@@ -94,6 +94,8 @@ const aspectRatioVariants = cva("", {
   },
 });
 
+// const defaultHeight = "h-[20dvh]";
+
 interface MediaPickerProps {
   label?: string;
   value?: MinimalMediaProps[];
@@ -132,14 +134,14 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   onChange,
 
   // Layout defaults
-  orientation = "grid",
+  orientation = "horizontal",
   gridConfig = {
     cols: 3,
     gap: "gap-3",
   },
   sizeConfig = {
     width: "w-full",
-    maxHeight: "max-h-[25dvh]",
+    maxHeight: "max-h-[20dvh]",
   },
   scroll = "vertical",
 
@@ -318,13 +320,13 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
           src={item.s3Url}
           onClick={(e:any)=>handlePreview(item, e)}
           alt={item.s3Url || "Selected media"}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full rounded-2xl object-cover transition-transform duration-300 group-hover:scale-105"
         />
       );
     }
 
     return (
-      <div onClick={(e:any)=>handlePreview(item, e)} className="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
+      <div onClick={(e:any)=>handlePreview(item, e)} className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
         <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-white to-gray-200 flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
           {fileType === "video" && <Video className={cn(getIconClasses(), "text-primary")} />}
           {fileType === "pdf" && <FileText className={cn(getIconClasses(), "text-red-500")} />}
@@ -345,65 +347,65 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   };
 
   // Single mode with horizontal layout
-  if (isSingleMode && hasSelection && orientation === "horizontal") {
-    const selectedWidthPercent = 100 - addButtonWidthPercent;
+  // if (isSingleMode && hasSelection && orientation === "horizontal") {
+  //   const selectedWidthPercent = 100 - addButtonWidthPercent;
 
-    return (
-      <div className="space-y-1">
-        {label && <Label required={required}>{label}</Label>}
-        <div className={cn(buildSizeClasses(sizeConfig), className)}>
-          <div className={cn(getScrollClasses(), buildSizeClasses(sizeConfig), containerClassName)}>
-            <div className={cn("flex", gridConfig.gap || "gap-3")}>
-              {/* Selected Item */}
-              <div
-                className={cn(
-                  "relative group rounded-2xl border border-gray-300 overflow-hidden bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-xl",
-                  buildSizeClasses(itemSizeConfig),
-                  itemClassName
-                )}
-                style={{ width: `${selectedWidthPercent}%` }}
-              >
-                <div className={itemSizeConfig.aspectRatio ? "" : "w-full h-full"}>
-                  {renderItemContent(cleanedValue[0])}
-                </div>
+  //   return (
+  //     <div className="space-y-1">
+  //       {label && <Label required={required}>{label}</Label>}
+  //       <div className={cn(buildSizeClasses(sizeConfig), className)}>
+  //         <div className={cn(getScrollClasses(), buildSizeClasses(sizeConfig), containerClassName)}>
+  //           <div className={cn("flex", gridConfig.gap || "gap-3")}>
+  //             {/* Selected Item */}
+  //             <div
+  //               className={cn(
+  //                 "relative group rounded-2xl border border-gray-300 overflow-hidden bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-xl",
+  //                 buildSizeClasses(itemSizeConfig),
+  //                 itemClassName
+  //               )}
+  //               style={{ width: `${selectedWidthPercent}%` }}
+  //             >
+  //               <div className={itemSizeConfig.aspectRatio ? "" : "w-full h-full"}>
+  //                 {renderItemContent(cleanedValue[0])}
+  //               </div>
 
-                <Button
-                  onClick={() => handleRemove(cleanedValue[0].id)}
-                  className="absolute top-2 right-2 p-1.5 bg-white/95 backdrop-blur-sm text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-red-500 hover:text-white active:scale-95"
-                  aria-label="Remove item"
-                >
-                  <X className={getIconClasses()} />
-                </Button>
-              </div>
+  //               <Button
+  //                 onClick={() => handleRemove(cleanedValue[0].id)}
+  //                 className="absolute top-2 right-2 p-1.5 bg-white/95 backdrop-blur-sm text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-red-500 hover:text-white active:scale-95"
+  //                 aria-label="Remove item"
+  //               >
+  //                 <X className={getIconClasses()} />
+  //               </Button>
+  //             </div>
 
-              {/* Replace Button */}
-              <button
-                type="button"
-                onClick={() => setIsGalleryOpen(true)}
-                className={cn(
-                  "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-gradient-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
-                  gridConfig.gap || "gap-2"
-                )}
-                style={{ width: `${addButtonWidthPercent}%` }}
-              >
-                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-200 transition-all duration-300">
-                  <RefreshCw className={cn(getIconClasses(), "text-primary")} />
-                </div>
-                {textConfig.show && <span className={getTextClasses()}>Replace</span>}
-              </button>
-            </div>
-          </div>
+  //             {/* Replace Button */}
+  //             <button
+  //               type="button"
+  //               onClick={() => setIsGalleryOpen(true)}
+  //               className={cn(
+  //                 "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-gradient-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
+  //                 gridConfig.gap || "gap-2"
+  //               )}
+  //               style={{ width: `${addButtonWidthPercent}%` }}
+  //             >
+  //               <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-200 transition-all duration-300">
+  //                 <RefreshCw className={cn(getIconClasses(), "text-primary")} />
+  //               </div>
+  //               {textConfig.show && <span className={getTextClasses()}>Replace</span>}
+  //             </button>
+  //           </div>
+  //         </div>
 
-          <MediaGallery
-            isOpen={isGalleryOpen}
-            onClose={() => setIsGalleryOpen(false)}
-            onConfirm={handleConfirm}
-          />
-        </div>
-        {error && <ErrorText>{error}</ErrorText>}
-      </div>
-    );
-  }
+  //         <MediaGallery
+  //           isOpen={isGalleryOpen}
+  //           onClose={() => setIsGalleryOpen(false)}
+  //           onConfirm={handleConfirm}
+  //         />
+  //       </div>
+  //       {error && <ErrorText>{error}</ErrorText>}
+  //     </div>
+  //   );
+  // }
 
   // Normal layout (grid, horizontal, vertical)
   return (
@@ -428,7 +430,8 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 <div
                   key={item.id}
                   className={cn(
-                    "relative group rounded-2xl border border-gray-300 overflow-hidden bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-xl ",
+                    "relative group rounded-2xl overflow-hidden border border-gray-300 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-xl ",
+                    "h-[20dvh]",
                     buildSizeClasses(itemSizeConfig),
                     itemClassName,
                     orientation === "horizontal" && !itemSizeConfig.width && "shrink-0",
@@ -455,12 +458,13 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 onClick={() => setIsGalleryOpen(true)}
                 className={cn(
                   "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-primary hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-gradient-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
+                  "h-[20dvh]",
                   buildSizeClasses(itemSizeConfig),
                   itemClassName,
                   !hasSelection && orientation === "grid" && "col-span-full",
                   gridConfig.gap || "gap-2",
-                  orientation === "horizontal" && !itemSizeConfig.width && "flex-shrink-0",
-                  orientation === "vertical" && !itemSizeConfig.height && "flex-shrink-0"
+                  orientation === "horizontal" && !itemSizeConfig.width && "shrink-0",
+                  orientation === "vertical" && !itemSizeConfig.height && "shrink-0"
                 )}
               >
                 <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-200 transition-all duration-300">

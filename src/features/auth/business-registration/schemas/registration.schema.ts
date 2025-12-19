@@ -63,54 +63,68 @@ export const businessDetailsWithGSTSchema = BusinessDetailsSchema.omit({
 
 // Schema for businesses WITHOUT GST (Requires all business/person details + declaration)
 export const businessDetailsWithoutGSTSchema = BusinessDetailsSchema.omit({
-    gstNumber: true,
-    gstCertificateId: true,
-    gstCertificate: true,
+  gstNumber: true,
+  gstCertificateId: true,
+  gstCertificate: true,
 }).extend({
-    // Make file IDs and URLs mandatory for non-GST flow
-    panCardId: FileIdSchema,
-    panCard: FileUrlSchema,
-    registrationCertificateId: FileIdSchema,
-    registrationCertificate: FileUrlSchema,
-    authorisedPersonPanCardId: FileIdSchema,
-    authorisedPersonPanCard: FileUrlSchema,
-    authorisedPersonAadharCardId: FileIdSchema,
-    authorisedPersonAadharCard: FileUrlSchema,
-    hasGST: z.literal(false),
+  // Make file IDs and URLs mandatory for non-GST flow
+  panCardId: FileIdSchema,
+  panCard: FileUrlSchema,
+  registrationCertificateId: FileIdSchema,
+  registrationCertificate: FileUrlSchema,
+  authorisedPersonPanCardId: FileIdSchema,
+  authorisedPersonPanCard: FileUrlSchema,
+  authorisedPersonAadharCardId: FileIdSchema,
+  authorisedPersonAadharCard: FileUrlSchema,
+  hasGST: z.literal(false),
 });
-
 
 export const SingleBrandSchema = z.object({
   brandName: z.string().trim().min(1, "Brand name is required"),
-  natureOfBusiness: z.string().min(1, "Nature of business is required"), // Radio string
-selectedCategories: z
-  .array(z.string())
-  .min(1, "At least one category is required"),
-  brandDocumentIds: z.array(z.string()).max(5, "Max 5 documents"),
-  brandDocuments: z.array(z.string()).max(5, "Max 5 documents"),
-  website: z.string().optional(),
+  natureOfBusiness: z.enum(["brandowner", "manufacturer", "importer"], "Nature of business is required"), // Radio string
+  selectedCategories: z.array(z.string()).min(1, "At least one category is required"),
+  brandDocumentIds: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
+  brandDocuments: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
+  brandLogoId: FileIdSchema,
+  brandLogo: FileIdSchema,
+  website: z.url("Website must be a valid URL (https://...)").optional().or(z.literal("")),
   socialMedia: z.string().optional(),
-  
 });
 
-export const BrandDetailsSchema = z.array(SingleBrandSchema).min(1, "At least one brand is required");
+export const BrandDetailsSchema = z
+  .array(SingleBrandSchema)
+  .min(1, "At least one brand is required")
+  .superRefine((brands, ctx) => {
+    const seen = new Map<string, number>();
 
+    brands.forEach((brand, index) => {
+      const name = brand.brandName.trim().toLowerCase();
+
+      if (seen.has(name)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Brand name already exists",
+          path: [index, "brandName"], // 👈 error shows on exact field
+        });
+      } else {
+        seen.set(name, index);
+      }
+    });
+  });
 
 export const BankDetailsSchema = z.object({
   accountNumber: z.string().min(8, "Invalid account number").max(18, "Invalid account number"),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC Code"),
   accountHolderName: z.string().min(2, "Account holder name is required"),
-  
+
   // 6. Bank Proof Document - Both ID and URL required
   bankProofDocumentId: FileIdSchema,
   bankProofDocument: FileUrlSchema,
 });
 
-
 export const DeclarationSchema = z.object({
   agreed: z.boolean().refine((val) => val === true, "You must accept the terms and conditions"),
 });
-
 
 export type BusinessDetailsType = z.infer<typeof BusinessDetailsSchema>;
 export type SingleBrandType = z.infer<typeof SingleBrandSchema>;

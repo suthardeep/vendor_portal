@@ -12,7 +12,7 @@ interface HSL {
   l: number;
 }
 
-interface ColorData {
+export interface ColorData {
   color: string;
   name: string;
   alpha: number;
@@ -37,7 +37,7 @@ interface CustomColorPickerProps {
   pickerHeight?: string;
 }
 
-const CustomColorPicker: React.FC<CustomColorPickerProps> = ({
+const ColorPickerDialog: React.FC<CustomColorPickerProps> = ({
   isOpen = true,
   onClose = () => {},
   onSave = (color: ColorData) => console.log('Color saved:', color),
@@ -341,60 +341,4 @@ const CustomColorPicker: React.FC<CustomColorPickerProps> = ({
   );
 };
 
-export default CustomColorPicker;
-
-// Demo Usage
-export function CustomColorPickerDemo() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [savedColor, setSavedColor] = useState<ColorData | null>(null);
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Custom Color Picker Demo</h1>
-        
-        <div className="space-y-4 mb-8">
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Different Sizes:</h2>
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setIsOpen(true)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm"
-              >
-                Default (500px × 200px)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {savedColor && (
-          <div className="mt-8 p-4 bg-white rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-3">Saved Color:</h2>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-lg border" style={{ backgroundColor: savedColor.color }} />
-              <div>
-                <p className="font-medium">{savedColor.name}</p>
-                <p className="text-sm text-gray-600">Hex: {savedColor.color}</p>
-                <p className="text-sm text-gray-600">RGB: {savedColor.rgb.r}, {savedColor.rgb.g}, {savedColor.rgb.b}</p>
-                <p className="text-sm text-gray-600">Alpha: {Math.round(savedColor.alpha)}%</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <CustomColorPicker
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          onSave={(color) => {
-            setSavedColor(color);
-            setIsOpen(false);
-          }}
-          initialColor="#8000ff"
-          initialName="Custom blue"
-          maxWidth="500px"
-          pickerHeight="200px"
-        />
-      </div>
-    </div>
-  );
-}
+export default ColorPickerDialog;

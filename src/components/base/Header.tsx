@@ -1,16 +1,13 @@
 import React, { FC, JSX } from "react";
 import Icon from "./Icon";
 import { cn } from "../../utils/helpers";
-
-type Breadcrumb = {
-  label: string;
-  onClick?: () => void;
-};
+import { useNavigate } from "@tanstack/react-router";
+import { getBreadcrumbs } from "@/utils/getBreadCrumbs";
 
 interface HeaderProps {
   greeting?: string;
   subtitle?: string;
-  breadcrumbs?: Breadcrumb[];
+  // breadcrumbs?: Breadcrumb[];
   showBack?: boolean;
   onBackClick?: () => void;
   userAvatar?: string;
@@ -20,7 +17,7 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({
   greeting,
   subtitle,
-  breadcrumbs = [],
+  // breadcrumbs = [],
   showBack = false,
   onBackClick,
   userAvatar = "profile.jpg",
@@ -30,31 +27,30 @@ const Header: FC<HeaderProps> = ({
     (e.currentTarget as HTMLElement).style.opacity = value;
   };
 
-return (
-    <header className="px-1">
+  const navigate = useNavigate();
+
+  const breadcrumbs = getBreadcrumbs();
+
+  return (
+    <header className="">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-0.5">
-
           {breadcrumbs.length > 0 && (
-            <nav className="flex items-center gap-1 text-xl"> {/* Increased gap and text size */}
+            <nav className="flex items-center gap-1 text-xl">
+              {" "}
+              {/* Increased gap and text size */}
               {breadcrumbs.map((crumb, index) => (
                 <React.Fragment key={index}>
-                  {index > 0 && (
-                    <Icon 
-                      name="ChevronRight" 
-                      size={20}  
-                      className="text-base-content"
-                    />
-                  )}
+                  {index > 0 && <Icon name="ChevronRight" size={20} className="text-base-content" />}
                   <span
                     className={cn(
-                      "transition-opacity text-base", 
+                      "transition-opacity text-base",
                       index === breadcrumbs.length - 1 ? "font-light" : "cursor-pointer font-light"
                     )}
                     style={{
                       opacity: index === breadcrumbs.length - 1 ? 1 : 0.6,
                     }}
-                    onClick={() => crumb.onClick?.()}
+                    onClick={() => navigate({ to: crumb.path ?? "/dashboard" })}
                     onMouseEnter={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.8")}
                     onMouseLeave={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.6")}
                   >
@@ -79,21 +75,12 @@ return (
             </button>
           )}
 
-          {greeting && (
-            <h1 className="text-base font-semibold text-primary-content-50">
-              {greeting}
-            </h1>
-          )}
+          {greeting && <h1 className="text-base font-semibold text-primary-content-50">{greeting}</h1>}
 
-          {subtitle && (
-            <p className="text-md text-primary-content-50">
-              {subtitle}
-            </p>
-          )}
+          {subtitle && <p className="text-md text-primary-content-50">{subtitle}</p>}
         </div>
 
         <div className="flex items-center gap-2">
-
           {showNotification && (
             <button
               className="transition-opacity opacity-60"
@@ -101,7 +88,7 @@ return (
               onMouseLeave={(e) => setOpacity(e, "0.6")}
               type="button"
             >
-              <Icon name="Bell" size={20}  className="text-base-1"  />
+              <Icon name="Bell" size={20} className="text-base-1" />
             </button>
           )}
 

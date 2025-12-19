@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from "@/components/base/Icon";
 import { cn } from '../../utils/helpers';
+import { TokenUtil } from '@/utils/tokenUtil';
+import { useNavigate } from '@tanstack/react-router';
+import LogoutDialog from '../shared/LogoutDialog';
 
 interface SidebarProfileProps {
   userName?: string;
@@ -17,11 +20,22 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
   userExpanded,
   onUserExpand
 }) => {
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+
+
+  const handleLogout = ()=>{
+    TokenUtil.clearToken();
+    navigate({to: "/login"})
+  }
+
   const profileMenuItems = [
     { label: "My Profile", icon: "User", action: "profile" },
     { label: "Manage Warehouse", icon: "Home", action: "warehouse" },
     { label: "Change Password", icon: "Key", action: "password" },
-    { label: "Logout", icon: "LogOut", action: "logout" },
+    { label: "Logout", icon: "LogOut", action: "logout" , onClick: ()=> setIsLogoutDialogOpen(true)},
   ];
 
   return (
@@ -39,6 +53,7 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
               )}
               onClick={(e) => {
                 e.stopPropagation();
+                item.onClick && item.onClick();
                 console.log(`${item.action} clicked`);
                 onUserExpand(false);
               }}
@@ -98,6 +113,8 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
           )}
         />
       </div>
+
+      <LogoutDialog isOpen={isLogoutDialogOpen} close={()=> setIsLogoutDialogOpen(false)} />
     </div>
   );
 };
