@@ -12,11 +12,24 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DemoRouteRouteImport } from './routes/demo/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as AppSplatRouteImport } from './routes/_app/$'
 import { Route as AuthRegistrationIndexRouteImport } from './routes/_auth/registration/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as AuthBusinessRegistrationIndexRouteImport } from './routes/_auth/business-registration/index'
+import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
+import { Route as AppProductsIndexRouteImport } from './routes/_app/products/index'
+import { Route as AppProductsUnderApprovalIndexRouteImport } from './routes/_app/products-under-approval/index'
+import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders/index'
+import { Route as AppDraftsIndexRouteImport } from './routes/_app/drafts/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers/index'
+import { Route as AppAnalyticsIndexRouteImport } from './routes/_app/analytics/index'
+import { Route as AppActiveProductsIndexRouteImport } from './routes/_app/active-products/index'
 import { Route as AppOrdersNewOrdersRouteRouteImport } from './routes/_app/orders/new-orders/route'
+import { Route as AppSettingsSecurityIndexRouteImport } from './routes/_app/settings/security/index'
+import { Route as AppSettingsGeneralIndexRouteImport } from './routes/_app/settings/general/index'
+import { Route as AppSettingsBillingIndexRouteImport } from './routes/_app/settings/billing/index'
+import { Route as AppProductsCategoriesIndexRouteImport } from './routes/_app/products/categories/index'
 import { Route as AppProductsAddProductIndexRouteImport } from './routes/_app/products/add-product/index'
 import { Route as AppProductsProductFormProductIdRouteRouteImport } from './routes/_app/products/product-form/$productId/route'
 import { Route as AppProductsProductFormProductIdVariationsRouteRouteImport } from './routes/_app/products/product-form/$productId/variations/route'
@@ -35,6 +48,11 @@ const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppSplatRoute = AppSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AuthRegistrationIndexRoute = AuthRegistrationIndexRouteImport.update({
   id: '/registration/',
   path: '/registration/',
@@ -51,9 +69,50 @@ const AuthBusinessRegistrationIndexRoute =
     path: '/business-registration/',
     getParentRoute: () => AuthRouteRoute,
   } as any)
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProductsIndexRoute = AppProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProductsUnderApprovalIndexRoute =
+  AppProductsUnderApprovalIndexRouteImport.update({
+    id: '/products-under-approval/',
+    path: '/products-under-approval/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppOrdersIndexRoute = AppOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDraftsIndexRoute = AppDraftsIndexRouteImport.update({
+  id: '/drafts/',
+  path: '/drafts/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppAnalyticsIndexRoute = AppAnalyticsIndexRouteImport.update({
+  id: '/analytics/',
+  path: '/analytics/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppActiveProductsIndexRoute = AppActiveProductsIndexRouteImport.update({
+  id: '/active-products/',
+  path: '/active-products/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrdersNewOrdersRouteRoute = AppOrdersNewOrdersRouteRouteImport.update({
@@ -61,6 +120,28 @@ const AppOrdersNewOrdersRouteRoute = AppOrdersNewOrdersRouteRouteImport.update({
   path: '/orders/new-orders',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppSettingsSecurityIndexRoute =
+  AppSettingsSecurityIndexRouteImport.update({
+    id: '/settings/security/',
+    path: '/settings/security/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppSettingsGeneralIndexRoute = AppSettingsGeneralIndexRouteImport.update({
+  id: '/settings/general/',
+  path: '/settings/general/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSettingsBillingIndexRoute = AppSettingsBillingIndexRouteImport.update({
+  id: '/settings/billing/',
+  path: '/settings/billing/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProductsCategoriesIndexRoute =
+  AppProductsCategoriesIndexRouteImport.update({
+    id: '/products/categories/',
+    path: '/products/categories/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
 const AppProductsAddProductIndexRoute =
   AppProductsAddProductIndexRouteImport.update({
     id: '/products/add-product/',
@@ -88,25 +169,51 @@ const AppProductsProductFormProductIdBasicDetailsRouteRoute =
 
 export interface FileRoutesByFullPath {
   '/demo': typeof DemoRouteRoute
+  '/$': typeof AppSplatRoute
   '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/active-products': typeof AppActiveProductsIndexRoute
+  '/analytics': typeof AppAnalyticsIndexRoute
+  '/customers': typeof AppCustomersIndexRoute
   '/dashboard': typeof AppDashboardIndexRoute
+  '/drafts': typeof AppDraftsIndexRoute
+  '/orders': typeof AppOrdersIndexRoute
+  '/products-under-approval': typeof AppProductsUnderApprovalIndexRoute
+  '/products': typeof AppProductsIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/registration': typeof AuthRegistrationIndexRoute
   '/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
   '/products/add-product': typeof AppProductsAddProductIndexRoute
+  '/products/categories': typeof AppProductsCategoriesIndexRoute
+  '/settings/billing': typeof AppSettingsBillingIndexRoute
+  '/settings/general': typeof AppSettingsGeneralIndexRoute
+  '/settings/security': typeof AppSettingsSecurityIndexRoute
   '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
   '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRoutesByTo {
   '/demo': typeof DemoRouteRoute
+  '/$': typeof AppSplatRoute
   '/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/active-products': typeof AppActiveProductsIndexRoute
+  '/analytics': typeof AppAnalyticsIndexRoute
+  '/customers': typeof AppCustomersIndexRoute
   '/dashboard': typeof AppDashboardIndexRoute
+  '/drafts': typeof AppDraftsIndexRoute
+  '/orders': typeof AppOrdersIndexRoute
+  '/products-under-approval': typeof AppProductsUnderApprovalIndexRoute
+  '/products': typeof AppProductsIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
   '/business-registration': typeof AuthBusinessRegistrationIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/registration': typeof AuthRegistrationIndexRoute
   '/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
   '/products/add-product': typeof AppProductsAddProductIndexRoute
+  '/products/categories': typeof AppProductsCategoriesIndexRoute
+  '/settings/billing': typeof AppSettingsBillingIndexRoute
+  '/settings/general': typeof AppSettingsGeneralIndexRoute
+  '/settings/security': typeof AppSettingsSecurityIndexRoute
   '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
   '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
@@ -115,13 +222,26 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
   '/demo': typeof DemoRouteRoute
+  '/_app/$': typeof AppSplatRoute
   '/_app/orders/new-orders': typeof AppOrdersNewOrdersRouteRoute
+  '/_app/active-products/': typeof AppActiveProductsIndexRoute
+  '/_app/analytics/': typeof AppAnalyticsIndexRoute
+  '/_app/customers/': typeof AppCustomersIndexRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
+  '/_app/drafts/': typeof AppDraftsIndexRoute
+  '/_app/orders/': typeof AppOrdersIndexRoute
+  '/_app/products-under-approval/': typeof AppProductsUnderApprovalIndexRoute
+  '/_app/products/': typeof AppProductsIndexRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
   '/_auth/business-registration/': typeof AuthBusinessRegistrationIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/registration/': typeof AuthRegistrationIndexRoute
   '/_app/products/product-form/$productId': typeof AppProductsProductFormProductIdRouteRouteWithChildren
   '/_app/products/add-product/': typeof AppProductsAddProductIndexRoute
+  '/_app/products/categories/': typeof AppProductsCategoriesIndexRoute
+  '/_app/settings/billing/': typeof AppSettingsBillingIndexRoute
+  '/_app/settings/general/': typeof AppSettingsGeneralIndexRoute
+  '/_app/settings/security/': typeof AppSettingsSecurityIndexRoute
   '/_app/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
   '/_app/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
@@ -129,25 +249,51 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/demo'
+    | '/$'
     | '/orders/new-orders'
+    | '/active-products'
+    | '/analytics'
+    | '/customers'
     | '/dashboard'
+    | '/drafts'
+    | '/orders'
+    | '/products-under-approval'
+    | '/products'
+    | '/settings'
     | '/business-registration'
     | '/login'
     | '/registration'
     | '/products/product-form/$productId'
     | '/products/add-product'
+    | '/products/categories'
+    | '/settings/billing'
+    | '/settings/general'
+    | '/settings/security'
     | '/products/product-form/$productId/basic-details'
     | '/products/product-form/$productId/variations'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/demo'
+    | '/$'
     | '/orders/new-orders'
+    | '/active-products'
+    | '/analytics'
+    | '/customers'
     | '/dashboard'
+    | '/drafts'
+    | '/orders'
+    | '/products-under-approval'
+    | '/products'
+    | '/settings'
     | '/business-registration'
     | '/login'
     | '/registration'
     | '/products/product-form/$productId'
     | '/products/add-product'
+    | '/products/categories'
+    | '/settings/billing'
+    | '/settings/general'
+    | '/settings/security'
     | '/products/product-form/$productId/basic-details'
     | '/products/product-form/$productId/variations'
   id:
@@ -155,13 +301,26 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_auth'
     | '/demo'
+    | '/_app/$'
     | '/_app/orders/new-orders'
+    | '/_app/active-products/'
+    | '/_app/analytics/'
+    | '/_app/customers/'
     | '/_app/dashboard/'
+    | '/_app/drafts/'
+    | '/_app/orders/'
+    | '/_app/products-under-approval/'
+    | '/_app/products/'
+    | '/_app/settings/'
     | '/_auth/business-registration/'
     | '/_auth/login/'
     | '/_auth/registration/'
     | '/_app/products/product-form/$productId'
     | '/_app/products/add-product/'
+    | '/_app/products/categories/'
+    | '/_app/settings/billing/'
+    | '/_app/settings/general/'
+    | '/_app/settings/security/'
     | '/_app/products/product-form/$productId/basic-details'
     | '/_app/products/product-form/$productId/variations'
   fileRoutesById: FileRoutesById
@@ -195,6 +354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/$': {
+      id: '/_app/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof AppSplatRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_auth/registration/': {
       id: '/_auth/registration/'
       path: '/registration'
@@ -216,6 +382,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthBusinessRegistrationIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_app/settings/': {
+      id: '/_app/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/products/': {
+      id: '/_app/products/'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof AppProductsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/products-under-approval/': {
+      id: '/_app/products-under-approval/'
+      path: '/products-under-approval'
+      fullPath: '/products-under-approval'
+      preLoaderRoute: typeof AppProductsUnderApprovalIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/orders/': {
+      id: '/_app/orders/'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AppOrdersIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/drafts/': {
+      id: '/_app/drafts/'
+      path: '/drafts'
+      fullPath: '/drafts'
+      preLoaderRoute: typeof AppDraftsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/dashboard/': {
       id: '/_app/dashboard/'
       path: '/dashboard'
@@ -223,11 +424,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/customers/': {
+      id: '/_app/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AppCustomersIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/analytics/': {
+      id: '/_app/analytics/'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AppAnalyticsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/active-products/': {
+      id: '/_app/active-products/'
+      path: '/active-products'
+      fullPath: '/active-products'
+      preLoaderRoute: typeof AppActiveProductsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/orders/new-orders': {
       id: '/_app/orders/new-orders'
       path: '/orders/new-orders'
       fullPath: '/orders/new-orders'
       preLoaderRoute: typeof AppOrdersNewOrdersRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/settings/security/': {
+      id: '/_app/settings/security/'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof AppSettingsSecurityIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/settings/general/': {
+      id: '/_app/settings/general/'
+      path: '/settings/general'
+      fullPath: '/settings/general'
+      preLoaderRoute: typeof AppSettingsGeneralIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/settings/billing/': {
+      id: '/_app/settings/billing/'
+      path: '/settings/billing'
+      fullPath: '/settings/billing'
+      preLoaderRoute: typeof AppSettingsBillingIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/products/categories/': {
+      id: '/_app/products/categories/'
+      path: '/products/categories'
+      fullPath: '/products/categories'
+      preLoaderRoute: typeof AppProductsCategoriesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/products/add-product/': {
@@ -280,18 +530,44 @@ const AppProductsProductFormProductIdRouteRouteWithChildren =
   )
 
 interface AppRouteRouteChildren {
+  AppSplatRoute: typeof AppSplatRoute
   AppOrdersNewOrdersRouteRoute: typeof AppOrdersNewOrdersRouteRoute
+  AppActiveProductsIndexRoute: typeof AppActiveProductsIndexRoute
+  AppAnalyticsIndexRoute: typeof AppAnalyticsIndexRoute
+  AppCustomersIndexRoute: typeof AppCustomersIndexRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppDraftsIndexRoute: typeof AppDraftsIndexRoute
+  AppOrdersIndexRoute: typeof AppOrdersIndexRoute
+  AppProductsUnderApprovalIndexRoute: typeof AppProductsUnderApprovalIndexRoute
+  AppProductsIndexRoute: typeof AppProductsIndexRoute
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
   AppProductsProductFormProductIdRouteRoute: typeof AppProductsProductFormProductIdRouteRouteWithChildren
   AppProductsAddProductIndexRoute: typeof AppProductsAddProductIndexRoute
+  AppProductsCategoriesIndexRoute: typeof AppProductsCategoriesIndexRoute
+  AppSettingsBillingIndexRoute: typeof AppSettingsBillingIndexRoute
+  AppSettingsGeneralIndexRoute: typeof AppSettingsGeneralIndexRoute
+  AppSettingsSecurityIndexRoute: typeof AppSettingsSecurityIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppSplatRoute: AppSplatRoute,
   AppOrdersNewOrdersRouteRoute: AppOrdersNewOrdersRouteRoute,
+  AppActiveProductsIndexRoute: AppActiveProductsIndexRoute,
+  AppAnalyticsIndexRoute: AppAnalyticsIndexRoute,
+  AppCustomersIndexRoute: AppCustomersIndexRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppDraftsIndexRoute: AppDraftsIndexRoute,
+  AppOrdersIndexRoute: AppOrdersIndexRoute,
+  AppProductsUnderApprovalIndexRoute: AppProductsUnderApprovalIndexRoute,
+  AppProductsIndexRoute: AppProductsIndexRoute,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
   AppProductsProductFormProductIdRouteRoute:
     AppProductsProductFormProductIdRouteRouteWithChildren,
   AppProductsAddProductIndexRoute: AppProductsAddProductIndexRoute,
+  AppProductsCategoriesIndexRoute: AppProductsCategoriesIndexRoute,
+  AppSettingsBillingIndexRoute: AppSettingsBillingIndexRoute,
+  AppSettingsGeneralIndexRoute: AppSettingsGeneralIndexRoute,
+  AppSettingsSecurityIndexRoute: AppSettingsSecurityIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

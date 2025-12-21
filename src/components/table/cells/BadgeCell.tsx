@@ -1,7 +1,7 @@
 import React from "react";
 import Chip, { type ChipColor } from "@/components/base/Chip";
 import { BadgeCellConfig } from "../table.types";
-import { getStatusColor } from "@/components/utils/getStatusColor";
+import { getStatusColor } from "@/utils/getStatusColor";
 import { cn } from "demaze-ui-lib/utils";
 
 interface BadgeCellProps extends BadgeCellConfig {
@@ -53,7 +53,7 @@ export const BadgeCell: React.FC<BadgeCellProps> = ({
           : variant === "filled"
             ? "!text-white"
             : "",
-            "rounded-sm text-sm font-normal" ,
+            "rounded-sm text-[11px] px-2 py-0.5 font-medium" ,
         className
       )}
     />

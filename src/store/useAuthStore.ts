@@ -2,37 +2,17 @@ import { create } from "zustand";
 import type { User } from "../types/user";
 
 export interface AuthStore {
-  isLoggedIn: boolean;
   user?: User;
-  loginSuccess: () => void;
-  loginFail: () => void;
-  setUser: (user: User) => void;
-  clearUser: () => void;
+  setAuth: (user: User) => void;
+  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
-  isLoggedIn: false,
-  setUser: (user: User) => {
-    set(() => ({
-      user,
-      isLoggedIn: true,
-    }));
+  user: undefined,
+  setAuth: (user: User) => {
+    set({ user });
   },
-  loginSuccess: () => {
-    set(() => ({
-      isLoggedIn: true,
-    }));
-  },
-  loginFail: () => {
-    set(() => ({
-      isLoggedIn: false,
-      user: undefined,
-    }));
-  },
-  clearUser: () => {
-    set(() => ({
-      user: undefined,
-      isLoggedIn: false,
-    }));
+  clearAuth: () => {
+    set({ user: undefined });
   },
 }));

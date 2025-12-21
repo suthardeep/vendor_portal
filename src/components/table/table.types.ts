@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import { IconName } from '../base/Icon';
 import { ChipColor } from "../base/Chip";
+import { PaginationMeta } from '@/types/baseApi';
 
 
 export interface SubColumnDef<T = any> {
@@ -60,6 +61,13 @@ export interface InputCellConfig {
   placeholder?: string;
   onChange?: (value: any, row: any) => void;
   disabled?: boolean;
+}
+
+
+export interface PaginationConfig {
+  meta: PaginationMeta;
+  onPageChange: (page: number) => void;
+  showTotal?: boolean;
 }
 
 
@@ -138,15 +146,6 @@ export interface BreadcrumbConfig {
   heading?: string;
 }
 
-export interface PaginationConfig {
-  currentPage?: number;
-  totalPages?: number;
-  totalDocs?: number;
-  hasNext?: boolean;
-  hasPrev?: boolean;
-  onPageChange?: (page: number) => void;
-  showTotal?: boolean;
-}
 
 
 export interface ActionMenuItem {
@@ -184,7 +183,6 @@ export interface TableProps<T = any> {
   sortable?: boolean;
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
   
-  pagination?: PaginationConfig;
   
   striped?: boolean;
   hoverable?: boolean;
@@ -198,6 +196,8 @@ export interface TableProps<T = any> {
   
   showFooter?: boolean;
   footerActions?: ActionButton[];
+    pagination?: PaginationConfig;  
+
   
   expandedRowConfig?: ExpandedRowConfig<T>;
 
@@ -205,4 +205,8 @@ export interface TableProps<T = any> {
   filterChips?:FilterChip[]
 
   containsAction?:boolean
+
+  stickyPagination?: boolean;
+
+  maxHeight?: string;
 }

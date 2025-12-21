@@ -27,7 +27,7 @@ export const router = createRouter({
 export type AppRouter = typeof router;
 
 const AuthInitializer = () => {
-  const { user, setUser, clearUser } = useAuthStore();
+  const { user, setAuth, clearAuth } = useAuthStore();
   const hasToken = TokenUtil.hasToken();
 
   const currentPath = window.location.pathname;
@@ -35,6 +35,9 @@ const AuthInitializer = () => {
   // Always fetch profile if we have a token (for centralized navigation)
   const shouldFetchProfile = hasToken;
   const { data: profileData, isLoading, isError } = useGetProfile(shouldFetchProfile);
+  
+  // Only show full screen loader if we don't have any user data at all (first time load)
+  const shouldShowFullScreenLoader = hasToken && isLoading && !user;
 
   // Helper function to check if user is on a valid route for their current state
   const isUserOnValidRoute = (userData: any, path: string) => {
@@ -193,11 +196,19 @@ const AuthInitializer = () => {
   }, [hasToken]);
 
   useEffect(() => {
-
+    // In DEV mode, still set profile data but skip navigation logic
     if (IS_DEV) {
-    console.log("🧪 [DEV MODE] Auth & route guards disabled");
-    return;
-  }
+      console.log("🧪 [DEV MODE] Auth & route guards disabled");
+      
+      // Still set profile data if available
+      if (profileData?.data) {
+        const userData = profileData.data;
+        setAuth(userData);
+        console.log("✅ [DEV MODE] Profile data set:", userData);
+      }
+      
+      return; // Skip navigation logic in dev mode
+    }
   
     // No token - redirect to login if not already there
     if (!hasToken) {
@@ -217,7 +228,7 @@ const AuthInitializer = () => {
     if (isError) {
       console.error("🚫 [APP INIT] Profile API failed, token invalid - clearing auth data");
       // TokenUtil.clearToken();
-      clearUser();
+      clearAuth();
       router.update({
         context: {
           isLoggedIn: false,
@@ -231,7 +242,7 @@ const AuthInitializer = () => {
     // Profile data received - store it and determine navigation
     if (profileData?.data) {
       const userData = profileData.data;
-      setUser(userData);
+      setAuth(userData);
 
       // Determine if navigation is needed using smart logic
       const targetRoute = determineNavigationAction(userData, currentPath);
@@ -254,9 +265,9 @@ const AuthInitializer = () => {
       } else {
       }
     }
-  }, [hasToken, profileData, isLoading, isError, setUser, clearUser, currentPath]);
+  }, [hasToken, profileData, isLoading, isError, setAuth, clearAuth, currentPath]);
 
-  if (hasToken && isLoading && shouldFetchProfile) {
+  if (shouldShowFullScreenLoader) {
     return <AppShimmer />;
   }
 

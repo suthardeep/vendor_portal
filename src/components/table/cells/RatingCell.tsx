@@ -1,5 +1,5 @@
 import React from "react";
-import {Icon} from "../../base/Icon";
+import Icon from "../../base/Icon";
 import { RatingCellConfig } from "../table.types";
 
 interface RatingCellProps extends RatingCellConfig {
@@ -26,7 +26,7 @@ export const RatingCell: React.FC<RatingCellProps> = ({
       />
       <span className="text-sm font-medium text-base-content">{rating}</span>
       {showCount && count && (
-        <span className="text-sm text-body-content">({count})</span>
+        <span className="text-sm font-medium text-base-content">({count})</span>
       )}
     </div>
   );

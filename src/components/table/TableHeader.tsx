@@ -1,7 +1,6 @@
-// TableHeader.tsx - Fixed with proper dependencies
 import { cn } from "@/utils/helpers";
 import React, { useState, useEffect, useMemo } from "react";
-import {Icon , IconName } from "../base/Icon";
+import Icon, { IconName } from "../base/Icon";
 import { Button } from "../base/Button";
 import { ActionButton, BreadcrumbConfig, FilterConfig, FilterChip } from "./table.types";
 import { FilterSidebar } from "../base/FilterSidebar";
@@ -14,7 +13,7 @@ interface TableHeaderProps {
   searchPlaceholder?: string;
   onSearch?: (value: string) => void;
   filters?: FilterConfig[];
-  filterChips?: FilterChip[]; // New prop for chips
+  filterChips?: FilterChip[];
   actions?: ActionButton[];
 }
 
@@ -33,7 +32,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   const [pendingFilters, setPendingFilters] = useState<Record<string, any>>({});
   const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>({});
   
-  // Memoize filterChips to prevent unnecessary re-renders
   const defaultActiveChips = useMemo(() => 
     filterChips.filter(chip => chip.defaultActive).map(chip => chip.key),
     [filterChips]
@@ -45,7 +43,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
   const hasBreadcrumbs = breadcrumbs && breadcrumbs.items.length > 0;
 
-  // Calculate what can fit: Max 4 things total
   const itemCount = (searchable ? 1 : 0) + (actions?.length || 0);
   
   let headerFilters: FilterConfig[] = [];
@@ -72,13 +69,11 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     }
   }
 
-  // FIXED: Use useMemo to create stable filter keys
   const filterKeys = useMemo(() => 
     filters.map(filter => filter.key).join(','), 
     [filters]
   );
 
-  // FIXED: Use appliedFilters and filterKeys as dependencies
   useEffect(() => {
     const initial: Record<string, any> = {};
     filters.forEach((filter) => {
@@ -87,19 +82,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         : filter.value;
     });
     setPendingFilters(initial);
-  }, [appliedFilters, filterKeys]); // Use filterKeys instead of filters
-
-  // Alternative: Only run once on mount and when filters actually change
-  // useEffect(() => {
-  //   const initial: Record<string, any> = {};
-  //   filters.forEach((filter) => {
-  //     initial[filter.key] = appliedFilters[filter.key] !== undefined 
-  //       ? appliedFilters[filter.key] 
-  //       : filter.value;
-  //   });
-  //   setPendingFilters(initial);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []); // Empty dependency array if you only want to run once
+  }, [appliedFilters, filterKeys]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -171,35 +154,31 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   };
 
   const renderControls = (isBreadcrumbLayout: boolean) => {
-    const searchSize = isBreadcrumbLayout ? "sm" : "md";
     const containerClass = isBreadcrumbLayout
-      ? "flex flex-wrap gap-2 items-center w-full lg:w-auto lg:ml-auto bg-white"
-      : "flex flex-col sm:flex-row gap-3 items-center w-full lg:w-auto bg-white";
+      ? "flex flex-wrap gap-2 items-center w-full lg:w-auto lg:ml-auto"
+      : "flex flex-col sm:flex-row gap-2 items-center w-full lg:w-auto";
 
     return (
       <div className={containerClass}>
-        {/* Search Bar */}
+        {/* Search - h-8 consistent */}
         {searchable && (
-          <div className="relative shrink-0 bg-white">
+          <div className="relative shrink-0">
             <Icon
               name="Search"
-              size={isBreadcrumbLayout ? 16 : 18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50"
+              size={14}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/50"
             />
             <input
               type="text"
               value={searchValue}
               onChange={handleSearchChange}
               placeholder={searchPlaceholder}
-              className={cn(
-                "w-full pl-9 pr-3 text-sm bg-transparent border border-base-content/20 rounded-lg outline-none focus:border-primary transition-all",
-                isBreadcrumbLayout ? "sm:w-48 h-9" : "sm:w-64 h-10"
-              )}
+              className="w-48 h-8 pl-8 pr-3 text-xs bg-transparent border border-base-content/20 rounded-md outline-none focus:border-primary transition-all"
             />
           </div>
         )}
 
-        {/* Inline Filters */}
+        {/* Inline Filters - h-8 consistent */}
         {headerFilters.map((filter) => (
           <div key={filter.key} className="flex-shrink-0">
             <FilterRenderer
@@ -208,49 +187,45 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                 ? appliedFilters[filter.key] 
                 : filter.value}
               onChange={(value) => handleHeaderFilterChange(filter.key, value)}
-              size={searchSize}
+              size="sm"
               variant="outlined"
             />
           </div>
         ))}
 
-        {/* Filters Button */}
+        {/* Filters Button - h-8 consistent */}
         {shouldShowFilterButton && (
           <div className="relative flex-shrink-0">
             <Button
               onClick={() => setIsSidebarOpen(true)}
               variant="outline"
               color="primary"
-              size={searchSize}
+              size="sm"
               startIcon="SlidersHorizontal"
-              className={cn(
-                "whitespace-nowrap border border-base-content/20",
-                isBreadcrumbLayout ? "text-xs h-9" : "rounded-md"
-              )}
+              className="whitespace-nowrap border border-base-content/20 text-xs h-8 px-3"
             >
               Filters
             </Button>
             {getActiveFilterCount() > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-semibold">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-semibold">
                 {getActiveFilterCount()}
               </span>
             )}
           </div>
         )}
 
-        {/* Actions */}
+        {/* Actions - h-8 consistent */}
         {actions && actions.length > 0 && actions?.map((action, idx) => (
           <Button
             key={idx}
             onClick={action.onClick}
             variant={action.variant === "primary" ? "filled" : "outline"}
             color="primary"
-            size={searchSize}
+            size="sm"
             startIcon={action.icon as IconName}
             className={cn(
-              "whitespace-nowrap flex-shrink-0",
-              isBreadcrumbLayout ? "text-xs h-9" : "rounded-md",
-              action.variant === "outlined" ,
+              "whitespace-nowrap flex-shrink-0 text-xs h-8 px-3",
+              action.variant === "outlined",
               action.className
             )}
           >
@@ -272,12 +247,12 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
     return (
       <>
-        <div className="py-5 px-4 bg-red-500">
-          <div className="space-y-3 bg-red-400">
+        <div className="py-3 px-4 bg-white border-b border-base-content/10">
+          <div className="space-y-2">
             {title && (
-              <h2 className="text-base-content font-semibold">
+              <p className="text-base font-semibold text-base-content">
                 {title}
-              </h2>
+              </p>
             )}
 
             {breadcrumbs?.heading && (
@@ -286,7 +261,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
               </p>
             )}
 
-            <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center justify-between">
+            <div className="flex flex-col lg:flex-row gap-2 items-start lg:items-center justify-between">
               <div className="flex items-center gap-2 flex-wrap">
                 {breadcrumbs.items.map((item, index) => {
                   const colorClass = colorClasses[index % colorClasses.length];
@@ -299,7 +274,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                       <button
                         onClick={() => handleBreadcrumbClick(item, index)}
                         className={cn(
-                          "px-2 py-1.5 text-xs rounded-md font-medium whitespace-nowrap transition-colors duration-200",
+                          "px-2 py-1 text-xs rounded font-medium whitespace-nowrap transition-colors duration-200",
                           colorClass,
                           breadcrumbs.onItemClick && "cursor-pointer"
                         )}
@@ -307,7 +282,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                         {item}
                       </button>
                       {showArrow && (
-                        <span className="text-base-content/60 text-sm select-none">
+                        <span className="text-base-content/60 text-xs select-none">
                           ›
                         </span>
                       )}
@@ -321,9 +296,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           </div>
         </div>
 
-        {/* Filter Chips Row - Full Width Second Row */}
         {filterChips.length > 0 && (
-          <div className="py-3 px-4 border-t border-base-content/10">
+          <div className="py-2 px-4 border-b border-base-content/10">
             <div className="flex items-center justify-end gap-2 flex-wrap">
               {filterChips.map((chip) => {
                 const isActive = activeChips.has(chip.key);
@@ -332,7 +306,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                     key={chip.key}
                     onClick={() => handleChipToggle(chip.key)}
                     className={cn(
-                      "px-3 py-1.5 text-xs font-medium rounded-lg cursor-pointer transition-colors",
+                      "px-2.5 py-1 text-xs font-medium rounded cursor-pointer transition-colors",
                       isActive 
                         ? "bg-base-content/10 text-base-content/70 hover:bg-base-content/15" 
                         : "bg-base-content/80 text-white"
@@ -363,21 +337,20 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
   return (
     <>
-      <div className="py-5 px-4 bg-white">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      <div className="py-3 px-4 bg-white border-b border-base-content/10">
+        <div className="flex flex-col lg:flex-row gap-2 items-start lg:items-center justify-between">
           {title && (
-            <h2 className="text-lg md:text-xl font-semibold text-base-content">
+            <p className="text-lg font-semibold text-base-content ">
               {title}
-            </h2>
+            </p>
           )}
 
           {renderControls(false)}
         </div>
       </div>
 
-      {/* Filter Chips Row - Full Width Second Row */}
       {filterChips.length > 0 && (
-        <div className="py-3 px-4 border-t border-base-content/10">
+        <div className="py-2 px-4 border-b border-base-content/10">
           <div className="flex items-center justify-end gap-2 flex-wrap">
             {filterChips.map((chip) => {
               const isActive = activeChips.has(chip.key);
@@ -386,10 +359,10 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                   key={chip.key}
                   onClick={() => handleChipToggle(chip.key)}
                   className={cn(
-                    "px-3 py-1.5 text-sm font-normal rounded-md cursor-pointer transition-colors",
+                    "px-2.5 py-1 text-xs font-normal rounded cursor-pointer transition-colors",
                     isActive 
                       ? "bg-secondary-500/30 text-base-content/80" 
-                      : "bg-secondary-500/10  text-base-content/80"
+                      : "bg-secondary-500/10 text-base-content/80"
                   )}
                 >
                   {chip.label}
@@ -414,3 +387,9 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     </>
   );
 };
+
+// CONSISTENT SIZING:
+// - Title: text-sm (slightly bigger for heading)
+// - All controls: text-xs
+// - All inputs/buttons: h-8
+// - py-3 (header padding)

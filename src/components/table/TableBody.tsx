@@ -1,7 +1,7 @@
 import React from "react";
 import { ColumnDef, ActionMenuItem, ExpandedRowConfig } from "./table.types";
 import { TableRow } from "./TableRow";
-import {Icon} from "../base/Icon";
+import Icon from "../base/Icon";
 import { IconName } from "demaze-ui-lib/components";
 
 interface TableBodyProps<T> {
@@ -18,13 +18,12 @@ interface TableBodyProps<T> {
   emptyMessage?: string;
   emptyIcon?: string;
   actions?: ActionMenuItem[];
-   singleIcon?: {  
+  singleIcon?: {  
     name: string;
     onClick: (row: T) => void;
     tooltip?: string;
   };
-    expandedRowConfig
-?: ExpandedRowConfig<T>;
+  expandedRowConfig?: ExpandedRowConfig<T>;
 }
 
 export const TableBody = <T,>({
@@ -41,9 +40,8 @@ export const TableBody = <T,>({
   emptyMessage = "No data available",
   emptyIcon = "Inbox" as IconName,
   actions,
-  singleIcon ,
-    expandedRowConfig
-
+  singleIcon,
+  expandedRowConfig
 }: TableBodyProps<T>) => {
   const getRowKey = (row: T): string | number => {
     if (typeof rowKey === "function") {
@@ -52,29 +50,24 @@ export const TableBody = <T,>({
     return row[rowKey] as string | number;
   };
 
-
-
-  console.log("TableBody data:", data);
-  console.log("TableBody columns:", columns);
-
-  // Loading skeleton
+  // Loading skeleton - COMPACT
   if (loading) {
     return (
       <tbody>
         {[...Array(5)].map((_, idx) => (
           <tr key={idx} className="border-b border-base-3">
             {selectable && (
-              <td className="px-4 py-3">
-                <div className="w-4 h-4 bg-base-3 rounded animate-pulse" />
+              <td className="px-2 py-1.5">
+                <div className="w-3.5 h-3.5 bg-base-3 rounded animate-pulse" />
               </td>
             )}
             {columns.map((col) => (
-              <td key={col.key} className="px-4 py-3">
-                <div className="h-4 bg-base-3 rounded animate-pulse" />
+              <td key={col.key} className="px-3 py-1.5">
+                <div className="h-3 bg-base-3 rounded animate-pulse" />
               </td>
             ))}
-            <td className="px-4 py-3">
-              <div className="h-4 w-4 bg-base-3 rounded animate-pulse mx-auto" />
+            <td className="px-2 py-1.5">
+              <div className="h-3 w-3 bg-base-3 rounded animate-pulse mx-auto" />
             </td>
           </tr>
         ))}
@@ -82,18 +75,18 @@ export const TableBody = <T,>({
     );
   }
 
-  // Empty state
+  // Empty state - COMPACT
   if (!data || data.length === 0) {
     return (
       <tbody>
         <tr>
           <td
             colSpan={columns.length + (selectable ? 1 : 0) + 1}
-            className="px-4 py-12 text-center"
+            className="px-3 py-8 text-center"
           >
-            <div className="flex flex-col items-center justify-center gap-3">
-              <Icon name={emptyIcon as IconName} size={48} className="text-disabled-content" />
-              <p className="text-sm text-body-content">{emptyMessage}</p>
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Icon name={emptyIcon as IconName} size={36} className="text-disabled-content" />
+              <p className="text-xs text-body-content">{emptyMessage}</p>
             </div>
           </td>
         </tr>

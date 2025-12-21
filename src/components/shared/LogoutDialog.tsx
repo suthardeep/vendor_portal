@@ -27,7 +27,7 @@ const LogoutDialog: React.FC<LogoutProps> = (props) => {
     <Dialog
       isOpen={isOpen}
       close={close}
-      title="Logout?"
+      title="Logout"
       actions={{
         primary: {
           children: "Logout",
@@ -40,7 +40,7 @@ const LogoutDialog: React.FC<LogoutProps> = (props) => {
         },
       }}
     >
-      <h6 className="text-base-3 dark:text-neutral-content">
+      <h6 className="text-base-content">
         Are you sure you want to logout?
       </h6>
     </Dialog>

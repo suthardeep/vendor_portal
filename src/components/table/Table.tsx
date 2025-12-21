@@ -1,4 +1,3 @@
-
 import { cn } from "@/utils/helpers";
 import React, { useState, useMemo } from "react";
 import { TableProps } from "./table.types";
@@ -33,26 +32,24 @@ export const Table = <T extends Record<string, any>>({
   loading,
   emptyMessage,
   emptyIcon,
-  breadcrumbs ,
-  singleIcon ,
-  showFooter=false ,
-  footerActions=[] ,
-    expandedRowConfig ,
-    filterChips=[] ,
-    containsAction
-  
-
+  breadcrumbs,
+  singleIcon,
+  showFooter = false,
+  footerActions = [],
+  expandedRowConfig,
+  filterChips = [],
+  containsAction,
+  stickyPagination = true, // NEW: Control sticky pagination
+  maxHeight, // NEW: Optional max height for scrollable content
 }: TableProps<T>) => {
   const [internalSelectedRows, setInternalSelectedRows] = useState<Set<any>>(new Set());
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [currentPage, setCurrentPage] = useState(pagination?.currentPage || 1);
+  const [currentPage, setCurrentPage] = useState(pagination?.meta?.currentPage || 1);
 
-  // Use controlled or internal selection
   const selectedRows = controlledSelectedRows || internalSelectedRows;
   const setSelectedRows = onSelectionChange || setInternalSelectedRows;
 
-  // Get row key
   const getRowKey = (row: T): string | number => {
     if (typeof rowKey === "function") {
       return rowKey(row);
@@ -60,7 +57,6 @@ export const Table = <T extends Record<string, any>>({
     return row[rowKey] as string | number;
   };
 
-  // Handle select all
   const handleSelectAll = (selected: boolean) => {
     if (selected) {
       const allKeys = new Set(data.map(getRowKey));
@@ -70,7 +66,6 @@ export const Table = <T extends Record<string, any>>({
     }
   };
 
-  // Handle row selection
   const handleRowSelect = (key: any, selected: boolean) => {
     const newSelected = new Set(selectedRows);
     if (selected) {
@@ -81,7 +76,6 @@ export const Table = <T extends Record<string, any>>({
     setSelectedRows(newSelected);
   };
 
-  // Handle sorting
   const handleSort = (key: string) => {
     if (!sortable) return;
 
@@ -96,9 +90,8 @@ export const Table = <T extends Record<string, any>>({
     onSort?.(key, newDirection);
   };
 
-  // Sort data if needed
   const sortedData = useMemo(() => {
-    if (!sortColumn || onSort) return data; // External sorting
+    if (!sortColumn || onSort) return data;
 
     const sorted = [...data].sort((a, b) => {
       const aVal = (a as any)[sortColumn];
@@ -112,12 +105,10 @@ export const Table = <T extends Record<string, any>>({
     return sorted;
   }, [data, sortColumn, sortDirection, onSort]);
 
-  // Paginate data if needed
   const paginatedData = useMemo(() => {
     if (!pagination) return sortedData;
 
-    // const pageSize = pagination.pageSize || 10; - ERROR _RESOLVE LATER
-    const pageSize = 10;  
+    const pageSize = pagination.meta.pageSize || 10;
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
 
@@ -127,7 +118,7 @@ export const Table = <T extends Record<string, any>>({
   const allSelected = data.length > 0 && selectedRows.size === data.length;
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full flex flex-col", className)}>
       {/* Header */}
       {(title || searchable || filters || actions) && (
         <TableHeader
@@ -142,54 +133,94 @@ export const Table = <T extends Record<string, any>>({
         />
       )}
 
-      {/* Table */}
-        <div className="overflow-x-auto ">
-          <table className="w-full">
-            <TableHead
-              columns={columns}
-              selectable={selectable}
-              allSelected={allSelected}
-              onSelectAll={handleSelectAll}
-              sortColumn={sortColumn || undefined}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-               containsAction={containsAction}
-
-            />
-
-            <TableBody
-              data={paginatedData}
-              columns={columns}
-              selectable={selectable}
-              selectedRows={selectedRows}
-              onRowSelect={handleRowSelect}
-              rowKey={rowKey}
-              onRowClick={onRowClick}
-              hoverable={hoverable}
-              striped={striped}
-              loading={loading}
-              emptyMessage={emptyMessage}
-              emptyIcon={emptyIcon}
-              actions={rowActions}
-              singleIcon={typeof singleIcon === "string" ? { name: singleIcon, onClick: () => {} } : singleIcon}
-              expandedRowConfig={expandedRowConfig}
-            />
-          </table>
-        </div>
-
-        {/* Pagination  */}
-        {/* COMMENTED TEMPORARILY- RESOLVE ERROR AND UNCOMMENT AGAIN */}
-        {/* {pagination && !loading && data.length > 0 && (
-          <TablePagination
-           meta={pagination}
-            showTotal={pagination.showTotal}
+      {/* Table Container with optional max height */}
+    <div 
+  className={cn(
+    "relative flex-1 min-h-0", // min-h-0 is key for nested flex scrolling
+    maxHeight ? "overflow-y-auto" : "overflow-visible",
+    "scrollbar-thin scrollbar-thumb-gray-300" // Optional: makes scrollbar less intrusive
+  )}
+  style={maxHeight ? { maxHeight } : undefined}
+>
+  <table className="w-full border-separate border-spacing-0">
+          <TableHead
+            columns={columns}
+            selectable={selectable}
+            allSelected={allSelected}
+            onSelectAll={handleSelectAll}
+            sortColumn={sortColumn || undefined}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            containsAction={containsAction}
           />
-        )} */}
 
+          <TableBody
+            data={paginatedData}
+            columns={columns}
+            selectable={selectable}
+            selectedRows={selectedRows}
+            onRowSelect={handleRowSelect}
+            rowKey={rowKey}
+            onRowClick={onRowClick}
+            hoverable={hoverable}
+            striped={striped}
+            loading={loading}
+            emptyMessage={emptyMessage}
+            emptyIcon={emptyIcon}
+            actions={rowActions}
+            singleIcon={typeof singleIcon === "string" ? { name: singleIcon, onClick: () => {} } : singleIcon}
+            expandedRowConfig={expandedRowConfig}
+          />
+        </table>
+      </div>
 
-        {showFooter && <TableFooter actions={footerActions} />}
+      {/* Pagination - Now with sticky support */}
+      {pagination && (
+        <TablePagination 
+          meta={pagination.meta} 
+          onPageChange={pagination.onPageChange}
+          showTotal={pagination.showTotal}
+          sticky={stickyPagination}
+        />
+      )}
+
+      {/* Footer */}
+      {showFooter && <TableFooter actions={footerActions} />}
     </div>
   );
 };
 
+// ============================================
+// KEY CHANGES:
+// ============================================
+// 1. NEW: stickyPagination prop (default true)
+// 2. NEW: maxHeight prop for scrollable content
+// 3. NEW: flex flex-col layout for proper sticky positioning
+// 4. NEW: Conditional pb-[52px] when pagination is sticky
+// 5. NEW: overflow-y-auto when maxHeight is set
+// 6. Removed nested overflow-x-auto wrapper
+// 7. Pass sticky prop to TablePagination
+// 8. Better layout structure for admin panels
+// ============================================
 
+// ============================================
+// USAGE EXAMPLE:
+// ============================================
+/*
+<Table
+  data={users}
+  columns={columns}
+  title="Users"
+  searchable
+  pagination={{
+    meta: paginationMeta,
+    onPageChange: handlePageChange,
+    showTotal: true
+  }}
+  stickyPagination={true} // Pagination always visible
+  maxHeight="calc(100vh - 200px)" // Optional scrollable content
+  actions={[
+    { label: "Add User", icon: "Plus", variant: "primary", onClick: handleAdd }
+  ]}
+/>
+*/

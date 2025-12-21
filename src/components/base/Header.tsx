@@ -1,8 +1,9 @@
-import React, { FC, JSX } from "react";
+import React, { FC, JSX, useState } from "react";
 import Icon from "./Icon";
 import { cn } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
 import { getBreadcrumbs } from "@/utils/getBreadCrumbs";
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface HeaderProps {
   greeting?: string;
@@ -20,7 +21,6 @@ const Header: FC<HeaderProps> = ({
   // breadcrumbs = [],
   showBack = false,
   onBackClick,
-  userAvatar = "profile.jpg",
   showNotification = true,
 }): JSX.Element => {
   const setOpacity = (e: React.MouseEvent<HTMLElement>, value: string) => {
@@ -28,8 +28,19 @@ const Header: FC<HeaderProps> = ({
   };
 
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
 
   const breadcrumbs = getBreadcrumbs();
+
+  // Debug: Log user data
+  console.log("🔍 [HEADER] User data:", user);
+
+  // Get user data from store
+  const userName = user?.fullName || user?.businessName || "Vendor User";
+  const userAvatar = "profile.jpg"; // Default avatar since no avatar field in vendor user type
+
+  console.log("🔍 [HEADER] Computed userName:", userName);
 
   return (
     <header className="">
@@ -82,24 +93,52 @@ const Header: FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2">
           {showNotification && (
-            <button
-              className="transition-opacity opacity-60"
-              onMouseEnter={(e) => setOpacity(e, "0.8")}
-              onMouseLeave={(e) => setOpacity(e, "0.6")}
-              type="button"
-            >
-              <Icon name="Bell" size={20} className="text-base-1" />
-            </button>
+            <div className="relative">
+              <button
+                className="relative p-2.5 rounded-lg hover:bg-base-3 transition-all group"
+                type="button"
+                onMouseEnter={() => setShowNotifPanel(true)}
+                onMouseLeave={() => setShowNotifPanel(false)}
+              >
+                <Icon 
+                  name="Bell" 
+                  size={20} 
+                  className="text-body-content group-hover:text-base-content transition-colors" 
+                />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-base-1 animate-pulse" />
+              </button>
+
+              {/* Notification Panel */}
+              {showNotifPanel && (
+                <div 
+                  className="absolute right-0 top-full mt-2 w-80 bg-base-1 rounded-xl shadow-lg border border-base-3 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                  onMouseEnter={() => setShowNotifPanel(true)}
+                  onMouseLeave={() => setShowNotifPanel(false)}
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <Icon name="Bell" size={18} className="text-primary-600" />
+                    <h3 className="font-semibold text-base-content">Notifications</h3>
+                  </div>
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="w-12 h-12 rounded-full bg-base-3 flex items-center justify-center mb-3">
+                      <Icon name="Bell" size={24} className="text-disabled-content" />
+                    </div>
+                    <p className="text-sm text-body-content">
+                      Your notifications will appear here
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
-          <img
-            src={userAvatar}
-            alt="User avatar"
-            className="w-10 h-10 rounded-lg"
-            style={{
-              border: "2px solid rgba(255, 255, 255, 0.2)",
-            }}
-          />
+          <div 
+            className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105"
+          >
+            <span className="text-white font-semibold text-base">
+              {userName.charAt(0)}
+            </span>
+          </div>
         </div>
       </div>
     </header>

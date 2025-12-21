@@ -73,8 +73,8 @@ function AppLayout() {
           <Sidebar
             menuItems={sidebarMenuItems}
             logo={logo}
-            userAvatar="profile.jpg"
             showOverlay={showOverlay}
+            onNavigate={(path) => navigate({ to: path })}
           />
         </div>
 

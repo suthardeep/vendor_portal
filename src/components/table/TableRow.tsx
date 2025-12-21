@@ -59,8 +59,8 @@ export const TableRow = <T,>({
         return <InputCell row={row} valueKey={column.key} {...column.inputConfig} />;
       default:
         return (
-          <span className={cn(" font-light text-base  text-base-content", column.cellClassName)}>
-            {value}
+<span className={cn("font-normal text-sm text-body-content", column.cellClassName)}>
+              {value}
           </span>
         );
     }
@@ -75,16 +75,14 @@ export const TableRow = <T,>({
     }
   });
 
-  // Check if this row should have expanded content
   const shouldShowExpanded = expandedRowConfig?.shouldExpand 
     ? expandedRowConfig.shouldExpand(row) 
     : false;
 
-  // Calculate colspan for expanded row
   const colspan = totalColumns || (
     flatColumns.length + 
     (selectable ? 1 : 0) + 
-    1 // for action column
+    1
   );
 
   return (
@@ -95,17 +93,17 @@ export const TableRow = <T,>({
           "border-b border-base-3 transition-colors",
           hoverable && "hover:bg-base-2",
           onClick && "cursor-pointer",
-          shouldShowExpanded && "border-b-0" // Remove border if expanded row follows
+          shouldShowExpanded && "border-b-0"
         )}
       >
         {selectable && (
-          <td className="px-4 py-3">
+          <td className="px-3 py-2.5">
             <input
               type="checkbox"
               checked={isSelected}
               onChange={(e) => onSelect?.(e.target.checked)}
               onClick={(e) => e.stopPropagation()}
-              className="w-4 h-4 rounded border-base-3 text-primary-500 focus:ring-2 focus:ring-primary-500"
+              className="w-4 h-4 rounded border-base-3 text-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </td>
         )}
@@ -128,11 +126,12 @@ export const TableRow = <T,>({
             <td
               key={column.key}
               className={cn(
-                "px-4 py-3 relative",
+                "px-3 py-2.5 relative",
                 column.align === 'center' && "text-center",
                 column.align === 'right' && "text-right",
                 !column.align && "text-left",
-                column.cellClassName
+                column.cellClassName ,
+                "border-b border-base-content/5"
               )}
             >
               <div className={cn(
@@ -144,22 +143,21 @@ export const TableRow = <T,>({
               </div>
               
               {isInSubGroup && !isLastInSubGroup && (
-                <div className="absolute right-0 top-5 bottom-5 w-px bg-base-content" />
+                <div className="absolute right-0 top-3 bottom-3 w-px bg-base-content/10" />
               )}
             </td>
           );
         })}
 
-        <td className="px-4 py-3 text-center">
+        <td className="px-3 py-2.5 text-center">
           <ActionCell row={row} actions={actions} singleIcon={singleIcon}/>
         </td>
       </tr>
 
-      {/* Expanded Row Content */}
       {shouldShowExpanded && expandedRowConfig && (
-        <tr className="border-b border-base-3 ">
-          <td colSpan={colspan} className="px-4 py-3">
-            <div className="rounded-lg bg-base-1 p-4">
+        <tr className="border-b border-base-3">
+          <td colSpan={colspan} className="px-3 py-2.5">
+            <div className="rounded-md bg-base-1 p-3">
               {expandedRowConfig.render(row)}
             </div>
           </td>
@@ -168,3 +166,8 @@ export const TableRow = <T,>({
     </>
   );
 };
+
+// FINAL SIZING:
+// - text-[11px] (smaller text)
+// - py-2.5 (consistent with head)
+// - px-3 (everywhere - FIXED from px-2)

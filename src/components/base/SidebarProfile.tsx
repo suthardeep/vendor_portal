@@ -4,6 +4,7 @@ import { cn } from '../../utils/helpers';
 import { TokenUtil } from '@/utils/tokenUtil';
 import { useNavigate } from '@tanstack/react-router';
 import LogoutDialog from '../shared/LogoutDialog';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface SidebarProfileProps {
   userName?: string;
@@ -14,28 +15,25 @@ interface SidebarProfileProps {
 }
 
 const SidebarProfile: React.FC<SidebarProfileProps> = ({
-  userName = "Jeel Thumar",
-  userRole = "Vendor",
-  userAvatar,
   userExpanded,
   onUserExpand
 }) => {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
+  // Debug: Log user data
+  console.log("🔍 [SIDEBAR PROFILE] User data:", user);
 
+  // Get user data from store or fallback to defaults
+  const userName = user?.fullName || user?.businessName || "Vendor User";
+  const userRole = "Vendor";
+  const userAvatar = undefined; // No avatar field in vendor user type
 
-  const handleLogout = ()=>{
-    TokenUtil.clearToken();
-    navigate({to: "/login"})
-  }
+  console.log("🔍 [SIDEBAR PROFILE] Computed userName:", userName);
 
   const profileMenuItems = [
-    { label: "My Profile", icon: "User", action: "profile" },
-    { label: "Manage Warehouse", icon: "Home", action: "warehouse" },
-    { label: "Change Password", icon: "Key", action: "password" },
-    { label: "Logout", icon: "LogOut", action: "logout" , onClick: ()=> setIsLogoutDialogOpen(true)},
+    { label: "Logout", icon: "LogOut", action: "logout", onClick: () => setIsLogoutDialogOpen(true) },
   ];
 
   return (
@@ -114,7 +112,10 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
         />
       </div>
 
-      <LogoutDialog isOpen={isLogoutDialogOpen} close={()=> setIsLogoutDialogOpen(false)} />
+      <LogoutDialog 
+        isOpen={isLogoutDialogOpen} 
+        close={() => setIsLogoutDialogOpen(false)}
+      />
     </div>
   );
 };

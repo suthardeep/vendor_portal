@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
 import React, { useRef, useEffect, useState } from "react";
-import {Icon} from "../../base/Icon";
+import Icon from "../../base/Icon";
 import { ActionMenuItem } from "../table.types";
 import { IconName } from "demaze-ui-lib/components";
 

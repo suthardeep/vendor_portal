@@ -1,18 +1,20 @@
 import { cn } from "@/utils/helpers";
 import React from "react";
-import {Icon} from "../base/Icon";
+import Icon from "../base/Icon";
 import { PaginationMeta } from "@/types/baseApi";
 
 type TablePaginationProps = {
   meta: PaginationMeta;
   onPageChange: (page: number) => void;
   showTotal?: boolean;
+  sticky?: boolean;
 }
 
 export const TablePagination: React.FC<TablePaginationProps> = ({
   meta,
   onPageChange,
   showTotal = true,
+  sticky = true,
 }) => {
   const {
     currentPage,
@@ -21,7 +23,6 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     totalPages,
     hasPrevPage,
     hasNextPage,
-    
   } = meta;
 
   const getPageNumbers = () => {
@@ -56,18 +57,25 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     return pages;
   };
 
-  const buttonBaseClass = "min-w-[36px] h-9 flex items-center justify-center rounded text-sm font-medium transition-colors";
+  const buttonBaseClass = "min-w-[36px] h-9 flex items-center justify-center rounded text-xs font-medium transition-colors";
 
-  // Calculate showing range
-  const startRow = (currentPage - 1) * pageSize + 1;
-  const endRow = Math.min(currentPage * pageSize, totalRows);
+  const currentPageNum = Number(currentPage);
+  const pageSizeNum = Number(pageSize);
+  const totalRowsNum = Number(totalRows);
+  const startRow = (currentPageNum - 1) * pageSizeNum + 1;
+  const endRow = Math.min(currentPageNum * pageSizeNum, totalRowsNum);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-base-1 border-base-3">
+    <div 
+      className={cn(
+        "flex flex-col sm:flex-row items-center justify-between gap-2 px-4 py-3 bg-base-1 border-t border-base-content/10",
+        sticky && " z-10"
+      )}
+    >
       {showTotal && (
-        <div className="text-sm text-body-content">
-          Showing {startRow} to {endRow} of {totalRows} entries
-          {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+        <div className="text-sm text-body-content font-medium">
+          Showing {startRow}-{endRow} of {totalRows}
+          {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
         </div>
       )}
 
@@ -77,27 +85,29 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           disabled={!hasPrevPage}
           className={cn(
             buttonBaseClass,
-            "px-3",
+            "px-2.5",
             !hasPrevPage
-              ? "bg-neutral/20 text-disabled-content cursor-not-allowed"
-              : "bg-neutral/20 text-body-content hover:bg-base-3"
+              ? "bg-neutral/10 text-disabled-content cursor-not-allowed opacity-50"
+              : "bg-neutral/10 text-body-content hover:bg-base-3"
           )}
+          title="First page"
         >
-          <Icon name="ChevronsLeft" size={18} />
+          <Icon name="ChevronsLeft" size={16} />
         </button>
 
         <button
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() => onPageChange(Number(currentPage) - 1)}
           disabled={!hasPrevPage}
           className={cn(
             buttonBaseClass,
-            "px-3",
+            "px-2.5",
             !hasPrevPage
-              ? "bg-neutral/10 text-disabled-content cursor-not-allowed"
+              ? "bg-neutral/10 text-disabled-content cursor-not-allowed opacity-50"
               : "bg-neutral/10 text-body-content hover:bg-base-3"
           )}
+          title="Previous page"
         >
-          <Icon name="ChevronLeft" size={18} />
+          <Icon name="ChevronLeft" size={16} />
         </button>
 
         {getPageNumbers().map((page, idx) => {
@@ -105,7 +115,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             return (
               <div
                 key={`ellipsis-${idx}`}
-                className={cn(buttonBaseClass, "px-3 text-body-content")}
+                className={cn(buttonBaseClass, "px-2.5 text-body-content pointer-events-none")}
               >
                 ...
               </div>
@@ -118,11 +128,12 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
               onClick={() => onPageChange(page as number)}
               className={cn(
                 buttonBaseClass,
-                "px-3",
+                "px-2.5",
                 currentPage === page
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-white font-semibold"
                   : "bg-neutral/10 text-body-content hover:bg-base-3"
               )}
+              title={`Page ${page}`}
             >
               {page}
             </button>
@@ -130,17 +141,18 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         })}
 
         <button
-          onClick={() => onPageChange(currentPage + 1)}
+          onClick={() => onPageChange(Number(currentPage) + 1)}
           disabled={!hasNextPage}
           className={cn(
             buttonBaseClass,
-            "px-3",
+            "px-2.5",
             !hasNextPage
-              ? "bg-neutral/10 text-disabled-content cursor-not-allowed"
+              ? "bg-neutral/10 text-disabled-content cursor-not-allowed opacity-50"
               : "bg-neutral/10 text-body-content hover:bg-base-3"
           )}
+          title="Next page"
         >
-          <Icon name="ChevronRight" size={18} />
+          <Icon name="ChevronRight" size={16} />
         </button>
 
         <button
@@ -148,15 +160,23 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           disabled={!hasNextPage}
           className={cn(
             buttonBaseClass,
-            "px-3",
+            "px-2.5",
             !hasNextPage
-              ? "bg-neutral/20 text-disabled-content cursor-not-allowed"
-              : "bg-neutral/20 text-body-content hover:bg-base-3"
+              ? "bg-neutral/10 text-disabled-content cursor-not-allowed opacity-50"
+              : "bg-neutral/10 text-body-content hover:bg-base-3"
           )}
+          title="Last page"
         >
-          <Icon name="ChevronsRight" size={18} />
+          <Icon name="ChevronsRight" size={16} />
         </button>
       </div>
     </div>
   );
 };
+
+// FINAL SIZING:
+// - h-9 (bigger buttons - was h-8)
+// - py-3 (more padding - was py-2.5)
+// - min-w-[36px] (slightly wider)
+// - text-xs
+// - sticky bottom-0
