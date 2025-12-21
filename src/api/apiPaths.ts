@@ -42,7 +42,9 @@ onboarding:{
     create: "products", // POST
     getById: (id: string) => `products/${id}`, // GET
     categories: "categories", // GET (supports level & parentId)
-    brands: "brands", // GET
+    brands: "vendor/my-brands", // GET
+    draft: "draft",
+    basicDetails: (productId: string) => `products/${productId}/basic-details`, // POST
   },
   variations: {
     generate: "variations/generate", // POST

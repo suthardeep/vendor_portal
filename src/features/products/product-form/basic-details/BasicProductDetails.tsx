@@ -189,13 +189,24 @@ export const BasicProductDetails = ({ productId }: Props) => {
     const validData = result.data as BasicDetailsFormValues;
 
     // Prepare Payload for API
-    const payload: SaveBasicDetailsPayload = {
-      ...validData,
-      // Map Media objects to IDs for backend storage
-      mediaIds: validData.media.map((m) => m.id),
-      // Ensure number conversion
-      totalStockQty: Number(validData.totalStockQty),
-    };
+    const payload: any = {
+    description: validData.description,
+    bulletPoints: validData.bulletPoints,
+    mediaUrls: validData.media.map((m: any) => m.s3Url || m.url), // Use URLs as per doc
+    modelNumber: validData.modelNumber,
+    modelName: validData.modelName,
+    isFragile: validData.isFragile,
+    manufacturerName: validData.manufacturerName,
+    packerDetails: validData.packerDetails,
+    importerDetails: validData.importerDetails,
+    tags: validData.tags,
+    hsnCode: validData.hsnCode,
+    gstRate: Number(validData.gstTaxSlab.replace("%", "")), // Map string slab to number
+    cessCode: validData.cessCode || "",
+    targetAge: validData.targetAgeGroup,
+    targetGender: validData.targetGender,
+    totalStockQuantity: Number(validData.totalStockQty)
+  };
 
     saveMutation.mutate(payload, {
       onSuccess: () => {

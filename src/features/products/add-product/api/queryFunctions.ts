@@ -5,11 +5,12 @@ import {
   CreateProductResponse, 
   BrandsDataResponse 
 } from "../types/addProduct.types";
+import { apiPaths } from "@/api/apiPaths";
 
 export const getCategories = async (level: string, parentId?: string): Promise<CategoryApiResponse> => {
   return apiService({
     method: "GET",
-    endpoint: "/api/v1/categories",
+    endpoint: apiPaths.products.categories,
     params: { level, parentId },
   });
 };
@@ -18,13 +19,13 @@ export const createProduct = async (data: CreateProductPayload): Promise<CreateP
   return apiService({
     method: "POST",
     data,
-    endpoint: "/products/draft", // Exact endpoint from doc
+    endpoint: apiPaths.products.draft, // Exact endpoint from doc
   });
 };
 
 export const getBrands = async () => {
   return apiService({
     method: "GET",
-    endpoint: "/api/v1/brands",
+    endpoint: apiPaths.products.brands,
   }) as Promise<BrandsDataResponse>;
 };

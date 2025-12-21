@@ -13,7 +13,6 @@ import {
   useCreateProductMutation,
   useBrandsQuery,
 } from "../api/queryHooks";
-import { BrandData } from "../types/addProduct.types";
 
 // Define local state interface matching the form fields
 interface CreateProductState {
@@ -71,10 +70,10 @@ export const CreateNewProductTab = () => {
     formData.hasBrandName
   );
 
-  const transformedBrandsData = brandsData?.data.map((brand: BrandData) => ({
+  const transformedBrandsData = brandsData?.data?.brands?.map((brand) => ({
     label: brand.brandName,
-    value: brand.brandId,
-  }));
+    value: brand.id, // API now sends 'id' instead of 'brandId'
+  })) || [];
 
   // 3. Handlers
 
@@ -140,6 +139,19 @@ export const CreateNewProductTab = () => {
 
     const validData = result.data;
 
+    // Construct categoryPath from selected names
+    const categoryPath: string[] = [];
+    const main = mainCategoriesData?.data?.data?.find(c => c.id === formData.mainCategoryId);
+    if (main) categoryPath.push(main.name);
+    
+    const sub = subCategoriesData?.data?.data?.find(c => c.id === formData.subCategoryId);
+    if (sub) categoryPath.push(sub.name);
+    
+    const child = childCategoriesData?.data?.data?.find(c => c.id === formData.childCategoryId);
+    if (child) categoryPath.push(child.name);
+
+    const selectedBrand = brandsData?.data?.brands?.find(b => b.id === formData.brandId);
+
     // Determine the most specific category ID
     const finalCategoryId =
       validData.childCategoryId ||
@@ -152,11 +164,13 @@ export const CreateNewProductTab = () => {
         categoryId: finalCategoryId,
         externalSku: validData.externalSku,
         hasVariants: validData.hasVariants,
+        hasBrand: validData.hasBrandName,
         brandId: validData.hasBrandName ? validData.brandId : undefined,
+        categoryPath: categoryPath,
       },
       {
         onSuccess: (res) => {
-          toast.success("Product draft created!");
+          toast.success("Product created successfully!");
           navigate({
             to: `/products/product-form/${res.data.id}/basic-details`,
           });

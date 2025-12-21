@@ -216,7 +216,7 @@ const AuthInitializer = () => {
     // Profile fetch failed - token is invalid
     if (isError) {
       console.error("🚫 [APP INIT] Profile API failed, token invalid - clearing auth data");
-      TokenUtil.clearToken();
+      // TokenUtil.clearToken();
       clearUser();
       router.update({
         context: {

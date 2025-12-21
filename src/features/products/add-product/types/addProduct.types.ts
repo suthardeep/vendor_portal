@@ -26,7 +26,7 @@ export interface Category {
   subcategoryCount: number;
   childCategoryCount: number;
   isActive: boolean;
-} 
+}
 
 export interface CategoryApiResponse {
   statusCode: number;
@@ -43,26 +43,41 @@ export interface CategoryApiResponse {
 
 export interface CreateProductPayload {
   name: string;
-  categoryId: string; // The final selected category ID (whether main, sub, or child)
+  categoryId: string;
   externalSku: string;
   hasVariants: boolean;
+  hasBrand: boolean;
+  brandName?: string;
+  brandLogo?: string;
+  categoryPath: string[]; // Parent -> Sub -> Child names
   brandId?: string;
 }
 
 export interface CreateProductResponse {
   statusCode: number;
+  message: string;
   data: {
     id: string;
-    // ... other fields
+    name: string;
+    status: string;
+    // ... other fields matching API doc
   };
 }
 
-export interface BrandData {
-  brandId: string;
+// Updated Brand interface to match new response fields
+export interface Brand {
+  id: string;
   brandName: string;
-  brandLogo: string;
+  brandLogo: string | null;
+  selectedCategoryIds: string[];
 }
 
+// Updated wrapper to match the new nested response structure
 export interface BrandsDataResponse {
-  data: BrandData[];
+  statusCode: number;
+  message: string;
+  data: {
+    brands: Brand[];
+    totalBrands: number;
+  };
 }
