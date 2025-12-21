@@ -128,13 +128,13 @@ export const MediaDialog = () => {
               {currentIndex + 1} / {files.length}
             </span>
           )}
-          <button
+          {/* <button
             onClick={handleDownload}
             className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors"
           >
             <Icon name="Download" className="w-5 h-5" />
             <span className="text-sm">Download</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

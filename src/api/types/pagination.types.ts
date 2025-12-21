@@ -1,5 +1,5 @@
 export interface PaginationProps {
     page: number,
-    limit: number,
+    pageSize: number,
     search?: string,
 }

@@ -145,8 +145,8 @@ const Login: React.FC = () => {
         onSuccess: async (data) => {
             try {
               // 3. Store Access Token FIRST
-              // console.log("✅ [LOGIN] Login successful, access token:", );
-              TokenUtil.setToken(data?.accessToken); 
+              console.log("✅ [LOGIN] Login successful, access token:",data );
+              TokenUtil.setToken(data?.data?.accessToken); 
               
               // Set flag to prevent AppInitializer from interfering with navigation
               sessionStorage.setItem('justLoggedIn', 'true');

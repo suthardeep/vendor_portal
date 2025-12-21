@@ -11,6 +11,7 @@ import { MediaItem } from "@/components/media-picker/types/media.types";
 const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
   // Fetch user object from the global store
   const { user } = useAuthStore();
+  console.log("User: ", user)
   const [isSameAsBeforeChecked, setIsSameAsBeforeChecked] = useState(false);
 
   const handleSameAsBeforeClick = (checked: boolean) => {
@@ -47,6 +48,7 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         label="Name"
         placeholder="Enter authorised person name"
         value={data.authorisedPersonName || ""}
+        disabled={isSameAsBeforeChecked}
         onChange={(e) => onChange({ ...data, authorisedPersonName: e.target.value })}
         error={errors.authorisedPersonName}
         containerClassName="col-span-2"
@@ -55,6 +57,7 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
       <MobileNumberInput
         label="Mobile Number"
         placeholder="Enter mobile number"
+        disabled={isSameAsBeforeChecked}
         value={data.authorisedPersonPhoneNumber || ""}
         onChange={(e) => onChange({ ...data, authorisedPersonPhoneNumber: e.target.value })}
         error={errors.authorisedPersonPhoneNumber}
@@ -66,6 +69,7 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         label="Email ID"
         placeholder="Enter email"
         type="email"
+        disabled={isSameAsBeforeChecked}
         value={data.authorisedPersonEmail || ""}
         onChange={(e) => onChange({ ...data, authorisedPersonEmail: e.target.value })}
         error={errors.authorisedPersonEmail}

@@ -326,8 +326,8 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
     }
 
     return (
-      <div onClick={(e:any)=>handlePreview(item, e)} className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
-        <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-white to-gray-200 flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
+      <div onClick={(e:any)=>handlePreview(item, e)} className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-linear-to-br from-gray-100 via-gray-50 to-gray-100">
+        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-white to-gray-200 flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
           {fileType === "video" && <Video className={cn(getIconClasses(), "text-primary")} />}
           {fileType === "pdf" && <FileText className={cn(getIconClasses(), "text-red-500")} />}
           {(!fileType || fileType === "other") && <File className={cn(getIconClasses(), "text-gray-400")} />}
@@ -457,7 +457,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 type="button"
                 onClick={() => setIsGalleryOpen(true)}
                 className={cn(
-                  "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-primary hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-gradient-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
+                  "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-primary hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-linear-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
                   "h-[20dvh]",
                   buildSizeClasses(itemSizeConfig),
                   itemClassName,

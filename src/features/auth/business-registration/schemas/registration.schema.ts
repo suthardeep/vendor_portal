@@ -82,7 +82,7 @@ export const businessDetailsWithoutGSTSchema = BusinessDetailsSchema.omit({
 export const SingleBrandSchema = z.object({
   brandName: z.string().trim().min(1, "Brand name is required"),
   natureOfBusiness: z.enum(["brandowner", "manufacturer", "importer"], "Nature of business is required"), // Radio string
-  selectedCategories: z.array(z.string()).min(1, "At least one category is required"),
+  selectedCategoryIds: z.array(z.string()).min(1, "At least one category is required"),
   brandDocumentIds: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
   brandDocuments: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
   brandLogoId: FileIdSchema,

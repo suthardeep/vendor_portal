@@ -387,7 +387,7 @@ export const MediaGallery = ({
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+            <div className="pb-20 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
               {isLoading && !isFetchingMore && displayItems.length === 0 ? (
                 <FolderShimmer />
               ) : displayItems.length === 0 ? (
@@ -401,7 +401,7 @@ export const MediaGallery = ({
                 </div>
               ) : (
                 <>
-                  <div className="p-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 pb-4">
+                  <div className="p-1 pb-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     {currentFolder
                       ? // --- RENDER FILES ---
                         (displayItems as MediaItem[]).map((item) => {

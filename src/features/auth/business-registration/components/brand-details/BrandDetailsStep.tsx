@@ -3,18 +3,19 @@ import { BrandDetailsStepProps } from "../../types/registration.types";
 import StepContainer from "../StepContainer";
 import { Input } from "@/components/base/Input";
 import { RadioGroup } from "@/components/base/RadioGroup";
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { Separator } from "@/components/base/Separator";
 import { SingleBrandType } from "../../schemas/registration.schema";
 import { Button } from "@/components/base/Button";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
 import { cn } from "@/utils/helpers";
+import { useCategoriesQuery } from "@/features/products/add-product/api/queryHooks";
 // import { useBrandDetailsRegistration } from "../../api/queryHooks";
 
 export const initialBrandState: SingleBrandType = {
   brandName: "",
   natureOfBusiness: "brandowner",
-  selectedCategories: [],
+  selectedCategoryIds: [],
   brandDocumentIds: [],
   brandDocuments: [],
   brandLogoId: "",
@@ -24,17 +25,10 @@ export const initialBrandState: SingleBrandType = {
 };
 
 // to update one value at a time
-type BrandChangeSingle = (
-  index: number,
-  field: keyof SingleBrandType,
-  value: any
-) => void;
+type BrandChangeSingle = (index: number, field: keyof SingleBrandType, value: any) => void;
 
 // to update multiple values at a time
-type BrandChangeMulti = (
-  index: number,
-  updates: Partial<SingleBrandType>
-) => void;
+type BrandChangeMulti = (index: number, updates: Partial<SingleBrandType>) => void;
 
 // const getMinimalMediaItem = (documentId: string[] = [], documentUrls: string[] = []) => {
 //   const maxLen = Math.max(documentId?.length || 0, documentUrls?.length || 0);
@@ -50,11 +44,7 @@ type BrandChangeMulti = (
 //   return result;
 // };
 
-const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
-  data,
-  onChange,
-  errors,
-}) => {
+const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({ data, onChange, errors }) => {
   const handleBrandChange: BrandChangeSingle & BrandChangeMulti = (
     index: number,
     fieldOrUpdates: any,
@@ -74,6 +64,8 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
 
   console.log("BRAND-DATA", data);
 
+  const { data: mainCategoriesData, isLoading: loadingCategories } = useCategoriesQuery("MAIN");
+
   const handleAddBrand = () => {
     onChange([...data, { ...initialBrandState }]);
   };
@@ -84,15 +76,11 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
     onChange(updatedBrands);
   };
 
-  const categoryOptions = [
-    { label: "Electronics", value: "Electronics & Gadgets" },
-    { label: "Fashion", value: "Fashion" },
-    { label: "Home & Kitchen", value: "Home & Kitchen" },
-    { label: "Beauty", value: "Beauty" },
-  ];
+  const mapCategories = (data: any) =>
+    data?.data?.data?.map((c: any) => ({ label: c.name, value: c.id })) || [];
 
   const getSingleCategoryValue = (brand: SingleBrandType): string => {
-    return brand.selectedCategories?.[0] || "";
+    return brand.selectedCategoryIds?.[0] || "";
   };
 
   return (
@@ -107,12 +95,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
               className="bg-base-1 rounded-xl p-1 md:p-2 md:py-0 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300"
             >
               {data.length > 1 && (
-                <div
-                  className={cn(
-                    "flex items-center",
-                    index === 0 ? "justify-end" : "justify-between"
-                  )}
-                >
+                <div className={cn("flex items-center", index === 0 ? "justify-end" : "justify-between")}>
                   {index > 0 && (
                     <h3 className="text-xl font-semibold text-base-content">{`Brand ${index + 1}`}</h3>
                   )}
@@ -135,9 +118,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
                 label="Brand Name"
                 placeholder="Type here"
                 value={brand.brandName}
-                onChange={(e) =>
-                  handleBrandChange(index, "brandName", e.target.value)
-                }
+                onChange={(e) => handleBrandChange(index, "brandName", e.target.value)}
                 error={brandErrors.brandName?.message || brandErrors.brandName} // Handle Zod structure
                 required
               />
@@ -153,9 +134,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
                   ]}
                   value={brand.natureOfBusiness}
                   error={brandErrors.natureOfBusiness}
-                  onChange={(val) =>
-                    handleBrandChange(index, "natureOfBusiness", val)
-                  }
+                  onChange={(val) => handleBrandChange(index, "natureOfBusiness", val)}
                   orientation="horizontal"
                   required
                 />
@@ -164,22 +143,15 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
               <Dropdown
                 label="Category"
                 placeholder="Select Category"
-                options={categoryOptions}
+                options={mapCategories(mainCategoriesData)}
                 // Use helper to get the single selected value for UI
-                value={getSingleCategoryValue(brand)}
+                value={brand.selectedCategoryIds?.[0] || ""}
                 onChange={(val) => {
                   // CONVERSION LOGIC: Store the single string value as a single-element array
-                  handleBrandChange(
-                    index,
-                    "selectedCategories",
-                    val ? [val] : []
-                  );
+                  handleBrandChange(index, "selectedCategoryIds", val ? [val] : []);
                 }}
                 // Note: Error key points to selectedCategories now
-                error={
-                  brandErrors.selectedCategories?.message ||
-                  brandErrors.selectedCategories
-                }
+                error={brandErrors.selectedCategories?.message || brandErrors.selectedCategories}
                 searchable
                 required
               />
@@ -204,9 +176,7 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
                 maxFiles={5}
                 itemClassName="max-h-[16dvh] w-full"
                 containerClassName={
-                  data[index].brandDocuments.length
-                    ? "p-2 border border-body-content/20 rounded-2xl"
-                    : ""
+                  data[index].brandDocuments.length ? "p-2 border border-body-content/20 rounded-2xl" : ""
                 }
                 iconConfig={{ size: "xs" }}
                 orientation="grid"
@@ -245,23 +215,17 @@ const BrandDetailsStep: React.FC<BrandDetailsStepProps> = ({
                 placeholder="Type here"
                 error={brandErrors.website}
                 value={brand.website}
-                onChange={(e) =>
-                  handleBrandChange(index, "website", e.target.value)
-                }
+                onChange={(e) => handleBrandChange(index, "website", e.target.value)}
               />
 
               <Input
                 label="Social Media"
                 placeholder="Type here"
                 value={brand.socialMedia}
-                onChange={(e) =>
-                  handleBrandChange(index, "socialMedia", e.target.value)
-                }
+                onChange={(e) => handleBrandChange(index, "socialMedia", e.target.value)}
               />
 
-              {index < data.length - 1 && (
-                <Separator variant={"dashed"} className="my-6 text-primary" />
-              )}
+              {index < data.length - 1 && <Separator variant={"dashed"} className="my-6 text-primary" />}
             </div>
           );
         })}

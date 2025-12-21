@@ -18,7 +18,7 @@ export const sendOtp = (data: SendOtpPayload): Promise<SendOtpResponse> => {
 }
 
 
-export const verifyOtp = (data: VerifyOtpPayload): Promise<LoginResponseData> => {
+export const verifyOtp = (data: VerifyOtpPayload): Promise<LoginResponse> => {
     return apiService({
         method: "POST",
         data: data,

@@ -83,7 +83,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               aria-describedby={error ? `${name}-error` : undefined}
               className={cn(
                 "appearance-none cursor-pointer border rounded transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                "focus:outline-none ",
                 sizeClasses[size],
                 "border-input-border bg-base-1",
                 checked && "bg-primary border-primary",

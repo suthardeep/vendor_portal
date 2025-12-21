@@ -10,7 +10,7 @@ export const useSendOtpMutation = () => {
 }
 
 export const useVerifyOtpMutation = () => {
-    return useMutation<LoginResponseData, Error, VerifyOtpPayload>({
+    return useMutation<LoginResponse, Error, VerifyOtpPayload>({
         mutationFn: (data: VerifyOtpPayload) => verifyOtp(data)
     })
 }

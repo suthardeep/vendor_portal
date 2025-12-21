@@ -63,7 +63,7 @@ const backgroundClasses = {
 };
 
 const disabledClasses =
-  "disabled:bg-base-2 disabled:text-disabled-content disabled:cursor-not-allowed disabled:opacity-70";
+  " disabled:text-disabled-content disabled:cursor-not-allowed disabled:opacity-70";
 
 const toggleButtonClasses =
   "cursor-pointer transition-colors duration-200 focus:outline-none text-body-content hover:text-base-content";

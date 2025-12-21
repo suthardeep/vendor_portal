@@ -139,7 +139,7 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
                 size === "sm" && "text-xs",
                 size === "md" && "text-sm",
                 size === "lg" && "text-sm",
-                disabled && "opacity-50",
+                disabled && "opacity-70 text-disabled-content",
                 prefixClassName
               )}
             >
@@ -159,7 +159,7 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
               aria-invalid={!!error}
               aria-describedby={error ? `${name}-error` : undefined}
               className={cn(
-                "flex-1 bg-transparent outline-none text-body-content placeholder:text-disabled-content min-w-0",
+                "flex-1 bg-transparent outline-none text-body-content placeholder:text-disabled-content disabled:text-disabled-content min-w-0",
                 disabled && "cursor-not-allowed opacity-50",
                 inputClassName
               )}

@@ -10,7 +10,7 @@ export const fetchFolders = (params: FolderSearchParams) => {
     params: {
       search: params.search,
       page: params.page,
-      limit: params.limit
+      pageSize: params.pageSize
     }
   }) as Promise<PaginatedResponse<string>>;
 };
@@ -21,7 +21,7 @@ export const fetchFiles = (params: MediaFileParams) => {
     endpoint: apiPaths.media.vendorList,
     params: {
         page: params.page,
-        limit: params.limit,
+        pageSize: params.pageSize,
         group: params.group,
         search: params.search
     },

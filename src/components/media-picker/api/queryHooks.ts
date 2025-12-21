@@ -12,7 +12,7 @@ export const useFoldersApi = (search: string , enabled: boolean) => {
   return useInfiniteQuery<PaginatedResponse<string>>({
     queryKey: [MEDIA_FOLDER_QUERY_KEY, search],
     queryFn: ({ pageParam = 1 }) => 
-      fetchFolders({ search, page: pageParam as number, limit: 20 }),
+      fetchFolders({ search, page: pageParam as number, pageSize: 20 }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const { currentPage, totalPages } = lastPage.data.meta;
@@ -32,7 +32,7 @@ export const useFilesApi = (params: Omit<MediaFileParams, 'page'>) => {
   return useInfiniteQuery<PaginatedResponse<MediaItem>>({
     queryKey: [MEDIA_FILE_QUERY_KEY, params.group, params.search],
     queryFn: ({ pageParam = 1 }) => 
-      fetchFiles({ ...params, page: pageParam as number, limit: 20 }),
+      fetchFiles({ ...params, page: pageParam as number, pageSize: 20 }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const { currentPage, totalPages } = lastPage.data.meta;

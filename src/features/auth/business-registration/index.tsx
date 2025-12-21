@@ -472,7 +472,7 @@ const BusinessRegistrationForm: React.FC = () => {
       </div>
 
       {/* Footer Navigation */}
-      <div className="w-full pt-4 mt-auto border-t border-base-content/10 flex items-center justify-between bg-base-1 z-10">
+      <div className="w-full pt-4 border-t border-base-content/10 flex items-center justify-between bg-base-1 z-10">
         <div className="w-[30%] pr-4">
           {currentStep > 1 && (
             <Button
