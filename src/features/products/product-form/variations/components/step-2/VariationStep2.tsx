@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "@/components/toast/Sonner";
 
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { Input } from "@/components/base/Input";
 import { Textarea } from "@/components/base/Textarea";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";

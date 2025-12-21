@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { cn } from "@/utils/helpers";
 import Icon from "../base/Icon";
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { Button } from "../base/Button";
 import {
   ActionButton,

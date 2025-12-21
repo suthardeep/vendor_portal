@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "@/components/toast/Sonner";
 
 import { Input } from "@/components/base/Input";
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { Switch } from "@/components/base/Switch";
 import { Button } from "@/components/base/Button";
 

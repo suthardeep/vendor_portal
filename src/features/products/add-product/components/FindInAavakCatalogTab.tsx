@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { Button } from "@/components/base/Button";
 import { useSearchCatalog } from "../api/mockApi";
 import { useNavigate } from "@tanstack/react-router";

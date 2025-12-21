@@ -12,7 +12,7 @@ import {
   MobileNumberInput,
   MobileNumberInputProps,
 } from "@/components/base/MobileNumberInput";
-import { Dropdown, DropdownProps } from "@/components/base/DropDown";
+import { Dropdown, DropdownProps } from "@/components/base/Dropdown";
 
 // --- Types Helper
 type ControlledProps<TFieldValues extends FieldValues, TProps> = TProps & {

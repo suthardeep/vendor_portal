@@ -5,7 +5,7 @@ import { toast } from "@/components/toast/Sonner";
 // --- Components ---
 import { Input } from "@/components/base/Input";
 import { Textarea } from "@/components/base/Textarea";
-import { Dropdown } from "@/components/base/DropDown";
+import { Dropdown } from "@/components/base/Dropdown";
 import { DropdownWithChips } from "@/components/base/DropdownWithChips";
 import { Switch } from "@/components/base/Switch";
 import { Button } from "@/components/base/Button";

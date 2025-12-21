@@ -2,7 +2,7 @@
 import React from "react";
 import { cn } from "@/utils/helpers";
 import { Icon } from "../base/Icon";
-import { Dropdown } from "../base/DropDown";
+import { Dropdown } from "../base/Dropdown";
 import { FilterConfig } from "./table.types";
 
 interface FilterRendererProps {
