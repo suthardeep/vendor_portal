@@ -134,8 +134,8 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         const payload = {
           variants: [{
             variantId: data.variantId,
-            mrp: Math.round(Number(data.mrp) * 100),
-            sellingPrice: Math.round(Number(data.sellingPrice) * 100),
+            mrp: Math.round(Number(data.mrp)),
+            sellingPrice: Math.round(Number(data.sellingPrice)),
             aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
             localCost: Math.round(Number(data.localCost || 0)),
             regionalCost: Math.round(Number(data.regionalCost || 0)),
@@ -211,8 +211,8 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     const payload = {
       variants: formData.map((data) => ({
         variantId: data.variantId,
-        mrp: Math.round(Number(data.mrp) * 100),
-        sellingPrice: Math.round(Number(data.sellingPrice) * 100),
+        mrp: Math.round(Number(data.mrp)),
+        sellingPrice: Math.round(Number(data.sellingPrice)),
         aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
         localCost: Math.round(Number(data.localCost || 0)),
         regionalCost: Math.round(Number(data.regionalCost || 0)),
