@@ -25,7 +25,7 @@ function AppLayout() {
     if (user) {
       // Check verification status first (higher priority)
       if (user.verificationStatus === "under_review") {
-        // setShowVerificationModal(true); // BYPASSING AS OF NOW
+        setShowVerificationModal(true); // BYPASSING AS OF NOW
         return;
       }
 

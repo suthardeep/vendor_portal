@@ -1,213 +1,166 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { X } from "lucide-react";
-import { useGetVariantPriceBreakdownByIdQuery } from "../api/queryHooks";
-
-interface BreakdownItem {
-  label: string;
-  local?: string | number;
-  regional?: string | number;
-  national?: string | number;
-  isHeader?: boolean;
-}
 
 interface BreakdownDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  variantId?: string;
-  currency?: string;
-  columns?: {
-    local?: boolean;
-    regional?: boolean;
-    national?: boolean;
-  };
-  columnLabels?: {
-    local?: string;
-    regional?: string;
-    national?: string;
-  };
-  okayButtonText?: string;
-  showOkayButton?: boolean;
-  productId?: string;
 }
+
+// Generate random price data for breakdown
+const generateRandomBreakdown = () => {
+  const sellingPrice = Math.floor(Math.random() * 5000) + 1000; // 1000-6000
+  const customerShippingCharge = Math.floor(Math.random() * 200) + 50; // 50-250
+  const feesAndTaxes = Math.floor(sellingPrice * 0.15); // 15% of selling price
+  const tdsTcs = Math.floor(sellingPrice * 0.01); // 1% of selling price
+
+  const localShipping = Math.floor(Math.random() * 100) + 30; // 30-130
+  const regionalShipping = Math.floor(Math.random() * 150) + 80; // 80-230
+  const nationalShipping = Math.floor(Math.random() * 200) + 120; // 120-320
+
+  const aavakCoins = Math.floor(Math.random() * 200) + 10; // 10-210
+
+  return {
+    sellingPrice,
+    customerShippingCharge,
+    feesAndTaxes,
+    tdsTcs,
+    localShipping,
+    regionalShipping,
+    nationalShipping,
+    aavakCoins,
+    local: {
+      total: sellingPrice + customerShippingCharge - feesAndTaxes - tdsTcs - localShipping - aavakCoins
+    },
+    regional: {
+      total: sellingPrice + customerShippingCharge - feesAndTaxes - tdsTcs - regionalShipping - aavakCoins
+    },
+    national: {
+      total: sellingPrice + customerShippingCharge - feesAndTaxes - tdsTcs - nationalShipping - aavakCoins
+    }
+  };
+};
 
 const BreakdownDialog: React.FC<BreakdownDialogProps> = ({
   isOpen,
   onClose,
   title = "Price Breakdown",
-  variantId,
-  currency = "₹",
-  columns = {
-    local: true,
-    regional: true,
-    national: true,
-  },
-  columnLabels = {
-    local: "LOCAL",
-    regional: "REGIONAL",
-    national: "NATIONAL",
-  },
-  okayButtonText = "Okay",
-  showOkayButton = true,
 }) => {
-  // Pass skip logic to the query hook if supported, otherwise handle locally
-  const { data: apiResponse, isLoading } = useGetVariantPriceBreakdownByIdQuery(
-    variantId || "",
-    !isOpen || !variantId
-  );
+  // Generate random data and memoize it - regenerate only when dialog opens
+  const breakdownData = useMemo(() => {
+    if (isOpen) return generateRandomBreakdown();
+    return null;
+  }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !breakdownData) return null;
 
-  // Use API data if available, otherwise fallback to null (or show loading)
-  const data = (apiResponse as any)?.data;
-
-  // Helper to safely parse and format prices (API returns strings for some, numbers for others)
-  const parsePrice = (val: string | number | undefined) => {
-    if (val === undefined || val === null) return 0;
-    return typeof val === "string" ? parseFloat(val) : val;
-  };
-
-  const formatValue = (value: string | number | undefined) => {
-    const numericValue = parsePrice(value);
-    // Assuming API values are in paise/cents based on /100 in your original code
-    // If API returns actual currency units, remove the / 100
-    const displayValue = (numericValue / 100).toLocaleString("en-IN", {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    return `${currency} ${displayValue}`;
+    }).format(amount);
   };
 
-  // Construct items list from the actual API "data" object
-  const items: BreakdownItem[] = data ? [
-    {
-      label: "Market Retail Price (MRP)",
-      local: data.breakdown.mrp,
-      regional: data.breakdown.mrp,
-      national: data.breakdown.mrp,
-    },
-    {
-      label: "Selling Price",
-      local: data.breakdown.sellingPrice,
-      regional: data.breakdown.sellingPrice,
-      national: data.breakdown.sellingPrice,
-    },
-    {
-      label: "Aavak Coins Discount",
-      local: data.breakdown.aavakCoinsPrice,
-      regional: data.breakdown.aavakCoinsPrice,
-      national: data.breakdown.aavakCoinsPrice,
-    },
-    {
-      label: "Shipping Charges (Cost to Platform)",
-      local: data.breakdown.deliveryCosts.local,
-      regional: data.breakdown.deliveryCosts.regional,
-      national: data.breakdown.deliveryCosts.national,
-    },
-    {
-      label: "Final Settlement Price",
-      local: data.breakdown.calculatedPrices.onLocal,
-      regional: data.breakdown.calculatedPrices.onRegional,
-      national: data.breakdown.calculatedPrices.onNational,
-    },
-    {
-      label: "User Earns (Coins)",
-      local: data.breakdown.calculatedPrices.userGets,
-      regional: data.breakdown.calculatedPrices.userGets,
-      national: data.breakdown.calculatedPrices.userGets,
-    }
-  ] : [];
-
-  const activeColumnsCount = Object.values(columns).filter(Boolean).length;
-  const gridCols = `grid-cols-${activeColumnsCount + 1}`;
+  const rows = [
+    { label: "Selling Price", local: breakdownData.sellingPrice, regional: breakdownData.sellingPrice, national: breakdownData.sellingPrice, isAddition: true },
+    { label: "Customer's Charge for Shipping", local: breakdownData.customerShippingCharge, regional: breakdownData.customerShippingCharge, national: breakdownData.customerShippingCharge, isAddition: true },
+    { label: "Fees and Taxes", local: breakdownData.feesAndTaxes, regional: breakdownData.feesAndTaxes, national: breakdownData.feesAndTaxes, isDeduction: true },
+    { label: "TDS/TCS", local: breakdownData.tdsTcs, regional: breakdownData.tdsTcs, national: breakdownData.tdsTcs, isDeduction: true },
+    { label: "Shipping Charges", local: breakdownData.localShipping, regional: breakdownData.regionalShipping, national: breakdownData.nationalShipping, isDeduction: true },
+    { label: "Praised Aavak Coins", local: breakdownData.aavakCoins, regional: breakdownData.aavakCoins, national: breakdownData.aavakCoins, isDeduction: true },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
-      
-      <div className="relative bg-white dark:bg-nd-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden flex flex-col max-h-[90vh]">
+
+      <div className="relative bg-base-1 rounded-2xl shadow-2xl w-full max-w-5xl mx-4 overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-nl-200 dark:border-nd-500 bg-white dark:bg-nd-800 sticky top-0 z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-body-content/20 bg-base-1 sticky top-0 z-10">
           <div>
-            <h2 className="text-lg font-bold text-nl-800 dark:text-nd-100">{title}</h2>
-            {data?.aavakSku && (
-              <p className="text-xs text-nl-500 font-mono mt-1">{data.aavakSku}</p>
-            )}
+            <h2 className="text-lg font-bold text-primary">{title}</h2>
+            <p className="text-xs text-body-content mt-1">Detailed breakdown of pricing across delivery zones</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-nl-100 dark:hover:bg-nd-700 rounded-full transition-colors"
+            className="p-2 hover:bg-base-2 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-nl-500 dark:text-nd-400" />
+            <X className="w-5 h-5 text-body-content" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto">
-          {isLoading ? (
-            <div className="space-y-4 py-10">
-              <div className="h-8 bg-nl-200 dark:bg-nd-700 animate-pulse rounded w-full" />
-              <div className="h-32 bg-nl-100 dark:bg-nd-700/50 animate-pulse rounded w-full" />
+        <div className="overflow-y-auto">
+          <div className="border border-body-content/20 rounded-xl overflow-hidden">
+            {/* Table Header */}
+            <div className="grid grid-cols-4 gap-4 bg-base-2 px-6 py-4 border-b border-body-content/20">
+              <div className="text-sm font-bold text-base-content uppercase tracking-wider"></div>
+              <div className="text-sm font-bold text-base-content text-center uppercase tracking-wider">Local</div>
+              <div className="text-sm font-bold text-base-content text-center uppercase tracking-wider">Regional</div>
+              <div className="text-sm font-bold text-base-content text-center uppercase tracking-wider">National</div>
             </div>
-          ) : (
-            <div className="border border-nl-200 dark:border-nd-600 rounded-xl overflow-hidden">
-              {/* Table Header */}
-              <div className={`grid ${gridCols} gap-4 bg-nl-100 dark:bg-nd-900 px-4 py-3 border-b border-nl-200 dark:border-nd-600`}>
-                <div className="text-xs font-bold text-nl-500 dark:text-nd-400 uppercase tracking-wider">Breakdown Item</div>
-                {columns.local && <div className="text-xs font-bold text-nl-700 dark:text-nd-200 text-center uppercase tracking-wider">{columnLabels.local}</div>}
-                {columns.regional && <div className="text-xs font-bold text-nl-700 dark:text-nd-200 text-center uppercase tracking-wider">{columnLabels.regional}</div>}
-                {columns.national && <div className="text-xs font-bold text-nl-700 dark:text-nd-200 text-center uppercase tracking-wider">{columnLabels.national}</div>}
-              </div>
 
-              {/* Rows */}
-              <div className="divide-y divide-nl-200 dark:divide-nd-600">
-                {items.map((item, index) => {
-                  const isSettlement = item.label.includes("Settlement");
-                  return (
-                    <div 
-                      key={index} 
-                      className={`grid ${gridCols} gap-4 px-4 py-4 transition-colors hover:bg-nl-50 dark:hover:bg-nd-700/30 ${isSettlement ? 'bg-pl-50/50 dark:bg-pd-900/20' : ''}`}
-                    >
-                      <div className={`text-sm ${isSettlement ? "font-bold text-pl-700 dark:text-pd-400" : "font-medium text-nl-700 dark:text-nd-200"}`}>
-                        {item.label}
-                      </div>
-                      {columns.local && (
-                        <div className={`text-sm text-center ${isSettlement ? "font-bold" : "text-nl-600 dark:text-nd-300"}`}>
-                          {formatValue(item.local)}
-                        </div>
-                      )}
-                      {columns.regional && (
-                        <div className={`text-sm text-center ${isSettlement ? "font-bold" : "text-nl-600 dark:text-nd-300"}`}>
-                          {formatValue(item.regional)}
-                        </div>
-                      )}
-                      {columns.national && (
-                        <div className={`text-sm text-center ${isSettlement ? "font-bold" : "text-nl-600 dark:text-nd-300"}`}>
-                          {formatValue(item.national)}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            {/* Table Rows */}
+            <div className="divide-y divide-body-content/20">
+              {rows.map((row, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-4 gap-4 px-6 py-4 transition-colors hover:bg-base-2/50"
+                >
+                  <div className={`text-sm font-semibold text-base-content `}>
+                    {row.label}
+                  </div>
+                  <div className={`text-sm text-center ${row.isDeduction ? 'text-dl-500' : 'text-sl-600'}`}>
+                    {row.isDeduction && '- '}{formatCurrency(row.local)}
+                  </div>
+                  <div className={`text-sm text-center  ${row.isDeduction ? 'text-dl-500' : 'text-sl-600'}`}>
+                    {row.isDeduction && '- '}{formatCurrency(row.regional)}
+                  </div>
+                  <div className={`text-sm text-center {row.isDeduction ? 'text-dl-500' : 'text-sl-600'}`}>
+                    {row.isDeduction && '- '}{formatCurrency(row.national)}
+                  </div>
+                </div>
+              ))}
+
+              {/* Settlement Price Row */}
+              <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-pl-50 dark:bg-pd-900/20 border-t border-base-content">
+                <div className="text-sm font-semibold text-base-content uppercase tracking-wide">
+                  Settlement Price
+                </div>
+                <div className="text-base text-center font-bold text-base-content">
+                  {formatCurrency(breakdownData.local.total)}
+                </div>
+                <div className="text-base text-center font-bold text-base-content">
+                  {formatCurrency(breakdownData.regional.total)}
+                </div>
+                <div className="text-base text-center font-bold text-base-content">
+                  {formatCurrency(breakdownData.national.total)}
+                </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Info Note */}
+          <div className="mt-4 mb-1 p-4 bg-base-2  border border-body-content/20">
+            <p className="text-xs text-body-content">
+              <span className="font-semibold text-primary">Note:</span> This breakdown shows how the final settlement price is calculated for different delivery zones. Deductions include platform fees, taxes, shipping costs, and promotional discounts.
+            </p>
+          </div>
         </div>
 
         {/* Footer */}
-        {showOkayButton && (
-          <div className="flex justify-end px-6 py-4 bg-nl-50 dark:bg-nd-900 border-t border-nl-200 dark:border-nd-600">
-            <button
-              onClick={onClose}
-              className="px-10 py-2.5 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-all active:scale-95"
-            >
-              {okayButtonText}
-            </button>
-          </div>
-        )}
+        <div className="flex justify-end px-6 py-4 bg-base-2 border-t border-body-content/20">
+          <button
+            onClick={onClose}
+            className="px-10 py-2.5 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-all active:scale-95"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

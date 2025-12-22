@@ -1,5 +1,6 @@
 import Dropdown from "@/components/base/Dropdown";
 import React, { useState } from "react";
+import { useProductDetailsQuery } from "../product-form/product-header/api/queryHooks";
 
 // Image Gallery Component
 const ImageGallery: React.FC<{ images: string[] }> = ({ images }) => {
@@ -77,9 +78,11 @@ interface ProductDetailsProps {
   isLoading?: boolean;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isLoading }) => {
+const ProductDetails = ({ productId }: {productId:string}) => {
   const [selectedVariantId, setSelectedVariantId] = useState<string>("");
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
+
+  const {data: product, isLoading} = useProductDetailsQuery(productId)
 
   // Initialize selected variant
   React.useEffect(() => {
@@ -136,28 +139,28 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
   const colorInfo = getColorInfo();
 
   // Build breakdown items from selected variant
-  const breakdownItems = selectedVariant
-    ? [
-        {
-          label: "Selling Price",
-          local: (selectedVariant.sellingPrice || 0) / 100,
-          regional: (selectedVariant.sellingPrice || 0) / 100,
-          national: (selectedVariant.sellingPrice || 0) / 100,
-        },
-        {
-          label: "Customer will be charged for shipping",
-          local: (selectedVariant.deliveryCharges?.local?.cost || 0) / 100,
-          regional: (selectedVariant.deliveryCharges?.regional?.cost || 0) / 100,
-          national: (selectedVariant.deliveryCharges?.national?.cost || 0) / 100,
-        },
-        {
-          label: "Settlement Price",
-          local: (selectedVariant.calculatedPricing?.onLocal || 0) / 100,
-          regional: (selectedVariant.calculatedPricing?.onRegional || 0) / 100,
-          national: (selectedVariant.calculatedPricing?.onNational || 0) / 100,
-        },
-      ]
-    : [];
+//   const breakdownItems = selectedVariant
+//     ? [
+//         {
+//           label: "Selling Price",
+//           local: (selectedVariant.sellingPrice || 0) / 100,
+//           regional: (selectedVariant.sellingPrice || 0) / 100,
+//           national: (selectedVariant.sellingPrice || 0) / 100,
+//         },
+//         {
+//           label: "Customer will be charged for shipping",
+//           local: (selectedVariant.deliveryCharges?.local?.cost || 0) / 100,
+//           regional: (selectedVariant.deliveryCharges?.regional?.cost || 0) / 100,
+//           national: (selectedVariant.deliveryCharges?.national?.cost || 0) / 100,
+//         },
+//         {
+//           label: "Settlement Price",
+//           local: (selectedVariant.calculatedPricing?.onLocal || 0) / 100,
+//           regional: (selectedVariant.calculatedPricing?.onRegional || 0) / 100,
+//           national: (selectedVariant.calculatedPricing?.onNational || 0) / 100,
+//         },
+//       ]
+//     : [];
 
   return (
     <div className="w-full bg-white p-6">
@@ -210,7 +213,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
               {selectedVariant.attributes?.size && (
                 <InfoRow 
                   label="Size" 
-                  value={typeof selectedVariant.attributes.size === "object" ? selectedVariant.attributes.size.name : selectedVariant.attributes.size} 
+                  value={typeof selectedVariant.attributes.size === "object" ? selectedVariant.attributes.size : selectedVariant.attributes.size} 
                 />
               )}
               {colorInfo && (
@@ -366,9 +369,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
           )}
 
           {/* Variant External SKU */}
-          {selectedVariant?.externalSku && (
+          {selectedVariant?.sellerSku && (
             <SectionCard>
-              <InfoRow label="Variant SKU" value={selectedVariant.externalSku} />
+              <InfoRow label="Variant SKU" value={selectedVariant.sellerSku} />
             </SectionCard>
           )}
 
@@ -380,10 +383,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
               </label>
               <SectionCard>
                 {selectedVariant.mrp && (
-                  <InfoRow label="MRP" value={`₹ ${(selectedVariant.mrp / 100).toFixed(2)}`} />
+                  <InfoRow label="MRP" value={`₹ ${(Number(selectedVariant.mrp)).toFixed(2)}`} />
                 )}
                 {selectedVariant.sellingPrice && (
-                  <InfoRow label="Selling Price" value={`₹ ${(selectedVariant.sellingPrice / 100).toFixed(2)}`} />
+                  <InfoRow label="Selling Price" value={`₹ ${(Number(selectedVariant.sellingPrice)).toFixed(2)}`} />
                 )}
                 {selectedVariant.aavakCoinsPrice && (
                   <InfoRow label="Aavak Coins Price" value={`₹ ${(selectedVariant.aavakCoinsPrice / 100).toFixed(2)}`} />
@@ -431,7 +434,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
           )}
 
           {/* Settlement Price */}
-          {selectedVariant?.calculatedPricing && (
+          {/* {selectedVariant?.calculatedPricing && (
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-sm font-semibold text-gray-900">Settlement Price</label>
@@ -471,7 +474,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productId, product, isL
                 )}
               </SectionCard>
             </div>
-          )}
+          )} */}
 
           {/* Admin Notes */}
           {product.adminNotes && (
