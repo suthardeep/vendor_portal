@@ -103,9 +103,6 @@ const Textarea = forwardRef<TextareaRef, TextareaProps>(
         />
         {(helperText || error) && (
           <ErrorText
-            className={
-              error ? "text-base-content dark:text-neutral-500" : textClasses.muted
-            }
           >
             {error || helperText}
           </ErrorText>

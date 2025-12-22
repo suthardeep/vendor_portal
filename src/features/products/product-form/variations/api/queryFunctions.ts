@@ -1,29 +1,29 @@
 import apiService from "@/api/apiService";
 import { apiPaths } from "@/api/apiPaths";
-import { VariationsApiResponse } from "../types/variations.types";
+import { VariantsApiResponse } from "../types/variations.types";
 
-// POST: /api/v1/variations/generate
+// POST: /products/:id/variants (Generate combinations)
 export const generateCombinations = async (data: any) => {
   return apiService({
     method: "POST",
-    data,
-    endpoint: apiPaths.variations.generate,
+    data: { variants: data.variants },
+    endpoint: apiPaths.variations.generate(data.productId),
   });
 };
 
-// GET: /api/v1/products/:id/variations
-export const getVariations = async (productId: string) => {
+// GET: /products/:id/variants
+export const getVariants = async (productId: string): Promise<VariantsApiResponse> => {
   return apiService({
     method: "GET",
-    endpoint: apiPaths.variations.get(productId),
-  }) as Promise<VariationsApiResponse>;
+    endpoint: apiPaths.variations.getVariants(productId),
+  });
 };
 
-// PUT: /api/v1/products/:id/variations (Assuming this exists for Step 2 save)
-export const updateVariations = async ({ productId, variations }: any) => {
+// PATCH: /products/:id/variants/details
+export const updateVariantDetails = async (productId: string, data: any) => {
   return apiService({
-    method: "PUT",
-    data: { variations },
-    endpoint: apiPaths.variations.update(productId),
+    method: "PATCH",
+    data,
+    endpoint: apiPaths.variations.updateVariantDetails(productId),
   });
 };

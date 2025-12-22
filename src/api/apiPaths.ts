@@ -43,14 +43,19 @@ onboarding:{
     getById: (id: string) => `products/${id}`, // GET
     categories: "categories", // GET (supports level & parentId)
     brands: "vendor/my-brands", // GET
-    draft: "draft",
+    draft: "products/draft",
     basicDetails: (productId: string) => `products/${productId}/basic-details`, // POST
     myProducts: "products/my-products", // GET (supports status, page, pageSize, search)
   },
   variations: {
-    generate: "variations/generate", // POST
+    generate: (productId: string) => `products/${productId}/variants`, // POST
     get: (productId: string) => `products/${productId}/variations`, // GET
     update: (productId: string) => `products/${productId}/variations`, // PUT
+    getVariants: (productId: string) => `products/${productId}/variants`, // GET
+    updateVariantDetails: (productId: string) => `products/variants/details`, // PATCH
+    updateVariantPricing: (productId: string) => `products/variants/pricing`, // PATCH
+    getVariantPriceBreakdown: (productId: string) => `products/${productId}/variants/price-breakdown`, // GET
+    getVariantPriceBreakdownById: (variantId: string) => `products/variants/${variantId}/price-breakdown`, // GET
   }
 
 } as const;

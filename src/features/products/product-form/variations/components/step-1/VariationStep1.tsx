@@ -4,6 +4,8 @@ import { ADDITIONAL_VARIATIONS, DEFAULT_COLORS } from "../../constants/staticDat
 import Variations from "./components/Variations";
 import CombinationsPreview from "./components/CombinationsPreview";
 import { useGenerateCombinationsMutation } from "../../api/queryHooks";
+import { Button } from "@/components/base/Button";
+import { toast } from "@/components/compound/Sonner";
 
 interface Props {
   productId: string;
@@ -86,7 +88,7 @@ export default function VariationStep1({ productId, onSuccess }: Props) {
         .join("-");
     };
 
-    let combinations: Array<CombinationItem> = [{ _id: "", id: "" }];
+    let combinations: Array<CombinationItem> = [{ _id: "" }];
 
     enabledVariations.forEach(({ key, values }) => {
       const newCombinations: Array<CombinationItem> = [];
@@ -97,8 +99,7 @@ export default function VariationStep1({ productId, onSuccess }: Props) {
               ? { name: value.name, ...value }
               : value;
 
-          // SOLUTION: Use destructuring to remove _id instead of delete operator
-          // This avoids the "operand of delete must be optional" error and is cleaner
+          // Remove _id from the combo using destructuring
           const { _id: _unused, ...newComboBase } = combo;
 
           const newCombo = { ...newComboBase, [key]: formattedValue };
@@ -118,6 +119,49 @@ export default function VariationStep1({ productId, onSuccess }: Props) {
 
   const finalCombinations = getFinalCombinations();
 
+  const handleSaveAndNext = () => {
+    if (finalCombinations.length === 0) {
+      toast.error("Please create at least one combination before proceeding");
+      return;
+    }
+
+    // Transform combinations to the correct backend format
+    const backendPayload = {
+      variants: finalCombinations.map((combo) => {
+        const variant: any = {};
+        
+        // Transform combination data for backend
+        Object.keys(combo).forEach(key => {
+          if (key === '_id') {
+            // Skip _id, don't send to backend
+            return;
+          } else if (key === 'size') {
+            // Send only name of size
+            variant.size = typeof combo[key] === 'object' ? combo[key].name : combo[key];
+          } else if (key === 'color') {
+            // Send only hex value of color
+            variant.color = typeof combo[key] === 'object' ? combo[key].value : combo[key];
+          } else if (key !== 'id') {
+            // Include other attributes as-is (material, pattern, fit, etc.)
+            variant[key] = typeof combo[key] === 'object' ? combo[key].name : combo[key];
+          }
+        });
+        
+        return variant;
+      })
+    };
+
+    mutation.mutate({ productId, variants: backendPayload.variants }, {
+      onSuccess: () => {
+        toast.success("Variants created successfully");
+        onSuccess();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to create variants");
+      },
+    });
+  };
+
   return (
     <div className="">
       <div className="mx-auto space-y-4 mb-4">
@@ -128,15 +172,17 @@ export default function VariationStep1({ productId, onSuccess }: Props) {
           onRemoveCombination={handleRemoveCombination}
         />
 
-        {/* <div className="mt-8 p-6 bg-base-1 rounded-2xl">
-          <h3 className="text-lg font-semibold text-body-content mb-4">Final Data (for backend)</h3>
-          <pre className="text-xs bg-base-2 p-4 rounded-lg overflow-auto max-h-96 text-body-content">
-            {JSON.stringify(finalCombinations, null, 2)}
-          </pre>
-          <p className="mt-4 text-sm text-body-content/70">
-            Total combinations: <span className="font-bold text-primary">{finalCombinations.length}</span>
-          </p>
-        </div> */}
+        {finalCombinations.length > 0 && (
+          <div className="flex justify-end pt-4">
+            <Button 
+              onClick={handleSaveAndNext} 
+              isLoading={mutation.isPending}
+              className="px-8"
+            >
+              Save & Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

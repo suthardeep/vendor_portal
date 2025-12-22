@@ -6,6 +6,7 @@ export const useProductDetailsQuery = (id: string) => {
     queryKey: ["product", id],
     queryFn: () => getProductDetails(id),
     enabled: !!id,
+    select: (response) => response.data,
     retry: false,
   });
 };

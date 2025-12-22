@@ -104,7 +104,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
                 <h2 className="text-base sm:text-lg font-medium text-base-content">
-                  {product.productName}
+                  {product.name}
                 </h2>
               </div>
 
@@ -117,11 +117,11 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
 
             <div className="w-full flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between ">
               {/* Brand Card */}
-              <div className="flex items-center gap-2 sm:gap-3 px-3 py-2 bg-base-2 rounded-lg border border-base-content/10 shrink-0 w-full sm:w-auto">
+              {product.brandName && (<div className="flex items-center gap-2 sm:gap-3 px-3 py-2 bg-base-2 rounded-lg border border-base-content/10 shrink-0 w-full sm:w-auto">
                 {product.brandLogo ? (
                   <img 
                     src={product.brandLogo} 
-                    alt={product.brandName} 
+                    alt={product.brandName ?? "Brand Logo"} 
                     className="w-8 h-8 sm:w-10 sm:h-10 object-contain" 
                   />
                 ) : (
@@ -136,14 +136,16 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
                   </span>
                 </div>
               </div>
+              )}
 
               {/* Categories */}
               <div className="w-2/3 overflow-hidden ">
                 <PillPath 
                   label="Product Categories" 
-                  items={product.categories} 
+                  items={product.categoryPath} 
                   showSeparator 
                   separatorClassname="xl:text-sm px-1"
+                  mainContainerClassname={cn(!product.brandName && "md:pl-0 pl-0")}
                 />
               </div>
             </div>

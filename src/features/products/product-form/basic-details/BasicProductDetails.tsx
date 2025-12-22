@@ -16,14 +16,9 @@ import { Separator } from "@/components/base/Separator";
 // --- Types & API ---
 import { basicDetailsSchema } from "./schemas/basicDetails.schema";
 import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
-import {
-  useGetBasicDetailsQuery,
-  useSaveBasicDetailsMutation,
-} from "./api/queryHooks";
-import {
-  BasicDetailsFormValues,
-  SaveBasicDetailsPayload,
-} from "./types/basicDetails.types";
+import { useGetBasicDetailsQuery, useSaveBasicDetailsMutation } from "./api/queryHooks";
+import { BasicDetailsFormValues, SaveBasicDetailsPayload } from "./types/basicDetails.types";
+import { useProductDetailsQuery } from "../product-header/api/queryHooks";
 
 // --- Constants ---
 const TAX_SLABS = [
@@ -56,7 +51,7 @@ interface Props {
 interface BasicDetailsState {
   description: string;
   bulletPoints: string[];
-  media: MinimalMediaProps[];
+  mediaUrls: string[];
   modelNumber: string;
   modelName: string;
   isFragile: boolean;
@@ -74,16 +69,20 @@ interface BasicDetailsState {
 
 export const BasicProductDetails = ({ productId }: Props) => {
   const navigate = useNavigate();
+  const STORAGE_KEY = `basic_details_draft_${productId}`;
 
   // 1. API Hooks
-  const { data: apiData, isLoading } = useGetBasicDetailsQuery(productId);
+  // const { data: apiData, isLoading } = useGetBasicDetailsQuery(productId);
+  const { data: apiData, isLoading } = useProductDetailsQuery(productId);
+  console.log("Api data :", apiData);
+
   const saveMutation = useSaveBasicDetailsMutation(productId);
 
   // 2. Local State
   const [formData, setFormData] = useState<BasicDetailsState>({
     description: "",
     bulletPoints: [],
-    media: [],
+    mediaUrls: [],
     modelNumber: "",
     modelName: "",
     isFragile: false,
@@ -108,30 +107,70 @@ export const BasicProductDetails = ({ productId }: Props) => {
       setFormData({
         description: apiData.description || "",
         bulletPoints: apiData.bulletPoints || [],
-        media: apiData.media || [],
+        mediaUrls: apiData.mediaUrls || [],
         modelNumber: apiData.modelNumber || "",
         modelName: apiData.modelName || "",
         isFragile: apiData.isFragile || false,
         targetGender: apiData.targetGender || "",
-        targetAgeGroup: apiData.targetAgeGroup || "",
+        targetAgeGroup: apiData.targetAge || "",
         manufacturerName: apiData.manufacturerName || "",
         packerDetails: apiData.packerDetails || "",
         importerDetails: apiData.importerDetails || "",
         tags: apiData.tags || [],
-        totalStockQty: apiData.totalStockQty
-          ? String(apiData.totalStockQty)
-          : "",
+        totalStockQty: apiData.quantity ? String(apiData.quantity) : "",
         hsnCode: apiData.hsnCode || "",
-        gstTaxSlab: apiData.gstTaxSlab || "",
+        gstTaxSlab: apiData.gstRate?.toString() ?? "",
         cessCode: apiData.cessCode || "",
       });
     }
   }, [apiData]);
 
+  // 3. Prefill Logic with Session Storage check
+  // useEffect(() => {
+  //   if (apiData) {
+  //     const storedData = sessionStorage.getItem(STORAGE_KEY);
+
+  //     // Prioritize persisted session data over server data for unsaved changes
+  //     if (storedData) {
+  //       try {
+  //         const parsed = JSON.parse(storedData);
+  //         setFormData(parsed);
+  //         return;
+  //       } catch (e) {
+  //         console.error("Failed to parse persisted basic details", e);
+  //       }
+  //     }
+
+  //     setFormData({
+  //       description: apiData.description || "",
+  //       bulletPoints: apiData.bulletPoints || [],
+  //       media: apiData.media || [],
+  //       modelNumber: apiData.modelNumber || "",
+  //       modelName: apiData.modelName || "",
+  //       isFragile: apiData.isFragile || false,
+  //       targetGender: apiData.targetGender || "",
+  //       targetAgeGroup: apiData.targetAgeGroup || "",
+  //       manufacturerName: apiData.manufacturerName || "",
+  //       packerDetails: apiData.packerDetails || "",
+  //       importerDetails: apiData.importerDetails || "",
+  //       tags: apiData.tags || [],
+  //       totalStockQty: apiData.totalStockQty ? String(apiData.totalStockQty) : "",
+  //       hsnCode: apiData.hsnCode || "",
+  //       gstTaxSlab: apiData.gstTaxSlab || "",
+  //       cessCode: apiData.cessCode || "",
+  //     });
+  //   }
+  // }, [apiData, STORAGE_KEY]);
+
+  // 4. Persistence Side Effect: Save to Session Storage on every change
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  //   }
+  // }, [formData, STORAGE_KEY, isLoading]);
+
   // 4. Handlers
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     clearError(name);
@@ -182,6 +221,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
         if (issue.path[0]) fieldErrors[issue.path[0] as string] = issue.message;
       });
       setErrors(fieldErrors);
+      console.log(fieldErrors);
       toast.error("Please fix the errors in the form.");
       return;
     }
@@ -190,23 +230,23 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
     // Prepare Payload for API
     const payload: any = {
-    description: validData.description,
-    bulletPoints: validData.bulletPoints,
-    mediaUrls: validData.media.map((m: any) => m.s3Url || m.url), // Use URLs as per doc
-    modelNumber: validData.modelNumber,
-    modelName: validData.modelName,
-    isFragile: validData.isFragile,
-    manufacturerName: validData.manufacturerName,
-    packerDetails: validData.packerDetails,
-    importerDetails: validData.importerDetails,
-    tags: validData.tags,
-    hsnCode: validData.hsnCode,
-    gstRate: Number(validData.gstTaxSlab.replace("%", "")), // Map string slab to number
-    cessCode: validData.cessCode || "",
-    targetAge: validData.targetAgeGroup,
-    targetGender: validData.targetGender,
-    totalStockQuantity: Number(validData.totalStockQty)
-  };
+      description: validData.description,
+      bulletPoints: validData.bulletPoints,
+      mediaUrls: validData.mediaUrls, // Use URLs as per doc
+      modelNumber: validData.modelNumber,
+      modelName: validData.modelName,
+      isFragile: validData.isFragile,
+      manufacturerName: validData.manufacturerName,
+      packerDetails: validData.packerDetails,
+      importerDetails: validData.importerDetails,
+      tags: validData.tags,
+      hsnCode: validData.hsnCode,
+      gstRate: Number(validData?.gstTaxSlab?.replace("%", "")), // Map string slab to number
+      cessCode: validData.cessCode || "",
+      targetAge: validData.targetAgeGroup,
+      targetGender: validData.targetGender,
+      quantity: Number(validData.totalStockQty),
+    };
 
     saveMutation.mutate(payload, {
       onSuccess: () => {
@@ -219,21 +259,15 @@ export const BasicProductDetails = ({ productId }: Props) => {
     });
   };
 
-  if (isLoading)
-    return <div className="p-10 text-center">Loading details...</div>;
+  if (isLoading) return <div className="p-10 text-center">Loading details...</div>;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in"
-    >
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
       {/* --- LEFT COLUMN (General Info) --- */}
       <div className="lg:col-span-2 space-y-6">
         {/* General Details Box */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">
-            General Details
-          </h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">General Details</h3>
           <Separator className="p-0 m-0" />
 
           <div className="w-full p-5 space-y-5">
@@ -290,9 +324,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
                       className="flex items-center gap-2 text-sm bg-base-2 p-2 rounded-lg animate-in fade-in"
                     >
                       <span className="text-primary">•</span>
-                      <span className="flex-1 text-body-content/80">
-                        {point}
-                      </span>
+                      <span className="flex-1 text-body-content/80">{point}</span>
                       <button
                         type="button"
                         onClick={() => removeBulletPoint(index)}
@@ -309,21 +341,24 @@ export const BasicProductDetails = ({ productId }: Props) => {
             <MediaPicker
               label="Upload Videos/Images"
               // Pass IDs and URLs derived from the state objects
-              ids={formData.media.map((m) => m.id)}
-              urls={formData.media.map((m) => m.s3Url || "")}
-              value={formData.media}
-              onChange={(items) => handleValueChange("media", items)}
+              ids={formData.mediaUrls}
+              urls={formData.mediaUrls}
+              // value={formData.mediaUrls}
+              onChange={(items) =>
+                handleValueChange(
+                  "mediaUrls",
+                  items.map((item) => item.s3Url)
+                )
+              }
               maxFiles={5}
               itemClassName="max-h-[16dvh] w-full"
               containerClassName={
-                formData.media.length > 0
-                  ? "p-2 border border-body-content/20 rounded-2xl"
-                  : ""
+                formData.mediaUrls.length > 0 ? "p-2 border border-body-content/20 rounded-2xl" : ""
               }
               iconConfig={{ size: "xs" }}
               orientation="grid"
               // gridConfig={{ cols: 3, gap: "gap-4" }}
-              error={errors.media}
+              error={errors.mediaUrls}
               required
             />
 
@@ -347,9 +382,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
             <Switch
               label="Is this a fragile product?"
               checked={formData.isFragile}
-              onCheckedChange={(checked) =>
-                handleValueChange("isFragile", checked)
-              }
+              onCheckedChange={(checked) => handleValueChange("isFragile", checked)}
               labelPosition="right"
               required
             />
@@ -358,9 +391,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Manufacturer Details */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">
-            Manufacture Details
-          </h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">Manufacture Details</h3>
           <Separator className="p-0 m-0" />
 
           <div className="p-5 space-y-4">
@@ -393,9 +424,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
       <div className="lg:col-span-1 space-y-6">
         {/* Target Audience */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">
-            Target Audience
-          </h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">Target Audience</h3>
           <Separator className="p-0 m-0" />
           <div className="p-5 space-y-4">
             <Dropdown
@@ -421,9 +450,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Tags */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">
-            Tags
-          </h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">Tags</h3>
           <Separator className="p-0 m-0" />
           <div className="p-5">
             <DropdownWithChips
@@ -441,15 +468,13 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
         {/* Inventory & Legal */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">
-            Inventory & Legal
-          </h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">Inventory & Legal</h3>
           <Separator className="p-0 m-0" />
 
           <div className="p-5 space-y-4">
             <Input
               name="totalStockQty"
-              label="Total Stock Qty"
+              label="Total Stock Quantity"
               type="number"
               value={formData.totalStockQty}
               onChange={handleInputChange}
@@ -463,6 +488,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
             <Input
               name="hsnCode"
               label="HSN Code"
+              type="number"
               value={formData.hsnCode}
               onChange={handleInputChange}
               fullWidth
@@ -477,7 +503,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
               onChange={(val) => handleValueChange("gstTaxSlab", val)}
               placeholder="Select Slab"
               fullWidth
-              required
+              // required
               error={errors.gstTaxSlab}
             />
 
@@ -494,19 +520,10 @@ export const BasicProductDetails = ({ productId }: Props) => {
 
       {/* --- FOOTER ACTION --- */}
       <div className="col-span-full flex justify-end gap-3 pt-4 pb-10">
-        <Button
-          className="w-40"
-          variant="outline"
-          type="button"
-          onClick={() => navigate({ to: ".." })}
-        >
+        <Button className="w-40" variant="outline" type="button" onClick={() => navigate({ to: ".." })}>
           Previous
         </Button>
-        <Button
-          className="w-40"
-          type="submit"
-          isLoading={saveMutation.isPending}
-        >
+        <Button className="w-40" type="submit" isLoading={saveMutation.isPending}>
           Save & Next
         </Button>
       </div>

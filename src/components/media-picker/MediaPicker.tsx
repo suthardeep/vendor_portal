@@ -173,8 +173,8 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   const mediaDialog = useMediaDialogStore();
 
 
-  const handleRemove = (id: string) => {
-    onChange(cleanedValue.filter((i) => i.id !== id));
+  const handleRemove = (s3Url: string) => {
+    onChange(cleanedValue.filter((i) => i.s3Url !== s3Url));
   };
 
   const handlePreview = (item: MinimalMediaProps, e: React.MouseEvent) => {
@@ -217,8 +217,9 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   };
 
   const handleConfirm = (newItems: MediaItem[]) => {
-    const existingIds = new Set(cleanedValue.map((v) => v.id));
-    const uniqueNew = newItems.filter((i) => !existingIds.has(i.id));
+    const existingUrls = new Set(cleanedValue.map((v) => v.s3Url));
+    console.log("exisrting urls", existingUrls)
+    const uniqueNew = newItems.filter((i) => !existingUrls.has(i.s3Url));
     const combinedItems = [...cleanedValue, ...uniqueNew];
     const limitedItems = maxFiles !== Infinity ? combinedItems.slice(0, maxFiles) : combinedItems;
     onChange(limitedItems);
@@ -441,7 +442,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                   {renderItemContent(item)}
 
                   <Button
-                    onClick={() => handleRemove(item.id)}
+                    onClick={() => handleRemove(item.s3Url)}
                     className="absolute top-2 right-2 p-0.5 bg-white/95 backdrop-blur-sm text-red-100 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-red-100 hover:text-white active:scale-95"
                     aria-label="Remove item"
                   >
@@ -480,7 +481,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
           isOpen={isGalleryOpen}
           onClose={() => setIsGalleryOpen(false)}
           onConfirm={handleConfirm}
-          maxFiles={maxFiles}
+          maxFiles={maxFiles-cleanedValue.length}
         />
       </div>
       {error && <ErrorText>{error}</ErrorText>}

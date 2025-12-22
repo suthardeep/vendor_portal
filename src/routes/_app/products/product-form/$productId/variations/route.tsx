@@ -6,5 +6,6 @@ export const Route = createFileRoute("/_app/products/product-form/$productId/var
 });
 
 function RouteComponent() {
-  return <VariationsAndCombinations />;
+  const { productId } = Route.useParams();
+  return <VariationsAndCombinations productId={productId} />;
 }

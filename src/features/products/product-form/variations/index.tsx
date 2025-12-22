@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import ShimmerBox from "@/components/base/ShimmerBox";
 
 import VariationStep1 from "./components/step-1/VariationStep1";
 import VariationStep2 from "./components/step-2/VariationStep2";
-import { useGetVariationsQuery } from "./api/queryHooks";
+import { useGetVariantsQuery } from "./api/queryHooks";
 
-const VariationsAndCombinations = () => {
-  const { productId } = useParams({ from: "/_app/products/product-form/$productId/variations" });
+const VariationsAndCombinations = ({ productId } : { productId: string }) => {
   
   // 1 = Create Combinations, 2 = Fill Details
   const [internalStep, setInternalStep] = useState<1 | 2>(2);
 
-  // Use the typed query hook
-  const { data: variationsData, isLoading, refetch } = useGetVariationsQuery(productId);
+  // Use the new variants API
+  const { data: variantsData, isLoading, refetch } = useGetVariantsQuery(productId);
 
   useEffect(() => {
-    // Now TypeScript knows 'combinations' exists on variationsData
-    if (variationsData?.combinations && variationsData.combinations.length > 0) {
+    // Check if variants exist to determine which step to show
+    if (variantsData?.data?.variants && variantsData.data.variants.length > 0) {
       setInternalStep(2);
     } else {
       setInternalStep(1);
     }
-  }, [variationsData]);
+  }, [variantsData]);
 
   const handleStep1Success = async () => {
     await refetch(); 
@@ -45,8 +43,8 @@ const VariationsAndCombinations = () => {
       ) : (
         <VariationStep2 
           productId={productId} 
-          // Check for undefined safely
-          combinations={variationsData?.combinations || []}
+          // Pass the variants data to Step 2
+          variants={variantsData?.data?.variants || []}
           onBack={handleBackToGeneration}
         />
       )}

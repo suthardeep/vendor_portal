@@ -38,11 +38,37 @@ export interface VariationsProp {
 // Helper for combination structure
 export interface CombinationItem {
   _id: string; // Added for reliable deletion
-  id: string; // Added for reliable deletion
   [key: string]: any;
 }
 
 export interface VariationsApiResponse {
   productId: string;
   combinations: CombinationItem[];
+}
+
+// New types for the variants API response
+export interface VariantPricingInfo {
+  onLocal: number;
+  onRegional: number;
+  onNational: number;
+  userGets: number;
+}
+
+export interface VariantItem {
+  id: string;
+  aavakSku: string;
+  size?: string;
+  color?: string;
+  pricing: VariantPricingInfo;
+  [key: string]: any; // For any additional attributes
+}
+
+export interface VariantsApiResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    productId: string;
+    productName: string;
+    variants: VariantItem[];
+  };
 }

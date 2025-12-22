@@ -14,7 +14,7 @@ export const saveBasicDetails = async (
   data: SaveBasicDetailsPayload
 ): Promise<BasicDetailsApiResponse> => {
   return apiService({
-    method: "POST", // Method from API doc
+    method: "PATCH", // Method from API doc
     data,
     endpoint: apiPaths.products.basicDetails(productId),
   });

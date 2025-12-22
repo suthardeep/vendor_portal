@@ -1,29 +1,32 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getVariations, generateCombinations, updateVariations } from "./queryFunctions";
-import { VariationsApiResponse, CombinationItem } from "../types/variations.types";
+import { 
+  generateCombinations,
+  getVariants,
+  updateVariantDetails
+} from "./queryFunctions";
+import { VariantsApiResponse, CombinationItem } from "../types/variations.types";
 
-// 1. Fetch Variations
-export const useGetVariationsQuery = (productId: string) => {
-  return useQuery<VariationsApiResponse>({
-    queryKey: ["variations", productId],
-    queryFn: () => getVariations(productId),
+// Generate Combinations (Step 1 -> Step 2)
+export const useGenerateCombinationsMutation = () => {
+  return useMutation({
+    mutationFn: (data: { productId: string; combinations?: CombinationItem[]; variants?: any[] }) => 
+      generateCombinations(data),
+  });
+};
+
+// Get Variants
+export const useGetVariantsQuery = (productId: string) => {
+  return useQuery<VariantsApiResponse>({
+    queryKey: ["variants", productId],
+    queryFn: () => getVariants(productId),
     retry: false,
     enabled: !!productId,
   });
 };
 
-// 2. Generate Combinations (Step 1 -> Step 2)
-export const useGenerateCombinationsMutation = () => {
+// Update Variant Details (Step 2 Save)
+export const useUpdateVariantDetailsMutation = (productId: string) => {
   return useMutation({
-    mutationFn: (data: { productId: string; combinations: CombinationItem[] }) => 
-      generateCombinations(data),
-  });
-};
-
-// 3. Update Variations (Step 2 Save)
-export const useUpdateVariationsMutation = () => {
-  return useMutation({
-    mutationFn: (data: { productId: string; variations: any[] }) => 
-      updateVariations(data),
+    mutationFn: (data: any) => updateVariantDetails(productId, data),
   });
 };

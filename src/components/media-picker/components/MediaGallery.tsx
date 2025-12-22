@@ -55,7 +55,7 @@ export const MediaGallery = ({
   isOpen,
   onClose,
   onConfirm,
-  maxFileSize = 10 * 1024 * 1024,
+  maxFileSize = 50 * 1024 * 1024,
   maxFiles,
 }: MediaGalleryProps) => {
   const mediaDialog = useMediaDialogStore();

@@ -46,6 +46,7 @@ interface PillPathProps {
   chipClassname?: string;
   chipContainerClassname?: string;
   separatorClassname?: string;
+  mainContainerClassname?: string;
   /** 👇 NEW — Controls if > separator is shown */
   showSeparator?: boolean;
 }
@@ -58,11 +59,12 @@ const PillPath: React.FC<PillPathProps> = ({
   chipClassname,
   separatorClassname,
   chipContainerClassname,
+  mainContainerClassname,
 }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="p-3 md:p-4 bg-base-1 rounded-2xl ">
+    <div className={cn("p-3 md:p-4 bg-base-1 rounded-2xl ", mainContainerClassname)}>
       <h2 className={cn("text-body-content/80 text-sm font-semibold mb-2", labelClassname)}>
         {label || "Categories"}
       </h2>

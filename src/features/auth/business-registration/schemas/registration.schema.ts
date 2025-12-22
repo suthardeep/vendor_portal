@@ -86,7 +86,7 @@ export const SingleBrandSchema = z.object({
   brandDocumentIds: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
   brandDocuments: z.array(z.string()).min(1, "At least one document is required").max(5, "Max 5 documents"),
   brandLogoId: FileIdSchema,
-  brandLogo: FileIdSchema,
+  brandLogo: FileUrlSchema,
   website: z.url("Website must be a valid URL (https://...)").optional().or(z.literal("")),
   socialMedia: z.string().optional(),
 });

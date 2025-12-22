@@ -1,4 +1,3 @@
-import React from "react";
 import { Trash2 } from "lucide-react";
 import { Separator } from "@/components/base/Separator";
 import { VariationsProp, CombinationItem } from "../../../types/variations.types";
@@ -82,8 +81,8 @@ const CombinationsPreview = ({
     );
   }
 
-  // Filter out internal keys like _id for header display
-  const variationKeys = Object.keys(combinations[0]).filter(k => k !== '_id');
+  // Filter out internal keys like _id and id for header display
+  const variationKeys = Object.keys(combinations[0]).filter(k => k !== '_id' && k !== 'id');
 
   return (
     <div className="bg-base-1 shadow-card rounded-xl">

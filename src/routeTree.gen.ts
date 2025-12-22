@@ -33,6 +33,7 @@ import { Route as AppProductsCategoriesIndexRouteImport } from './routes/_app/pr
 import { Route as AppProductsAddProductIndexRouteImport } from './routes/_app/products/add-product/index'
 import { Route as AppProductsProductFormProductIdRouteRouteImport } from './routes/_app/products/product-form/$productId/route'
 import { Route as AppProductsProductFormProductIdVariationsRouteRouteImport } from './routes/_app/products/product-form/$productId/variations/route'
+import { Route as AppProductsProductFormProductIdPricingAndShippingRouteRouteImport } from './routes/_app/products/product-form/$productId/pricing-and-shipping/route'
 import { Route as AppProductsProductFormProductIdBasicDetailsRouteRouteImport } from './routes/_app/products/product-form/$productId/basic-details/route'
 
 const DemoRouteRoute = DemoRouteRouteImport.update({
@@ -160,6 +161,12 @@ const AppProductsProductFormProductIdVariationsRouteRoute =
     path: '/variations',
     getParentRoute: () => AppProductsProductFormProductIdRouteRoute,
   } as any)
+const AppProductsProductFormProductIdPricingAndShippingRouteRoute =
+  AppProductsProductFormProductIdPricingAndShippingRouteRouteImport.update({
+    id: '/pricing-and-shipping',
+    path: '/pricing-and-shipping',
+    getParentRoute: () => AppProductsProductFormProductIdRouteRoute,
+  } as any)
 const AppProductsProductFormProductIdBasicDetailsRouteRoute =
   AppProductsProductFormProductIdBasicDetailsRouteRouteImport.update({
     id: '/basic-details',
@@ -190,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/settings/general': typeof AppSettingsGeneralIndexRoute
   '/settings/security': typeof AppSettingsSecurityIndexRoute
   '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/products/product-form/$productId/pricing-and-shipping': typeof AppProductsProductFormProductIdPricingAndShippingRouteRoute
   '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRoutesByTo {
@@ -215,6 +223,7 @@ export interface FileRoutesByTo {
   '/settings/general': typeof AppSettingsGeneralIndexRoute
   '/settings/security': typeof AppSettingsSecurityIndexRoute
   '/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/products/product-form/$productId/pricing-and-shipping': typeof AppProductsProductFormProductIdPricingAndShippingRouteRoute
   '/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRoutesById {
@@ -243,6 +252,7 @@ export interface FileRoutesById {
   '/_app/settings/general/': typeof AppSettingsGeneralIndexRoute
   '/_app/settings/security/': typeof AppSettingsSecurityIndexRoute
   '/_app/products/product-form/$productId/basic-details': typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  '/_app/products/product-form/$productId/pricing-and-shipping': typeof AppProductsProductFormProductIdPricingAndShippingRouteRoute
   '/_app/products/product-form/$productId/variations': typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 export interface FileRouteTypes {
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/security'
     | '/products/product-form/$productId/basic-details'
+    | '/products/product-form/$productId/pricing-and-shipping'
     | '/products/product-form/$productId/variations'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/security'
     | '/products/product-form/$productId/basic-details'
+    | '/products/product-form/$productId/pricing-and-shipping'
     | '/products/product-form/$productId/variations'
   id:
     | '__root__'
@@ -322,6 +334,7 @@ export interface FileRouteTypes {
     | '/_app/settings/general/'
     | '/_app/settings/security/'
     | '/_app/products/product-form/$productId/basic-details'
+    | '/_app/products/product-form/$productId/pricing-and-shipping'
     | '/_app/products/product-form/$productId/variations'
   fileRoutesById: FileRoutesById
 }
@@ -501,6 +514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProductsProductFormProductIdVariationsRouteRouteImport
       parentRoute: typeof AppProductsProductFormProductIdRouteRoute
     }
+    '/_app/products/product-form/$productId/pricing-and-shipping': {
+      id: '/_app/products/product-form/$productId/pricing-and-shipping'
+      path: '/pricing-and-shipping'
+      fullPath: '/products/product-form/$productId/pricing-and-shipping'
+      preLoaderRoute: typeof AppProductsProductFormProductIdPricingAndShippingRouteRouteImport
+      parentRoute: typeof AppProductsProductFormProductIdRouteRoute
+    }
     '/_app/products/product-form/$productId/basic-details': {
       id: '/_app/products/product-form/$productId/basic-details'
       path: '/basic-details'
@@ -513,6 +533,7 @@ declare module '@tanstack/react-router' {
 
 interface AppProductsProductFormProductIdRouteRouteChildren {
   AppProductsProductFormProductIdBasicDetailsRouteRoute: typeof AppProductsProductFormProductIdBasicDetailsRouteRoute
+  AppProductsProductFormProductIdPricingAndShippingRouteRoute: typeof AppProductsProductFormProductIdPricingAndShippingRouteRoute
   AppProductsProductFormProductIdVariationsRouteRoute: typeof AppProductsProductFormProductIdVariationsRouteRoute
 }
 
@@ -520,6 +541,8 @@ const AppProductsProductFormProductIdRouteRouteChildren: AppProductsProductFormP
   {
     AppProductsProductFormProductIdBasicDetailsRouteRoute:
       AppProductsProductFormProductIdBasicDetailsRouteRoute,
+    AppProductsProductFormProductIdPricingAndShippingRouteRoute:
+      AppProductsProductFormProductIdPricingAndShippingRouteRoute,
     AppProductsProductFormProductIdVariationsRouteRoute:
       AppProductsProductFormProductIdVariationsRouteRoute,
   }

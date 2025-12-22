@@ -166,6 +166,8 @@ export const CreateNewProductTab = () => {
         hasVariants: validData.hasVariants,
         hasBrand: validData.hasBrandName,
         brandId: validData.hasBrandName ? validData.brandId : undefined,
+        brandName: validData.hasBrandName ? selectedBrand?.brandName ?? undefined : undefined,
+        brandLogo: validData.hasBrandName ? selectedBrand?.brandLogo ?? undefined : undefined,
         categoryPath: categoryPath,
       },
       {
