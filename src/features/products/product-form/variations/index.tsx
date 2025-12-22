@@ -41,7 +41,7 @@ console.log("products data : ", productDetails)
     navigate({ to: `/products/product-form/${productId}/basic-details` });
   };
 
-if (isLoading || variants.length === 0) {
+if (isLoading) {
   return (
     <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6">
       {/* Header */}

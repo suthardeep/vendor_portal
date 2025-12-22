@@ -19,10 +19,16 @@ function AppLayout() {
   const { user } = useAuthStore();
   const [showOverlay, setShowOverlay] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const IS_DEV = import.meta.env.VITE_NODE_ENV === "development";
+
 
   // Check onboarding status and verification status on mount and when user changes
   useEffect(() => {
     if (user) {
+      if(IS_DEV){
+        console.log("DEV USER DETECTED BY PASSING VERIFICATION AND APPRIOVAL STATUS CHECK");  
+        return
+      }
       // Check verification status first (higher priority)
       if (user.verificationStatus === "under_review") {
         setShowVerificationModal(true); // BYPASSING AS OF NOW
