@@ -14,7 +14,6 @@ export interface VariantPricingData {
     height: number;
     weight: number;
   };
-  quantity: number;
 }
 
 export interface UpdateVariantsPricingPayload {

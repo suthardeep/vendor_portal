@@ -359,7 +359,7 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
     ? "text-error" 
     : success 
     ? "text-success" 
-    : "text-base-content/40";
+    : "text-base-content";
 
   const currentChipSize = chipSize || inputSize;
 

@@ -1,86 +1,76 @@
 import React, { useState, useMemo } from 'react';
 import { Table } from "@/components/table/Table";
 import { ColumnDef, PaginationConfig, FilterConfig } from "@/components/table/table.types";
-import { useGetActiveProductsQuery, useDeleteActiveProductMutation } from '../../api/queryHooks';
-import { ActiveProduct } from '../../types/activeProduct';
+import { useGetDraftProductsQuery, useDeleteDraftProductMutation } from '../../api/queryHooks';
+import { DraftProduct } from '../../types/draft';
 import { PaginationMeta } from "@/types/baseApi";
 import Dialog from "@/components/compound/Dialog";
 import { useCategoriesQuery } from '@/features/products/add-product/api/queryHooks';
 import { Category } from '@/features/products/add-product/types/addProduct.types';
+import { useNavigate } from '@tanstack/react-router';
 
-const ActiveProductsList: React.FC = () => {
+const DraftsList: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<ActiveProduct | null>(null);
+  const [productToDelete, setProductToDelete] = useState<DraftProduct | null>(null);
+  const navigate = useNavigate();
 
   const [params, setParams] = useState({ 
     page: 1, 
     pageSize: 10,
     search: '',
-    status: 'active',
+    status: 'draft',
     categoryId: '',
   });
 
   const { 
-    data: activeProductsData, 
+    data: draftsData, 
     isLoading, 
     isFetching, 
     isError 
-  } = useGetActiveProductsQuery(params);
+  } = useGetDraftProductsQuery(params);
 
   // Fetch categories for filter dropdown
   const { data: categoriesData } = useCategoriesQuery("MAIN", undefined, true);
 
-  const deleteProductMutation = useDeleteActiveProductMutation();
+  const deleteProductMutation = useDeleteDraftProductMutation();
   
-  const activeProducts: ActiveProduct[] = activeProductsData?.data || [];
-  const meta: PaginationMeta | undefined = activeProductsData?.meta;
+  const drafts: DraftProduct[] = draftsData?.data || [];
+  const meta: PaginationMeta | undefined = draftsData?.meta;
 
-  const columns: ColumnDef<ActiveProduct>[] = useMemo(() => [
+  const columns: ColumnDef<DraftProduct>[] = useMemo(() => [
+    {
+      key: "externalSku", 
+      header: "SKU",
+      cellType: "text",
+      render: (row) => (
+        <span className="text-sm font-normal text-body-content">{row.externalSku}</span>
+      )
+    },
     {
       key: "name", 
-      header: "PRODUCT",
+      header: "PRODUCT NAME",
       cellType: "text",
       render: (row) => (
         <div className="flex items-center gap-3">
           <img 
-            src={row.thumbnailUrl || "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBoZWFkcGhvbmVzfGVufDB8fDB8fHww"} 
+            src={row?.thumbnailUrl || "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBoZWFkcGhvbmVzfGVufDB8fDB8fHww"} 
             alt={row.name}
             className="w-10 h-10 rounded-lg object-cover"
           />
           <div>
             <p className="text-sm font-normal text-body-content">{row.name}</p>
-            <p className="text-xs text-base-content/60">{row.categoryName || 'N/A'}</p>
+            <p className="text-xs text-base-content/60">{row.categoryPath && row.categoryPath.length > 0 ? row.categoryPath[0] : 'N/A'}</p>
           </div>
         </div>
       )
     },
     {
-      key: "basePrice", 
-      header: "BASE PRICE",
+      key: "brandName", 
+      header: "BRAND",
       cellType: "text",
       render: (row) => (
-        <span className="text-sm font-normal text-body-content">
-          {row.basePrice ? `₹${row.basePrice.toLocaleString()}` : 'N/A'}
-        </span>
-      )
-    },
-    {
-      key: "settlementPrice", 
-      header: "SETTLEMENT PRICE",
-      cellType: "text",
-      render: (row) => (
-        <span className="text-sm font-normal text-body-content">
-          {row.settlementPrice ? `₹${row.settlementPrice.toLocaleString()}` : 'N/A'}
-        </span>
-      )
-    },
-    {
-      key: "quantity", 
-      header: "QUANTITY",
-      cellType: "text",
-      render: (row) => (
-        <span className="text-sm font-normal text-body-content">{row.quantity || 0}</span>
+        <span className="text-sm font-normal text-body-content">{row.brandName || 'N/A'}</span>
       )
     },
     {
@@ -113,6 +103,11 @@ const ActiveProductsList: React.FC = () => {
     }));
   };
 
+  const handleDeleteClick = (product: DraftProduct) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
   const handleDeleteConfirm = () => {
     if (productToDelete) {
       deleteProductMutation.mutate(productToDelete.id, {
@@ -121,7 +116,7 @@ const ActiveProductsList: React.FC = () => {
           setProductToDelete(null);
         },
         onError: (error) => {
-          console.error('Failed to delete active product:', error);
+          console.error('Failed to delete draft product:', error);
         }
       });
     }
@@ -133,7 +128,7 @@ const ActiveProductsList: React.FC = () => {
   };
 
   if (isError) {
-    return <div className="p-4 text-error">Failed to load active products data.</div>;
+    return <div className="p-4 text-error">Failed to load draft products data.</div>;
   }
 
   const pagination: PaginationConfig | undefined = meta ? {
@@ -168,12 +163,12 @@ const ActiveProductsList: React.FC = () => {
 
   return (
     <>
-      <Table<ActiveProduct>
-        title="Active Products"
-        data={activeProducts} 
+      <Table<DraftProduct>
+        title="Draft Products"
+        data={drafts} 
         columns={columns}
         searchable
-        searchPlaceholder="Search active products..."
+        searchPlaceholder="Search draft products..."
         onSearch={handleSearch} 
         filters={filters}
         rowKey="id"
@@ -182,47 +177,34 @@ const ActiveProductsList: React.FC = () => {
           setSelectedRows(new Set(set as Set<string>))
         }
         maxHeight="calc(100vh - 198px)"
-        actions={[
-          {
-            label: "Add Product",
-            icon: "Plus",
-            variant: "primary",
-            onClick: () => {
-              // TODO: Navigate to add product page
-              console.log('Navigate to add product');
-            },
-          }
-        ]}
+        actions={[]}
         hoverable
         loading={isLoading || isFetching} 
         pagination={pagination}
-        // rowActions={[
-        //   {
-        //     label: "Edit",
-        //     icon: "Edit",
-        //     onClick: (row) => {
-        //       // TODO: Navigate to edit page
-        //       console.log('Edit product:', row.id);
-        //     },
-        //   },
-        //   {
-        //     label: "Delete",
-        //     icon: "Trash2",
-        //     onClick: (row) => handleDeleteClick(row),
-        //     variant: "danger",
-        //   },
-        // ]}
-
-        containsAction={false}
+        rowActions={[
+          {
+            label: "Edit",
+            icon: "Edit2",
+            onClick: (row) => {
+              navigate({to: `/products/product-form/${row.id}/basic-details`})
+            },
+          },
+          {
+            label: "Delete",
+            icon: "Trash2",
+            onClick: (row) => handleDeleteClick(row),
+            variant: "danger",
+          },
+        ]}
         className='flex-1'
-        emptyMessage="No active products found"
+        emptyMessage="No draft products found"
         emptyIcon="Package"
       />
 
       <Dialog
         isOpen={deleteDialogOpen}
         close={handleDeleteCancel}
-        title="Delete Active Product"
+        title="Delete Draft Product"
         subTitle={`Are you sure you want to delete "${productToDelete?.name}"? This action cannot be undone.`}
         size="sm"
         actions={{
@@ -242,7 +224,7 @@ const ActiveProductsList: React.FC = () => {
       >
         <div className="py-4">
           <p className="text-sm text-gray-600">
-            This will permanently delete the active product and all associated data.
+            This will permanently delete the draft product and all associated data.
           </p>
         </div>
       </Dialog>
@@ -250,4 +232,4 @@ const ActiveProductsList: React.FC = () => {
   );
 };
 
-export default ActiveProductsList;
+export default DraftsList;

@@ -15,10 +15,15 @@ interface ProductHeaderProps {
   productId: string;
 }
 
-const STEPS = [
+const STEPS_WITH_VARIATIONS = [
   { id: "basic-details", label: "Basic Details", number: 1 },
   { id: "variations", label: "Variations", number: 2 },
-  { id: "pricing-shipping", label: "Pricing & Shipping", number: 3 },
+  { id: "pricing-and-shipping", label: "Pricing & Shipping", number: 3 },
+];
+
+const STEPS_WITHOUT_VARIATIONS = [
+  { id: "basic-details", label: "Basic Details", number: 1 },
+  { id: "pricing-and-shipping", label: "Pricing & Shipping", number: 2 },
 ];
 
 export const ProductHeader: React.FC<ProductHeaderProps> = ({
@@ -31,9 +36,13 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { data: product, isLoading } = useProductDetailsQuery(productId);
+  const hasVariants = product?.hasVariants ?? false;
+
+  const STEPS = hasVariants ? STEPS_WITH_VARIATIONS : STEPS_WITHOUT_VARIATIONS;
+  console.log("Steps: ", STEPS)
 
   const currentStepId = STEPS.find((step) => location.pathname.includes(step.id))?.id || "basic-details";
-
+console.log("currentStepId: ", location.pathname)
   // Show shimmer loading state
   if (!productId || isLoading) {
     return <LoadingSkeleton />;
@@ -50,9 +59,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
       <div className="flex flex-col gap-4 p-4 md:p-5 md:pb-0">
         {/* Top Row: Title + Steps */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h1 className="text-xl sm:text-2xl font-semibold text-base-content">
-            {title}
-          </h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-base-content">{title}</h1>
 
           {showSteps && (
             <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-2 lg:pb-0 scrollbar-hide">
@@ -66,9 +73,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
                       "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 select-none shrink-0",
                       enableStepClick && "hover:scale-[1.02] active:scale-[0.98]",
                       enableStepClick ? "cursor-pointer" : "cursor-default",
-                      isActive 
-                        ? "bg-primary/10 shadow-sm" 
-                        : "bg-base-2 hover:bg-base-2/80"
+                      isActive ? "bg-primary/10 shadow-sm" : "bg-base-2 hover:bg-base-2/80"
                     )}
                   >
                     <span
@@ -103,9 +108,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
           <div className="flex flex-col gap-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
-                <h2 className="text-base sm:text-lg font-medium text-base-content">
-                  {product.name}
-                </h2>
+                <h2 className="text-base sm:text-lg font-medium text-base-content">{product.name}</h2>
               </div>
 
               <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -117,33 +120,30 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
 
             <div className="w-full flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between ">
               {/* Brand Card */}
-              {product.brandName && (<div className="flex items-center gap-2 sm:gap-3 px-3 py-2 bg-base-2 rounded-lg border border-base-content/10 shrink-0 w-full sm:w-auto">
-                {product.brandLogo ? (
-                  <img 
-                    src={product.brandLogo} 
-                    alt={product.brandName ?? "Brand Logo"} 
-                    className="w-8 h-8 sm:w-10 sm:h-10 object-contain" 
-                  />
-                ) : (
-                  <Icon name="Tag" className="w-4 h-4 sm:w-5 sm:h-5 text-base-content/50" />
-                )}
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] uppercase text-base-content/50 leading-tight">
-                    Brand
-                  </span>
-                  <span className="text-sm font-medium leading-tight truncate">
-                    {product.brandName}
-                  </span>
+              {product.brandName && (
+                <div className="flex items-center gap-2 sm:gap-3 px-3 py-2 bg-base-2 rounded-lg border border-base-content/10 shrink-0 w-full sm:w-auto">
+                  {product.brandLogo ? (
+                    <img
+                      src={product.brandLogo}
+                      alt={product.brandName ?? "Brand Logo"}
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                    />
+                  ) : (
+                    <Icon name="Tag" className="w-4 h-4 sm:w-5 sm:h-5 text-base-content/50" />
+                  )}
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] uppercase text-base-content/50 leading-tight">Brand</span>
+                    <span className="text-sm font-medium leading-tight truncate">{product.brandName}</span>
+                  </div>
                 </div>
-              </div>
               )}
 
               {/* Categories */}
               <div className="w-2/3 overflow-hidden ">
-                <PillPath 
-                  label="Product Categories" 
-                  items={product.categoryPath} 
-                  showSeparator 
+                <PillPath
+                  label="Product Categories"
+                  items={product.categoryPath}
+                  showSeparator
                   separatorClassname="xl:text-sm px-1"
                   mainContainerClassname={cn(!product.brandName && "md:pl-0 pl-0")}
                 />

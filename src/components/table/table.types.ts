@@ -150,7 +150,7 @@ export interface BreadcrumbConfig {
 
 export interface ActionMenuItem {
   label: string;
-  icon?: string;
+  icon?: IconName;
   onClick?: (row: any) => void;
   variant?: 'default' | 'danger';
 }

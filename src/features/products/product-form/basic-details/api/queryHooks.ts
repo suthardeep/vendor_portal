@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBasicDetails, saveBasicDetails } from "./queryFunctions";
 import { SaveBasicDetailsPayload, BasicDetailsApiResponse } from "../types/basicDetails.types";
+import { queryClient } from "@/lib/queryClient";
 
 export const useGetBasicDetailsQuery = (productId: string) => {
   return useQuery({
@@ -14,13 +15,11 @@ export const useGetBasicDetailsQuery = (productId: string) => {
 };
 
 export const useSaveBasicDetailsMutation = (productId: string) => {
-  const queryClient = useQueryClient();
-
   return useMutation<BasicDetailsApiResponse, Error, SaveBasicDetailsPayload>({
     mutationFn: (data) => saveBasicDetails(productId, data),
     onSuccess: () => {
       // Invalidate the fetch query to ensure fresh data if the user comes back
-      queryClient.invalidateQueries({ queryKey: ["product-basic-details", productId] });
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
     },
   });
 };

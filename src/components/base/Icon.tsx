@@ -92,7 +92,9 @@ import {
   PlusSquare,
    Clock ,
   Sparkles ,
-  Rocket
+  Rocket,
+  Edit2,
+  Edit
 } from "lucide-react";
 
 import { customIconRegistry, type CustomIconName } from "@/assets/icons";
@@ -190,7 +192,9 @@ const lucideIconRegistry = {
   PlusSquare,
   Clock ,
   Sparkles ,
-  Rocket
+  Rocket,
+  Edit,
+  Edit2
 } satisfies Record<string, LucideIcon>;
 
 export type LucideIconName = keyof typeof lucideIconRegistry;

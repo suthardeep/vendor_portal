@@ -3,9 +3,11 @@ import {
   getVariantsPricing,
   updateVariantsPricing,
   getVariantsPriceBreakdown,
-  getVariantPriceBreakdownById
+  getVariantPriceBreakdownById,
+  submitProduct,
 } from "./queryFunctions";
 import { VariantsPricingApiResponse } from "../types/pricing.types";
+import { queryClient } from "@/lib/queryClient";
 
 // Get variants for pricing (with pricing limits)
 export const useGetVariantsPricingQuery = (productId: string) => {
@@ -21,6 +23,10 @@ export const useGetVariantsPricingQuery = (productId: string) => {
 export const useUpdateVariantsPricingMutation = (productId: string) => {
   return useMutation({
     mutationFn: (data: any) => updateVariantsPricing(productId, data),
+    onSuccess: () => {
+      // Invalidate the fetch query to ensure fresh data if the user comes back
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    },
   });
 };
 
@@ -41,5 +47,16 @@ export const useGetVariantPriceBreakdownByIdQuery = (variantId: string, enabled 
     queryFn: () => getVariantPriceBreakdownById(variantId),
     retry: false,
     enabled: !!variantId && enabled,
+  });
+};
+
+// Submit product for approval
+export const useSubmitProductMutation = (productId: string) => {
+  return useMutation({
+    mutationFn: () => submitProduct(productId),
+    onSuccess: () => {
+      // Invalidate the fetch query to ensure fresh data if the user comes back
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    },
   });
 };

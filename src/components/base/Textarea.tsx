@@ -79,10 +79,12 @@ const Textarea = forwardRef<TextareaRef, TextareaProps>(
       }
     };
 
+    const labelColorClass = error ? "text-error" : "";
+
     return (
       <div className={cn(fullWidth && "w-full", containerClassName)}>
         {label && (
-          <Label required={required} className="mb-1">
+          <Label required={required} className={cn("mb-1", labelColorClass)}>
             {" "}
             {label}{" "}
           </Label>

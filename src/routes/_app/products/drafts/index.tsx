@@ -1,7 +1,7 @@
-import DraftsList from '@/features/drafts/pages/drafts-list/DraftsList'
+import DraftsList from '@/features/products/drafts/pages/drafts-list/DraftsList'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_app/drafts/')({
+export const Route = createFileRoute('/_app/products/drafts/')({
   component: RouteComponent,
   beforeLoad: () => ({
     breadcrumb: {

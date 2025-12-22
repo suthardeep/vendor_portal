@@ -31,7 +31,6 @@ export const basicDetailsSchema = z.object({
   ),
   targetAgeGroup: z.string().optional(),
 
-  // Inventory (Handled as string in form for input handling, converted later)
   totalStockQty: z.string().refine((val) => !isNaN(Number(val)) && val !== "", {
     message: "Must be a valid number",
   }),

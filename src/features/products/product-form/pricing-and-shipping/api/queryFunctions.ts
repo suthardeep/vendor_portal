@@ -34,3 +34,11 @@ export const getVariantPriceBreakdownById = async (variantId: string) => {
     endpoint: apiPaths.variations.getVariantPriceBreakdownById(variantId),
   });
 };
+
+// POST: /products/:id/submit
+export const submitProduct = async (productId: string) => {
+  return apiService({
+    method: "POST",
+    endpoint: apiPaths.products.submit(productId),
+  });
+};

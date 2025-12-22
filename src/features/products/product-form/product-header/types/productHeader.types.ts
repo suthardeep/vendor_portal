@@ -1,3 +1,52 @@
+export interface ProductVariant {
+  id: string;
+  aavakSku: string;
+  sellerSku: string | null;
+  attributes: {
+    size?: string;
+    color?: string;
+    [key: string]: any;
+  };
+  targetAge: string | null;
+  targetGender: string | null;
+  quantity: number;
+  mrp: string | null;
+  sellingPrice: string | null;
+  aavakCoinsPrice: number | null;
+  eanUpc: string | null;
+  description: string | null;
+  mediaUrls: string[];
+  deliveryCharges: {
+    local: {
+      cost: number;
+      unitDelivered: number;
+    };
+    regional: {
+      cost: number;
+      unitDelivered: number;
+    };
+    national: {
+      cost: number;
+      unitDelivered: number;
+    };
+  } | null;
+  dimensions: {
+    width: number;
+    height: number;
+    length: number;
+    weight: number;
+  } | null;
+  pricing?: {
+    onLocal: number;
+    onRegional: number;
+    onNational: number;
+    userGets: number;
+  };
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ProductData {
   id: string;
   name: string;
@@ -55,6 +104,8 @@ export interface ProductData {
   targetAge?: string;
   targetGender?: string;
   quantity?: number;
+
+  variants?: ProductVariant[];
 
   createdAt: string;
   updatedAt: string;

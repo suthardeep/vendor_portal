@@ -19,7 +19,7 @@ interface VariantData {
   description?: string;
   targetAge?: string;
   targetGender?: string;
-  quantity?: string;
+  // quantity?: string;
   mediaUrls?: any[];
   attributes: {
     size?: string;
@@ -47,31 +47,31 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
   const [errors, setErrors] = useState<{ [variantIndex: number]: { [field: string]: string } }>({});
 
   // 3. Effect to initialize from props only if storage is empty
-  useEffect(() => {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (!saved && variants.length > 0) {
-      const initialData = variants.map((variant) => ({
-        id: variant.id,
-        aavakSku: variant.aavakSku || "",
-        sellerSku: variant.sellerSku || "",
-        eanUpc: variant.eanUpc || "",
-        description: variant.description || "",
-        targetAge: variant.targetAge || "",
-        targetGender: variant.targetGender || "",
-        quantity: String(variant.quantity || ""),
-        mediaUrls: variant.mediaUrls || [],
-        attributes: variant.attributes || {},
-      }));
-      setFormData(initialData);
-    }
-  }, [variants, productId]);
+  // useEffect(() => {
+  //   const saved = sessionStorage.getItem(STORAGE_KEY);
+  //   if (!saved && variants.length > 0) {
+  //     const initialData = variants.map((variant) => ({
+  //       id: variant.id,
+  //       aavakSku: variant.aavakSku || "",
+  //       sellerSku: variant.sellerSku || "",
+  //       eanUpc: variant.eanUpc || "",
+  //       description: variant.description || "",
+  //       targetAge: variant.targetAge || "",
+  //       targetGender: variant.targetGender || "",
+  //       quantity: String(variant.quantity || ""),
+  //       mediaUrls: variant.mediaUrls || [],
+  //       attributes: variant.attributes || {},
+  //     }));
+  //     setFormData(initialData);
+  //   }
+  // }, [variants, productId]);
 
   // 4. Effect to persist data to Session Storage whenever it changes
-  useEffect(() => {
-    if (formData.length > 0) {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-    }
-  }, [formData, productId]);
+  // useEffect(() => {
+  //   if (formData.length > 0) {
+  //     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  //   }
+  // }, [formData, productId]);
 
   useEffect(() => {
     if (variants.length > 0) {
@@ -95,8 +95,6 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
   const genderOptions = [
     { value: "Male", label: "Male" },
     { value: "Female", label: "Female" },
-    { value: "Unisex", label: "Unisex" },
-    { value: "Other", label: "Other" },
   ];
 
   const handleInputChange = (index: number, field: string, value: any) => {
@@ -155,8 +153,8 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
           variantId: data.id,
           sellerSku: data.sellerSku || "",
           targetAge: data.targetAge || "",
-          targetGender: data.targetGender || "",
-          eanUpc: data.eanUpc || "",
+          targetGender: data.targetGender || undefined,
+          eanUpc: data.eanUpc || undefined,
           description: data.description || "",
           mediaUrls: data.mediaUrls || [],
         })),
@@ -266,11 +264,11 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
             <div key={index} className="px-6 py-6">
               {/* Variant Header */}
               <div className="mb-6">
-                <div className="flex flex-col gap-3 p-4 bg-nl-50  rounded-xl border border-body-content/40 ">
+                <div className="flex flex-col gap-3 p-4 bg-nl-50  rounded-xl  bg-base-2">
                   <span className="text-xs font-semibold text-nl-600 dark:text-nd-300 uppercase tracking-wide">
                     Product Variant
                   </span>
-                  {renderVariantAttributes(originalVariant)}
+                  {renderVariantAttributes(originalVariant?.attributes || {})}
                 </div>
               </div>
 
@@ -281,6 +279,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   value={data.aavakSku}
                   onChange={(e) => handleInputChange(index, "aavakSku", e.target.value)}
                   placeholder="Enter SKU"
+                  required
                   disabled
                   error={variantErrors.aavakSku}
                 />
@@ -289,6 +288,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   value={data.sellerSku}
                   onChange={(e) => handleInputChange(index, "sellerSku", e.target.value)}
                   placeholder="Enter SKU"
+                  required
                   error={variantErrors.sellerSku}
                 />
                 <Input
@@ -296,6 +296,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   value={data.eanUpc}
                   onChange={(e) => handleInputChange(index, "eanUpc", e.target.value)}
                   placeholder="Enter EAN/UPC"
+                  required
                   error={variantErrors.eanUpc}
                 />
               </div>
@@ -324,6 +325,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   }
                   iconConfig={{ size: "xs" }}
                   orientation="grid"
+                  error={variantErrors.mediaUrls}
                 />
               </div>
 
@@ -343,7 +345,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   onChange={(value) => handleInputChange(index, "targetGender", value)}
                   error={variantErrors.targetGender}
                 />
-                <Input
+                {/* <Input
                   label="Quantity"
                   value={data.quantity}
                   onChange={(e) => handleInputChange(index, "quantity", e.target.value)}
@@ -351,7 +353,7 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   required
                   type="number"
                   error={variantErrors.quantity}
-                />
+                /> */}
               </div>
             </div>
           );

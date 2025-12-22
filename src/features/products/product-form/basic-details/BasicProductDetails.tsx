@@ -17,7 +17,7 @@ import { Separator } from "@/components/base/Separator";
 import { basicDetailsSchema } from "./schemas/basicDetails.schema";
 import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
 import { useGetBasicDetailsQuery, useSaveBasicDetailsMutation } from "./api/queryHooks";
-import { BasicDetailsFormValues, SaveBasicDetailsPayload } from "./types/basicDetails.types";
+import { BasicDetailsFormValues } from "./types/basicDetails.types";
 import { useProductDetailsQuery } from "../product-header/api/queryHooks";
 
 // --- Constants ---
@@ -75,6 +75,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
   // const { data: apiData, isLoading } = useGetBasicDetailsQuery(productId);
   const { data: apiData, isLoading } = useProductDetailsQuery(productId);
   console.log("Api data :", apiData);
+  const hasVariants = apiData?.hasVariants ?? false
 
   const saveMutation = useSaveBasicDetailsMutation(productId);
 
@@ -251,7 +252,11 @@ export const BasicProductDetails = ({ productId }: Props) => {
     saveMutation.mutate(payload, {
       onSuccess: () => {
         toast.success("Product details saved successfully");
-        navigate({ to: `/products/product-form/${productId}/variations` });
+        if(hasVariants){
+          navigate({ to: `/products/product-form/${productId}/variations` });
+        }else{
+          navigate({ to: `/products/product-form/${productId}/pricing-and-shipping` });
+        }
       },
       onError: (err) => {
         toast.error(err.message || "Failed to save details");

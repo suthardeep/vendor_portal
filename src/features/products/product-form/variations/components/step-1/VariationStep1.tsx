@@ -16,7 +16,7 @@ interface Props {
 // ============================================================================
 
 export default function VariationStep1({ productId, onSuccess }: Props) {
-  const mutation = useGenerateCombinationsMutation();
+  const mutation = useGenerateCombinationsMutation(productId);
   const [variations, setVariations] = useState<VariationsProp>(() => {
     const initialState: VariationsProp = {
       size: {

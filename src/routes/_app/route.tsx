@@ -69,7 +69,7 @@ function AppLayout() {
       <div className={`flex p-4 gap-4 h-full ${showVerificationModal ? "blur-sm" : ""}`}>
         {/* Sidebar - with spacing all around */}
         {/* add - hidden xl:block for responsiveness and consider an alternative  */}
-        <div className=" w-75">
+        <div className="hidden xl:block w-75">
           <Sidebar
             menuItems={sidebarMenuItems}
             logo={logo}

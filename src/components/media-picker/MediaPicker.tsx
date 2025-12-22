@@ -172,7 +172,6 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   const cleanedValue = value.length > 0 ? value : getMediaPickerValue(ids, urls);
   const mediaDialog = useMediaDialogStore();
 
-
   const handleRemove = (s3Url: string) => {
     onChange(cleanedValue.filter((i) => i.s3Url !== s3Url));
   };
@@ -218,7 +217,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
 
   const handleConfirm = (newItems: MediaItem[]) => {
     const existingUrls = new Set(cleanedValue.map((v) => v.s3Url));
-    console.log("exisrting urls", existingUrls)
+    console.log("exisrting urls", existingUrls);
     const uniqueNew = newItems.filter((i) => !existingUrls.has(i.s3Url));
     const combinedItems = [...cleanedValue, ...uniqueNew];
     const limitedItems = maxFiles !== Infinity ? combinedItems.slice(0, maxFiles) : combinedItems;
@@ -319,7 +318,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
       return (
         <img
           src={item.s3Url}
-          onClick={(e:any)=>handlePreview(item, e)}
+          onClick={(e: any) => handlePreview(item, e)}
           alt={item.s3Url || "Selected media"}
           className="w-full h-full rounded-2xl object-cover transition-transform duration-300 group-hover:scale-105"
         />
@@ -327,7 +326,10 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
     }
 
     return (
-      <div onClick={(e:any)=>handlePreview(item, e)} className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-linear-to-br from-gray-100 via-gray-50 to-gray-100">
+      <div
+        onClick={(e: any) => handlePreview(item, e)}
+        className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-linear-to-br from-gray-100 via-gray-50 to-gray-100"
+      >
         <div className="w-16 h-16 rounded-xl bg-linear-to-br from-white to-gray-200 flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
           {fileType === "video" && <Video className={cn(getIconClasses(), "text-primary")} />}
           {fileType === "pdf" && <FileText className={cn(getIconClasses(), "text-red-500")} />}
@@ -411,7 +413,11 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   // Normal layout (grid, horizontal, vertical)
   return (
     <div className="space-y-1">
-      {label && <Label required={required}>{label}</Label>}
+      {label && (
+        <Label required={required} className={error ? "text-error" : ""}>
+          {label}
+        </Label>
+      )}
 
       <div className={cn(buildSizeClasses(sizeConfig), className)}>
         <div className={cn(getScrollClasses(), buildSizeClasses(sizeConfig), containerClassName)}>
@@ -460,6 +466,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 className={cn(
                   "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-primary hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-linear-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
                   "h-[20dvh]",
+                  error ? "border-error hover:border-error" : "",
                   buildSizeClasses(itemSizeConfig),
                   itemClassName,
                   !hasSelection && orientation === "grid" && "col-span-full",
@@ -481,7 +488,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
           isOpen={isGalleryOpen}
           onClose={() => setIsGalleryOpen(false)}
           onConfirm={handleConfirm}
-          maxFiles={maxFiles-cleanedValue.length}
+          maxFiles={maxFiles - cleanedValue.length}
         />
       </div>
       {error && <ErrorText>{error}</ErrorText>}

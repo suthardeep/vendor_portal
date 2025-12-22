@@ -19,12 +19,12 @@ export const sidebarMenuItems: MenuItem[] = [
     label: "Products",
     icon: "Box",
     subItems: [
-      { label: "All Products", path: "/products" },
-      { label: "Active Products", path: "/active-products" },
-      { label: "Products Under Approval", path: "/products-under-approval" },
-      { label: "Add Product", path: "/products/add-product" },
-      { label: "Drafts", path: "/drafts" },
-      { label: "Categories", path: "/products/categories" },
+      // { label: "All Products", path: "/products" },
+      { label: "Active Products", path: "/products/active-products" },
+      { label: "Under Approval", path: "/products/under-approval" },
+      // { label: "Add Product", path: "/products/add-product" },
+      { label: "Drafts", path: "/products/drafts" },
+      // { label: "Categories", path: "/products/categories" },
     ],
   },
   {

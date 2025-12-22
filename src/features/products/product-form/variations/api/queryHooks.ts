@@ -5,12 +5,17 @@ import {
   updateVariantDetails
 } from "./queryFunctions";
 import { VariantsApiResponse, CombinationItem } from "../types/variations.types";
+import { queryClient } from "@/lib/queryClient";
 
 // Generate Combinations (Step 1 -> Step 2)
-export const useGenerateCombinationsMutation = () => {
+export const useGenerateCombinationsMutation = (productId: string) => {
   return useMutation({
     mutationFn: (data: { productId: string; combinations?: CombinationItem[]; variants?: any[] }) => 
       generateCombinations(data),
+    onSuccess: () => {
+      // Invalidate the fetch query to ensure fresh data if the user comes back
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    },
   });
 };
 
@@ -28,5 +33,9 @@ export const useGetVariantsQuery = (productId: string) => {
 export const useUpdateVariantDetailsMutation = (productId: string) => {
   return useMutation({
     mutationFn: (data: any) => updateVariantDetails(productId, data),
+    onSuccess: () => {
+      // Invalidate the fetch query to ensure fresh data if the user comes back
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    },
   });
 };

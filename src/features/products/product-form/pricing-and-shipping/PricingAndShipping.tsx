@@ -5,10 +5,16 @@ import { Input } from "@/components/base/Input";
 import { Button } from "@/components/base/Button";
 import { toast } from "@/components/compound/Sonner";
 import CurrencyDisplay from "@/components/compound/CurrencyDisplay";
-import { useGetVariantsPricingQuery, useUpdateVariantsPricingMutation } from "./api/queryHooks";
+import {
+  useGetVariantsPricingQuery,
+  useUpdateVariantsPricingMutation,
+  useSubmitProductMutation,
+} from "./api/queryHooks";
 import BreakdownDialog from "./components/BreakdownDialog";
 import { useGetVariantsQuery } from "../variations/api/queryHooks";
+import { useProductDetailsQuery } from "../product-header/api/queryHooks";
 import { VariantItem } from "../variations/types/variations.types";
+import { validateVariantPricingForm } from "./schemas/pricing.schema";
 
 interface PricingAndShippingProps {
   productId: string;
@@ -26,7 +32,6 @@ interface VariantFormData {
   width: string;
   height: string;
   weight: string;
-  quantity: string;
 }
 
 interface SettlementPrice {
@@ -60,13 +65,25 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
   const navigate = useNavigate();
 
   // API hooks
-  const { data: variantsData, isLoading } = useGetVariantsQuery(productId);
+  const { data: productDetails, isLoading: isLoadingDetails } = useProductDetailsQuery(productId);
+  const { data: variantsData, isLoading: isLoadingVariants } = useGetVariantsQuery(productId);
   const updateMutation = useUpdateVariantsPricingMutation(productId);
+  const submitMutation = useSubmitProductMutation(productId);
+
+  const hasVariants = productDetails?.hasVariants ?? false;
+
+  // Prefer product details variants over API variants
+  const variants = productDetails?.variants || variantsData?.data?.variants || [];
+  const isLoading = isLoadingDetails || isLoadingVariants;
 
   // Form state
   const [formData, setFormData] = useState<VariantFormData[]>([]);
   const [settlementPrices, setSettlementPrices] = useState<SettlementPrice[]>([]);
   const [showSettlementSection, setShowSettlementSection] = useState(false);
+  const [errors, setErrors] = useState<{ [variantIndex: number]: { [field: string]: string } }>({});
+
+  // Track which variants have settlement prices visible
+  const [expandedVariants, setExpandedVariants] = useState<Set<string>>(new Set());
 
   // Dialog state
   const [breakdownDialog, setBreakdownDialog] = useState<{
@@ -75,31 +92,55 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     title?: string;
   }>({ isOpen: false });
 
-  // Initialize form data from API
+  // Initialize form data from API - prefill with existing data if available
   useEffect(() => {
-    if (variantsData?.data?.variants) {
-      const initialFormData = variantsData.data?.variants.map((variant: VariantItem) => ({
+    if (variants.length > 0) {
+      const initialFormData = variants.map((variant: any) => ({
         variantId: variant.id,
-        mrp: "",
-        sellingPrice: "",
-        aavakCoinsPrice: "",
-        localCost: "",
-        regionalCost: "",
-        nationalCost: "",
-        length: "",
-        width: "",
-        height: "",
-        weight: "",
-        quantity: "",
+        // Prefill pricing data if available (convert from paise to rupees if numeric)
+        mrp: variant.mrp ? (typeof variant.mrp === "number" ? String(variant.mrp / 100) : variant.mrp) : "",
+        sellingPrice: variant.sellingPrice
+          ? typeof variant.sellingPrice === "number"
+            ? String(variant.sellingPrice)
+            : variant.sellingPrice
+          : "",
+        aavakCoinsPrice: variant.aavakCoinsPrice
+          ? typeof variant.aavakCoinsPrice === "number"
+            ? String(variant.aavakCoinsPrice)
+            : String(variant.aavakCoinsPrice)
+          : "",
+        // Prefill delivery charges if available (convert from paise to rupees)
+        localCost: variant.deliveryCharges?.local?.cost ? String(variant.deliveryCharges.local.cost) : "",
+        regionalCost: variant.deliveryCharges?.regional?.cost
+          ? String(variant.deliveryCharges.regional.cost)
+          : "",
+        nationalCost: variant.deliveryCharges?.national?.cost
+          ? String(variant.deliveryCharges.national.cost)
+          : "",
+        // Prefill dimensions if available
+        length: variant.dimensions?.length ? String(variant.dimensions.length) : "",
+        width: variant.dimensions?.width ? String(variant.dimensions.width) : "",
+        height: variant.dimensions?.height ? String(variant.dimensions.height) : "",
+        weight: variant.dimensions?.weight ? String(variant.dimensions.weight) : "",
       }));
       setFormData(initialFormData);
     }
-  }, [variantsData]);
+  }, [variants]);
 
   const handleInputChange = (index: number, field: string, value: string) => {
     const newData = [...formData];
     newData[index] = { ...newData[index], [field]: value };
     setFormData(newData);
+
+    // Clear field-specific error when user starts typing
+    if (errors[index] && errors[index][field]) {
+      const newErrors = { ...errors };
+      delete newErrors[index][field];
+      if (Object.keys(newErrors[index] || {}).length === 0) {
+        delete newErrors[index];
+      }
+      setErrors(newErrors);
+    }
   };
 
   const formatVariantTitle = (variant: VariantItem) => {
@@ -115,22 +156,37 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     return parts.join(" / ");
   };
 
-  const handleViewSettlementPrice = (variantId: string, variantTitle: string) => {
-    setBreakdownDialog({
-      isOpen: true,
-      variantId,
-      title: `Price Breakdown - ${variantTitle}`,
-    });
+  const handleViewSettlementPrice = (variantId: string) => {
+    // Toggle the expanded state for this variant
+    const newExpanded = new Set(expandedVariants);
+    if (newExpanded.has(variantId)) {
+      newExpanded.delete(variantId);
+    } else {
+      newExpanded.add(variantId);
+    }
+    setExpandedVariants(newExpanded);
   };
 
   const handleSaveAndNext = () => {
-    // Validate required fields
-    const hasErrors = formData.some(
-      (data) => !data.mrp || !data.sellingPrice || !data.length || !data.width || !data.height || !data.weight
-    );
+    // Validate all variants using Zod
+    const validationErrors: { [variantIndex: number]: { [field: string]: string } } = {};
+    let hasErrors = false;
+
+    formData.forEach((data, index) => {
+      const validation = validateVariantPricingForm(data);
+      if (!validation.success) {
+        hasErrors = true;
+        validationErrors[index] = {};
+        validation.error.issues.forEach((issue) => {
+          const fieldName = issue.path[0] as string;
+          validationErrors[index][fieldName] = issue.message;
+        });
+      }
+    });
 
     if (hasErrors) {
-      toast.error("Please fill in all required fields");
+      setErrors(validationErrors);
+      toast.error("Please fix the validation errors before proceeding");
       return;
     }
 
@@ -138,19 +194,18 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     const payload = {
       variants: formData.map((data) => ({
         variantId: data.variantId,
-        mrp: Math.round(Number(data.mrp) * 100), // Convert to paise
-        sellingPrice: Math.round(Number(data.sellingPrice) * 100),
-        aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0) * 100),
-        localCost: Math.round(Number(data.localCost || 0) * 100),
-        regionalCost: Math.round(Number(data.regionalCost || 0) * 100),
-        nationalCost: Math.round(Number(data.nationalCost || 0) * 100),
+        mrp: Math.round(Number(data.mrp)), // Convert to paise
+        sellingPrice: Math.round(Number(data.sellingPrice)),
+        aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
+        localCost: Math.round(Number(data.localCost || 0)),
+        regionalCost: Math.round(Number(data.regionalCost || 0)),
+        nationalCost: Math.round(Number(data.nationalCost || 0)),
         dimensions: {
           length: Number(data.length),
           width: Number(data.width),
           height: Number(data.height),
           weight: Number(data.weight),
         },
-        quantity: Number(data.quantity) || 0,
       })),
     };
 
@@ -170,15 +225,17 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     });
   };
 
-  const handleSubmitForApproval = async () => {
-    // Dummy API call for now
-    try {
-      toast.success("Product submitted for approval successfully");
-      // Navigate to products list or dashboard
-      navigate({ to: "/products/all" });
-    } catch (error) {
-      toast.error("Failed to submit for approval");
-    }
+  const handleSubmitForApproval = () => {
+    submitMutation.mutate(undefined, {
+      onSuccess: (response: any) => {
+        console.log("Submit response:", response);
+        toast.success("Product is under approval");
+        navigate({ to: "/products/active-products" });
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to submit for approval");
+      },
+    });
   };
 
   const renderVariantAttributes = (variant: any) => {
@@ -255,8 +312,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     return <div className="shimmer h-96 w-full rounded-xl" />;
   }
 
-  const variants = variantsData?.data?.variants || [];
-  console.log("Variants data : ", variantsData);
+  console.log("Variants data : ", variants);
 
   return (
     <div className="w-full bg-base-1 rounded-2xl">
@@ -267,53 +323,59 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
 
       {/* Variants List */}
       <div className="divide-y divide-body-content/80">
-        {variants.map((variant: VariantItem, index: number) => {
+        {variants.map((variant: any, index: number) => {
           const data = formData[index] || {};
           const title = formatVariantTitle(variant);
+          const variantErrors = errors[index] || {};
+          const calculatedPricing =
+            variant.calculatedPricing ??
+            variantsData?.data?.variants?.find((v) => v.id === variant.id)?.calculatedPricing;
 
           return (
             <div key={variant.id} className="px-6 py-6">
               {/* Variant Header */}
               <div className="mb-6">
-                <div className="flex flex-col gap-3 p-4 bg-nl-50 rounded-xl border border-body-content/40">
+                <div className="flex flex-col gap-3 p-4 bg-nl-50 rounded-xl bg-base-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-nl-600 dark:text-nd-300 uppercase tracking-wide">
                       Product Variant
                     </span>
                     <Button
-                      onClick={() => handleViewSettlementPrice(variant.id, title)}
+                      onClick={() => handleViewSettlementPrice(variant.id)}
                       variant="outline"
                       className="py-1 max-w-1/3"
-                      endIcon="Eye"
+                      endIcon={expandedVariants.has(variant.id) ? "EyeOff" : "Eye"}
                       endIconClassname="h-4 w-4 rounded-full"
-                      // className="flex items-center gap-2 text-sm text-pl-600 dark:text-pd-400 hover:text-pl-700 dark:hover:text-pd-300 transition-colors"
                     >
-                      {/* <Eye className="w-4 h-4" /> */}
-                      <span>View Settlement Price</span>
+                      <span>
+                        {expandedVariants.has(variant.id) ? "Hide Settlement Price" : "View Settlement Price"}
+                      </span>
                     </Button>
                   </div>
-                  {renderVariantAttributes(variant || {})}
+                  {renderVariantAttributes(variant?.attributes || {})}
                 </div>
               </div>
 
               {/* Form Fields */}
               <div className="grid grid-cols-3 gap-4">
                 <Input
-                  label="MRP*"
+                  label="MRP"
                   value={data.mrp || ""}
                   onChange={(e) => handleInputChange(index, "mrp", e.target.value)}
                   placeholder="Enter MRP"
                   type="number"
                   required
+                  error={variantErrors.mrp}
                 />
 
                 <Input
-                  label="Selling Price*"
+                  label="Selling Price"
                   value={data.sellingPrice || ""}
                   onChange={(e) => handleInputChange(index, "sellingPrice", e.target.value)}
                   placeholder="Enter selling price"
                   type="number"
                   required
+                  error={variantErrors.sellingPrice}
                 />
 
                 <Input
@@ -322,6 +384,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                   onChange={(e) => handleInputChange(index, "aavakCoinsPrice", e.target.value)}
                   placeholder="Enter aavak coin price"
                   type="number"
+                  error={variantErrors.aavakCoinsPrice}
                 />
               </div>
 
@@ -332,6 +395,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                   onChange={(e) => handleInputChange(index, "localCost", e.target.value)}
                   placeholder="Enter local shipping cost"
                   type="number"
+                  error={variantErrors.localCost}
                 />
 
                 <Input
@@ -340,6 +404,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                   onChange={(e) => handleInputChange(index, "regionalCost", e.target.value)}
                   placeholder="Enter regional shipping cost"
                   type="number"
+                  error={variantErrors.regionalCost}
                 />
 
                 <Input
@@ -348,58 +413,93 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                   onChange={(e) => handleInputChange(index, "nationalCost", e.target.value)}
                   placeholder="Enter national shipping cost"
                   type="number"
+                  error={variantErrors.nationalCost}
                 />
               </div>
 
-              <div className="grid grid-cols-5 gap-4 mt-4">
+              <div className="grid grid-cols-4 gap-4 mt-4">
                 <Input
-                  label="Length (cm)*"
+                  label="Length (cm)"
                   value={data.length || ""}
                   onChange={(e) => handleInputChange(index, "length", e.target.value)}
                   placeholder="Enter length"
                   type="number"
                   leftElement={<Ruler className="w-4 h-4 text-nl-400 dark:text-nd-400" />}
                   required
+                  error={variantErrors.length}
                 />
 
                 <Input
-                  label="Width (cm)*"
+                  label="Width (cm)"
                   value={data.width || ""}
                   onChange={(e) => handleInputChange(index, "width", e.target.value)}
                   placeholder="Enter width"
                   type="number"
                   leftElement={<Package className="w-4 h-4 text-nl-400 dark:text-nd-400" />}
                   required
+                  error={variantErrors.width}
                 />
 
                 <Input
-                  label="Height (cm)*"
+                  label="Height (cm)"
                   value={data.height || ""}
                   onChange={(e) => handleInputChange(index, "height", e.target.value)}
                   placeholder="Enter height"
                   type="number"
                   leftElement={<Pencil className="w-4 h-4 text-nl-400 dark:text-nd-400" />}
                   required
+                  error={variantErrors.height}
                 />
 
                 <Input
-                  label="Weight (kg)*"
+                  label="Weight (kg)"
                   value={data.weight || ""}
                   onChange={(e) => handleInputChange(index, "weight", e.target.value)}
                   placeholder="Enter weight"
                   type="number"
                   leftElement={<Weight className="w-4 h-4 text-nl-400 dark:text-nd-400" />}
                   required
+                  error={variantErrors.weight}
                 />
 
-                <Input
-                  label="Quantity"
-                  value={data.quantity || ""}
-                  onChange={(e) => handleInputChange(index, "quantity", e.target.value)}
-                  placeholder="Enter quantity"
-                  type="number"
-                />
               </div>
+
+              {/* Settlement Prices Section - Expanded below this variant */}
+              {expandedVariants.has(variant.id) && calculatedPricing && (
+                <div className="mt-6 p-5 bg-t-green/5 dark:bg-t-green/10 rounded-xl border border-t-green/20">
+                  <h4 className="text-sm font-semibold text-nl-800 dark:text-nd-100 mb-4 flex items-center gap-2">
+                    Settlement Price Breakdown
+                  </h4>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="p-4 bg-nl-50 dark:bg-nd-800 rounded-lg border border-nl-200 dark:border-nd-600">
+                      <p className="text-xs text-nl-600 dark:text-nd-400 mb-1 font-medium">Local Delivery</p>
+                      <p className="text-lg font-bold text-nl-800 dark:text-nd-100">
+                        <CurrencyDisplay amount={calculatedPricing.onLocal / 100} />
+                      </p>
+                    </div>
+                    <div className="p-4 bg-nl-50 dark:bg-nd-800 rounded-lg border border-nl-200 dark:border-nd-600">
+                      <p className="text-xs text-nl-600 dark:text-nd-400 mb-1 font-medium">
+                        Regional Delivery
+                      </p>
+                      <p className="text-lg font-bold text-nl-800 dark:text-nd-100">
+                        <CurrencyDisplay amount={calculatedPricing.onRegional / 100} />
+                      </p>
+                    </div>
+                    <div className="p-4 bg-nl-50 dark:bg-nd-800 rounded-lg border border-nl-200 dark:border-nd-600">
+                      <p className="text-xs text-nl-600 dark:text-nd-400 mb-1 font-medium">
+                        National Delivery
+                      </p>
+                      <p className="text-lg font-bold text-nl-800 dark:text-nd-100">
+                        <CurrencyDisplay amount={calculatedPricing.onNational / 100} />
+                      </p>
+                    </div>
+                    <div className="p-4 bg-t-green/10 dark:bg-t-green/20 rounded-lg border border-t-green/30">
+                      <p className="text-xs text-t-green mb-1 font-bold">User Gets (Coins)</p>
+                      <p className="text-lg font-bold text-t-green">{calculatedPricing.userGets}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
@@ -412,7 +512,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
           <div className="space-y-4">
             {settlementPrices.map((settlement) => {
               const variant = variants.find((v) => v.id === settlement.id);
-              const title = variant ? formatVariantTitle(variant) : settlement.aavakSku;
+              const title = variant ? formatVariantTitle(variant?.attributes || {}) : settlement.aavakSku;
 
               return (
                 <div
@@ -468,14 +568,20 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         <Button
           className="w-44"
           variant="outline"
-          onClick={() => navigate({ to: `/products/product-form/${productId}/variations` })}
+          onClick={() => {
+            if (hasVariants) {
+              navigate({ to: `/products/product-form/${productId}/variations` });
+            } else {
+              navigate({ to: `/products/product-form/${productId}/basic-details` });
+            }
+          }}
         >
           Previous
         </Button>
         <Button
           className="w-44"
           onClick={showSettlementSection ? handleSubmitForApproval : handleSaveAndNext}
-          isLoading={updateMutation.isPending}
+          isLoading={showSettlementSection ? submitMutation.isPending : updateMutation.isPending}
         >
           {showSettlementSection ? "Submit for Approval" : "Save & Next"}
         </Button>

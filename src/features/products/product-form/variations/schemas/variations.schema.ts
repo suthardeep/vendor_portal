@@ -1,17 +1,16 @@
 import { z } from "zod";
 
-// Simple validation schemas
+// Form validation schema with required fields
 export const variantDetailsSchema = z.object({
   id: z.string().min(1, "Variant ID is required"),
   aavakSku: z.string().min(1, "Aavak SKU is required"),
-  sellerSku: z.string().optional(),
+  sellerSku: z.string().min(1, "Seller SKU is required"),
   eanUpc: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
   targetAge: z.string().optional(),
   targetGender: z.string().optional(),
   quantity: z.union([z.string(), z.number()]).optional(),
-  mediaIds: z.array(z.any()).optional(),
-  mediaUrls: z.array(z.any()).optional(),
+  mediaUrls: z.array(z.string()).min(1, "At least one image/video is required"),
   attributes: z.record(z.string(), z.any()).optional(),
 });
 
@@ -20,13 +19,12 @@ export const variantDetailsApiPayloadSchema = z.object({
   variants: z.array(
     z.object({
       variantId: z.string().min(1, "Variant ID is required"),
-      sellerSku: z.string().optional(),
+      sellerSku: z.string().min(1, "Seller SKU is required"),
       targetAge: z.string().optional(),
       targetGender: z.string().optional(),
       eanUpc: z.string().optional(),
-      description: z.string().optional(),
-      mediaUrls: z.array(z.any()).optional(),
-      quantity: z.number().min(0, "Quantity must be non-negative"),
+      description: z.string().min(1, "Description is required"),
+      mediaUrls: z.array(z.any()).min(1, "At least one image/video is required"),
     })
   ).min(1, "At least one variant is required"),
 });
@@ -55,7 +53,6 @@ export const transformToApiPayload = (formData: VariantDetailsFormData[]): Varia
       eanUpc: variant.eanUpc || "",
       description: variant.description || "",
       mediaUrls: variant.mediaUrls || [],
-      quantity: typeof variant.quantity === "string" ? parseFloat(variant.quantity) || 0 : variant.quantity || 0,
     })),
   };
 };

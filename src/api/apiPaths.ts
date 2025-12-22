@@ -46,6 +46,7 @@ onboarding:{
     draft: "products/draft",
     basicDetails: (productId: string) => `products/${productId}/basic-details`, // POST
     myProducts: "products/my-products", // GET (supports status, page, pageSize, search)
+    submit: (productId: string) => `products/${productId}/submit`, // POST
   },
   variations: {
     generate: (productId: string) => `products/${productId}/variants`, // POST

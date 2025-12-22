@@ -1,54 +1,43 @@
 import React, { useState, useMemo } from 'react';
 import { Table } from "@/components/table/Table";
-import { ColumnDef, PaginationConfig, FilterConfig, FilterChip } from "@/components/table/table.types";
-import { useGetApprovalProductsQuery, useDeleteApprovalProductMutation } from '../../api/queryHooks';
-import { ApprovalProduct } from '../../types/approvalProduct';
+import { ColumnDef, PaginationConfig, FilterConfig } from "@/components/table/table.types";
+import { useGetActiveProductsQuery, useDeleteActiveProductMutation } from '../../api/queryHooks';
+import { ActiveProduct } from '../../types/activeProduct';
 import { PaginationMeta } from "@/types/baseApi";
 import Dialog from "@/components/compound/Dialog";
 import { useCategoriesQuery } from '@/features/products/add-product/api/queryHooks';
 import { Category } from '@/features/products/add-product/types/addProduct.types';
-import { BadgeCell } from '@/components/table/cells/BadgeCell';
+import { useNavigate } from '@tanstack/react-router';
 
-const ProductsUnderApprovalList: React.FC = () => {
+const ActiveProductsList: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<ApprovalProduct | null>(null);
-
+  const [productToDelete, setProductToDelete] = useState<ActiveProduct | null>(null);
+  const navigate = useNavigate();
   const [params, setParams] = useState({ 
     page: 1, 
     pageSize: 10,
     search: '',
-    status: 'under_review',
+    status: 'active',
     categoryId: '',
   });
 
-  // Filter chip states
-  const [activeChips, setActiveChips] = useState<Set<string>>(new Set(['under_review']));
-
   const { 
-    data: approvalProductsData, 
+    data: activeProductsData, 
     isLoading, 
     isFetching, 
     isError 
-  } = useGetApprovalProductsQuery(params);
+  } = useGetActiveProductsQuery(params);
 
   // Fetch categories for filter dropdown
   const { data: categoriesData } = useCategoriesQuery("MAIN", undefined, true);
 
-  const deleteProductMutation = useDeleteApprovalProductMutation();
+  const deleteProductMutation = useDeleteActiveProductMutation();
   
-  const approvalProducts: ApprovalProduct[] = approvalProductsData?.data || [];
-  const meta: PaginationMeta | undefined = approvalProductsData?.meta;
+  const activeProducts: ActiveProduct[] = activeProductsData?.data || [];
+  const meta: PaginationMeta | undefined = activeProductsData?.meta;
 
-  const columns: ColumnDef<ApprovalProduct>[] = useMemo(() => [
-    {
-      key: "externalSku", 
-      header: "SKU",
-      cellType: "text",
-      render: (row) => (
-        <span className="text-sm font-normal text-body-content">{row.externalSku}</span>
-      )
-    },
+  const columns: ColumnDef<ActiveProduct>[] = useMemo(() => [
     {
       key: "name", 
       header: "PRODUCT",
@@ -78,31 +67,32 @@ const ProductsUnderApprovalList: React.FC = () => {
       )
     },
     {
-      key: "updatedAt", 
-      header: "LAST UPDATED",
+      key: "settlementPrice", 
+      header: "SETTLEMENT PRICE",
       cellType: "text",
-      sortable: true,
       render: (row) => (
-        <span className="font-light text-sm text-base-content">
-          {new Date(row.updatedAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+        <span className="text-sm font-normal text-body-content">
+          {row.settlementPrice ? `₹${row.settlementPrice.toLocaleString()}` : 'N/A'}
         </span>
       )
     },
     {
-      key: "status", 
-      header: "STATUS",
-      cellType: "badge",
+      key: "quantity", 
+      header: "QUANTITY",
+      cellType: "text",
       render: (row) => (
-        <BadgeCell 
-          value={row.status}
-          variant="soft"
-          colorMap={{
-            'under_review': 'yellow',
-            'approved': 'green',
-            'rejected': 'red',
-            'pending': 'blue'
-          }}
-        />
+        <span className="text-sm font-normal text-body-content">{row.quantity || 0}</span>
+      )
+    },
+    {
+      key: "createdAt", 
+      header: "CREATED ON",
+      cellType: "text",
+      sortable: true,
+      render: (row) => (
+        <span className="font-light text-sm text-base-content">
+          {new Date(row.createdAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+        </span>
       )
     },
   ], []);
@@ -124,25 +114,6 @@ const ProductsUnderApprovalList: React.FC = () => {
     }));
   };
 
-  const handleChipChange = (chipKey: string, _isActive: boolean) => {
-    // For radio button behavior: always activate the clicked chip
-    const newActiveChips = new Set<string>([chipKey]);
-    
-    setActiveChips(newActiveChips);
-    
-    // Update params based on the selected chip
-    setParams(prev => ({ 
-      ...prev, 
-      status: chipKey,
-      page: 1 
-    }));
-  };
-
-  const handleDeleteClick = (product: ApprovalProduct) => {
-    setProductToDelete(product);
-    setDeleteDialogOpen(true);
-  };
-
   const handleDeleteConfirm = () => {
     if (productToDelete) {
       deleteProductMutation.mutate(productToDelete.id, {
@@ -151,7 +122,7 @@ const ProductsUnderApprovalList: React.FC = () => {
           setProductToDelete(null);
         },
         onError: (error) => {
-          console.error('Failed to delete approval product:', error);
+          console.error('Failed to delete active product:', error);
         }
       });
     }
@@ -163,7 +134,7 @@ const ProductsUnderApprovalList: React.FC = () => {
   };
 
   if (isError) {
-    return <div className="p-4 text-error">Failed to load products under approval data.</div>;
+    return <div className="p-4 text-error">Failed to load active products data.</div>;
   }
 
   const pagination: PaginationConfig | undefined = meta ? {
@@ -196,77 +167,62 @@ const ProductsUnderApprovalList: React.FC = () => {
     }
   ], [categoryOptions, params.categoryId]);
 
-  // Create filter chips
-  const filterChips: FilterChip[] = useMemo(() => [
-    {
-      key: 'under_review',
-      label: 'Under Review',
-      defaultActive: true,
-      activeColor: 'yellow',
-      onChange: (isActive) => handleChipChange('under_review', isActive)
-    },
-    {
-      key: 'approved',
-      label: 'Approved',
-      defaultActive: false,
-      activeColor: 'green',
-      onChange: (isActive) => handleChipChange('approved', isActive)
-    },
-    {
-      key: 'rejected',
-      label: 'Rejected',
-      defaultActive: false,
-      activeColor: 'red',
-      onChange: (isActive) => handleChipChange('rejected', isActive)
-    }
-  ], [activeChips]);
-
   return (
     <>
-      <Table<ApprovalProduct>
-        title="Products Under Approval"
-        data={approvalProducts} 
+      <Table<ActiveProduct>
+        title="Active Products"
+        data={activeProducts} 
         columns={columns}
         searchable
-        searchPlaceholder="Search products under approval..."
+        searchPlaceholder="Search active products..."
         onSearch={handleSearch} 
         filters={filters}
-        filterChips={filterChips}
         rowKey="id"
         selectedRows={selectedRows}
         onSelectionChange={(set) =>
           setSelectedRows(new Set(set as Set<string>))
         }
         maxHeight="calc(100vh - 198px)"
-        actions={[]}
+        actions={[
+          {
+            label: "Add Product",
+            icon: "Plus",
+            variant: "primary",
+            onClick: () => {
+              navigate({to: '/products/add-product'})
+            },
+          }
+        ]}
         hoverable
         loading={isLoading || isFetching} 
         pagination={pagination}
-        rowActions={[
-          {
-            label: "Edit",
-            icon: "Edit",
-            onClick: (row) => {
-              // TODO: Navigate to edit page
-              console.log('Edit product:', row.id);
-            },
-          },
-          {
-            label: "Delete",
-            icon: "Trash2",
-            onClick: (row) => handleDeleteClick(row),
-            variant: "danger",
-          },
-        ]}
+        // rowActions={[
+        //   {
+        //     label: "Edit",
+        //     icon: "Edit",
+        //     onClick: (row) => {
+        //       // TODO: Navigate to edit page
+        //       console.log('Edit product:', row.id);
+        //     },
+        //   },
+        //   {
+        //     label: "Delete",
+        //     icon: "Trash2",
+        //     onClick: (row) => handleDeleteClick(row),
+        //     variant: "danger",
+        //   },
+        // ]}
+
+        containsAction={false}
         className='flex-1'
-        emptyMessage="No products under approval found"
+        emptyMessage="No active products found"
         emptyIcon="Package"
       />
 
       <Dialog
         isOpen={deleteDialogOpen}
         close={handleDeleteCancel}
-        title="Delete Product"
+        title="Delete Active Product"
         subTitle={`Are you sure you want to delete "${productToDelete?.name}"? This action cannot be undone.`}
         size="sm"
         actions={{
@@ -286,7 +242,7 @@ const ProductsUnderApprovalList: React.FC = () => {
       >
         <div className="py-4">
           <p className="text-sm text-gray-600">
-            This will permanently delete the product and all associated data.
+            This will permanently delete the active product and all associated data.
           </p>
         </div>
       </Dialog>
@@ -294,4 +250,4 @@ const ProductsUnderApprovalList: React.FC = () => {
   );
 };
 
-export default ProductsUnderApprovalList;
+export default ActiveProductsList;

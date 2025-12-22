@@ -166,7 +166,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   }, [isOpen, onBlur]);
 
   const hasValue = multiple ? Array.isArray(value) && value.length > 0 : value != null;
-
+const labelColorClass = error ? "text-error" : success ? "text-success" : "";
   return (
     <div
       ref={dropdownRef}
@@ -177,6 +177,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
           required={required} 
           className={cn(
             error ? "text-error" : success ? "text-success" : "",
+            labelColorClass,
             labelClassName
           )}
         >

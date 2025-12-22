@@ -122,7 +122,6 @@ const MobileNumberInput = forwardRef<HTMLInputElement, MobileNumberInputProps>(
 
     const state = error ? "error" : isVerified ? "verified" : "default";
     const statusText = isVerified ? verifiedText : unverifiedText;
-
     return (
       <div className={cn("w-full space-y-1", containerClassName)}>
         {label && (
