@@ -28,6 +28,7 @@ interface BreakdownDialogProps {
   };
   okayButtonText?: string;
   showOkayButton?: boolean;
+  productId?: string;
 }
 
 const BreakdownDialog: React.FC<BreakdownDialogProps> = ({

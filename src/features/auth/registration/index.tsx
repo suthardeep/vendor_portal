@@ -20,7 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const Registration: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser, user } = useAuthStore();
+  const { setAuth, user } = useAuthStore();
     const queryClient = useQueryClient();
 
 
@@ -200,7 +200,7 @@ const Registration: React.FC = () => {
                 console.log("👤 [REGISTRATION] Complete user data received:", completeUserData);
                 
                 // Store complete user data in store
-                setUser(completeUserData);
+                setAuth(completeUserData);
                 
                 // After registration, always go to business registration step 1
                 console.log("🧭 [REGISTRATION] Navigating to business registration step 1");
@@ -213,7 +213,7 @@ const Registration: React.FC = () => {
             } catch (profileError) {
               console.error("🚫 [REGISTRATION] Failed to fetch profile after registration:", profileError);
               // If profile fetch fails, still navigate but with basic user data
-              setUser({
+              setAuth({
                 ...user!,
                 email: formData.email,
                 fullName: formData.fullName,

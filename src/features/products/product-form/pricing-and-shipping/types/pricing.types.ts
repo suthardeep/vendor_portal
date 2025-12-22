@@ -1,3 +1,5 @@
+import { VariantItem } from "../../variations/types/variations.types";
+
 export interface VariantPricingData {
   variantId: string;
   mrp: number;
@@ -70,7 +72,7 @@ export interface VariantsPriceBreakdownResponse {
 }
 
 export interface VariantsPricingApiResponse {
-  variants: VariantWithPricing[];
+  variants: VariantItem[];
   productId: string;
   productName: string;
 }

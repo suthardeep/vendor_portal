@@ -12,14 +12,14 @@ interface LogoutProps {
 const LogoutDialog: React.FC<LogoutProps> = (props) => {
   const { close, isOpen } = props;
 
-  const loginFail = useAuthStore((s) => s.loginFail);
-  const clearUser = useAuthStore((s) => s.clearUser);
+  // const loginFail = useAuthStore((s) => s.loginFail);
+  // const clearUser = useAuthStore((s) => s.clearUser);
   const router = useRouter();
 
   const handleLogout = () => {
     TokenUtil.removeToken();
-    clearUser();
-    loginFail();
+    // clearUser();
+    // loginFail();
     router.navigate({ to: ROUTES.LOGIN });
   };
 

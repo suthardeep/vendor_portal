@@ -53,7 +53,7 @@ const BusinessRegistrationForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, any>>({});
   
   // Get user data from auth store for prefilling
-  const { user , setUser } = useAuthStore();
+  const { user , setAuth } = useAuthStore();
 
 
 
@@ -256,7 +256,7 @@ const BusinessRegistrationForm: React.FC = () => {
       }else if(step==4){
           await verificationMutation.mutateAsync()
             .then(() => {
-                setUser({
+                setAuth({
               ...user!,
               verificationStatus:'under_review'
               

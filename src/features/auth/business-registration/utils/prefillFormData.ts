@@ -50,7 +50,7 @@ export const prefillFormFromProfile = (profileData: User): FormData => {
     brandDetails: brands.map(brand => ({
       brandName: brand.brandName || "",
       natureOfBusiness: brand.natureOfBusiness || "",
-      selectedCategories: brand.selectedCategories || [],
+      selectedCategoryIds: brand.selectedCategories || [],
       brandDocumentIds: brand.brandDocumentIds || [],
       brandLogoId: brand.brandLogoId || "",
       brandLogo: brand.brandLogo || "",

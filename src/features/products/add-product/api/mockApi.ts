@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { CatalogProduct, CategoryOption } from "../types/addProduct.types";
-import { ProductHeaderData } from "../../product-form/product-header/types/productHeader.types";
+import { ProductData } from "../../product-form/product-header/types/productHeader.types";
 
 // Mock Data
 const MOCK_CATEGORIES: CategoryOption[] = [
@@ -28,44 +28,5 @@ export const useSearchCatalog = (query: string) => {
       );
     },
     enabled: true, // In real app, might want to debounce this
-  });
-};
-
-export const useGetCategories = () => {
-  return useQuery({
-    queryKey: ["categories"],
-    queryFn: async (): Promise<CategoryOption[]> => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return MOCK_CATEGORIES;
-    },
-  });
-};
-
-export const useGetProductDetails = (productId: string) => {
-  return useQuery({
-    queryKey: ["product", productId],
-    queryFn: async (): Promise<ProductHeaderData> => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return {
-        id: productId,
-        productName: "Allen Solly Men's 100% Cotton Regular Fit T-Shirt",
-        brandName: "Allen Solly",
-        brandLogo: "https://picsum.photos/600/400",
-        categories: ["Clothing", "Men's Apparel", "Tops", "T-Shirts"],
-        status: "active",
-      };
-    },
-    enabled: !!productId,
-  });
-};
-
-// --- Mutations ---
-
-export const useCreateProduct = () => {
-  return useMutation({
-    mutationFn: async (data: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      return { id: "new_prod_123", ...data };
-    },
   });
 };

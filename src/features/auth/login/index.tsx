@@ -26,7 +26,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   // NEW: Get the setUser function from the Auth Store
-  const { setUser } = useAuthStore(); 
+  const { setAuth } = useAuthStore(); 
   
   // --- State ---
   const [step, setStep] = useState<"INPUT_MOBILE" | "INPUT_OTP">("INPUT_MOBILE");
@@ -162,7 +162,7 @@ const Login: React.FC = () => {
                 console.log("👤 [LOGIN] Complete user data received:", completeUserData);
                 
                 // 5. Store complete user data in store
-                setUser(completeUserData);
+                setAuth(completeUserData);
                 
                 // 6. Navigate based on complete profile data
                 console.log("🧭 [LOGIN] Navigating based on profile data...");

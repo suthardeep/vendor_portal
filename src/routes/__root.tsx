@@ -34,6 +34,6 @@ function Root() {
 }
 
 export interface RouterContext {
-  isLoggedIn: AuthStore["isLoggedIn"];
+  isLoggedIn: boolean;
   queryClient: QueryClient;
 }
