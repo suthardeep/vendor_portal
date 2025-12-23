@@ -1,9 +1,10 @@
 import React, { FC, JSX, useState } from "react";
-import Icon from "./Icon";
+import Icon from "../base/Icon";
 import { cn } from "../../utils/helpers";
-import { useNavigate } from "@tanstack/react-router";
+import { useMatches, useNavigate } from "@tanstack/react-router";
 import { getBreadcrumbs } from "@/utils/getBreadCrumbs";
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAuthStore } from "@/store/useAuthStore";
+import { BreadcrumbMeta } from "@/types/breadcrumb";
 
 interface HeaderProps {
   greeting?: string;
@@ -31,16 +32,13 @@ const Header: FC<HeaderProps> = ({
   const { user } = useAuthStore();
   const [showNotifPanel, setShowNotifPanel] = useState(false);
 
-  const breadcrumbs = getBreadcrumbs();
+  const matches = useMatches();
 
-  // Debug: Log user data
-  console.log("🔍 [HEADER] User data:", user);
+  const breadcrumbs: BreadcrumbMeta[] = matches.map((m) => (m.staticData as any).breadcrumb).filter(Boolean);
 
   // Get user data from store
   const userName = user?.fullName || user?.businessName || "Vendor User";
   const userAvatar = "profile.jpg"; // Default avatar since no avatar field in vendor user type
-
-  console.log("🔍 [HEADER] Computed userName:", userName);
 
   return (
     <header className="">
@@ -61,7 +59,11 @@ const Header: FC<HeaderProps> = ({
                     style={{
                       opacity: index === breadcrumbs.length - 1 ? 1 : 0.6,
                     }}
-                    onClick={() => navigate({ to: crumb.path ?? "/dashboard" })}
+                    onClick={() => {
+                      if (index !== breadcrumbs.length - 1 && crumb.to) {
+                        navigate({ to: crumb.to });
+                      }
+                    }}
                     onMouseEnter={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.8")}
                     onMouseLeave={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.6")}
                   >
@@ -100,17 +102,17 @@ const Header: FC<HeaderProps> = ({
                 onMouseEnter={() => setShowNotifPanel(true)}
                 onMouseLeave={() => setShowNotifPanel(false)}
               >
-                <Icon 
-                  name="Bell" 
-                  size={20} 
-                  className="text-body-content group-hover:text-base-content transition-colors" 
+                <Icon
+                  name="Bell"
+                  size={20}
+                  className="text-body-content group-hover:text-base-content transition-colors"
                 />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-base-1 animate-pulse" />
               </button>
 
               {/* Notification Panel */}
               {showNotifPanel && (
-                <div 
+                <div
                   className="absolute right-0 top-full mt-2 w-80 bg-base-1 rounded-xl shadow-lg border border-base-3 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                   onMouseEnter={() => setShowNotifPanel(true)}
                   onMouseLeave={() => setShowNotifPanel(false)}
@@ -123,22 +125,18 @@ const Header: FC<HeaderProps> = ({
                     <div className="w-12 h-12 rounded-full bg-base-3 flex items-center justify-center mb-3">
                       <Icon name="Bell" size={24} className="text-disabled-content" />
                     </div>
-                    <p className="text-sm text-body-content">
-                      Your notifications will appear here
-                    </p>
+                    <p className="text-sm text-body-content">Your notifications will appear here</p>
                   </div>
                 </div>
               )}
             </div>
           )}
 
-          <div 
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105"
-          >
-            <span className="text-white font-semibold text-base">
-              {userName.charAt(0)}
-            </span>
-          </div>
+          <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center shrink-0">
+              <span className="text-primary-600 font-semibold text-sm">
+                {userName.charAt(0)}
+              </span>
+            </div>
         </div>
       </div>
     </header>

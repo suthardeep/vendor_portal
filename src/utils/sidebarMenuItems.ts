@@ -1,4 +1,4 @@
-import { MenuItem } from "@/components/base/Sidebar";
+import { MenuItem } from "@/components/sidebar/Sidebar";
 
 export const sidebarMenuItems: MenuItem[] = [
   {

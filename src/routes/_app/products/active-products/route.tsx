@@ -3,11 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/products/active-products")({
   component: RouteComponent,
-  beforeLoad: () => ({
+  staticData:{
     breadcrumb: {
-      label: "Active Products",
-    },
-  }),
+      label: "Active Product",
+    }
+  }
 });
 
 function RouteComponent() {

@@ -1,6 +1,6 @@
 // src/routes/_app/route.tsx
-import Header from "@/components/base/Header";
-import Sidebar from "@/components/base/Sidebar";
+import Header from "@/components/header/Header";
+import Sidebar from "@/components/sidebar/Sidebar";
 import RegistrationBanner from "@/features/dashboard/components/BusinessRegistration";
 import { StatusCard } from "@/components/base/StatusCard";
 import { sidebarMenuItems } from "@/utils/sidebarMenuItems";
@@ -12,6 +12,13 @@ import { cn } from "@/utils/helpers";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
+  staticData: {
+    breadcrumb: {
+      label: "Dashboard",
+      to: "/dashboard",
+    },
+  },
+  
 });
 
 function AppLayout() {
@@ -26,7 +33,7 @@ function AppLayout() {
   useEffect(() => {
     if (user) {
       if(IS_DEV){
-        console.log("DEV USER DETECTED BY PASSING VERIFICATION AND APPRIOVAL STATUS CHECK");  
+        console.log("DEV USER DETECTED BY-PASSING VERIFICATION AND APPRIOVAL STATUS CHECK");  
         return
       }
       // Check verification status first (higher priority)
@@ -74,7 +81,7 @@ function AppLayout() {
       {/* Main Layout - gets blurred when verification modal is active */}
       <div className={`flex p-4 gap-4 h-full ${showVerificationModal ? "blur-sm" : ""}`}>
         {/* Sidebar - with spacing all around */}
-        {/* add - hidden xl:block for responsiveness and consider an alternative  */}
+        {/* add - hidden xl:block for responsiveness , consider an alternative later */}
         <div className="hidden xl:block w-75">
           <Sidebar
             menuItems={sidebarMenuItems}
@@ -88,9 +95,7 @@ function AppLayout() {
         <div className="flex-1 flex flex-col gap-2">
           {/* Header - white background - NOT blurred */}
           <div className={showOverlay ? "relative z-1001" : ""}>
-            <Header
-            // breadcrumbs={[{ label: "Dashboard" }, { label: "Analytics" }]}
-            />
+            <Header />
           </div>
 
           {/* Registration Banner - Shows above blurred content */}

@@ -6,7 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import { useAuthStore } from "./store/useAuthStore";
 import { TokenUtil } from "./utils/tokenUtil";
 import { queryClient } from "./lib/queryClient";
-import { useGetProfile } from "@/api/profile/queryHooks";
+import { useGetProfile } from "@/features/profile/api/queryHooks";
 import { ROUTES } from "@/constants/routes";
 
 const IS_DEV = import.meta.env.VITE_NODE_ENV === "development";

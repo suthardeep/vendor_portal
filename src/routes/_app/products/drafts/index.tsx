@@ -3,11 +3,11 @@ import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app/products/drafts/')({
   component: RouteComponent,
-  beforeLoad: () => ({
+  staticData:{
     breadcrumb: {
-      label: "Drafts"
+      label: "Drafts",
     }
-  }),
+  }
 })
 
 function RouteComponent() {

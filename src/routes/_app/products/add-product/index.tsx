@@ -3,6 +3,11 @@ import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app/products/add-product/')({
   component: RouteComponent,
+  staticData:{
+    breadcrumb: {
+      label: "Add Product",
+    }
+  }
 })
 
 function RouteComponent() {

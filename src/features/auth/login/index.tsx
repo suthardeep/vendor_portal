@@ -19,7 +19,7 @@ import {TokenUtil} from '@/utils/tokenUtil'
 
 import { useSendOtpMutation, useVerifyOtpMutation } from "./api/queryHooks";
 import { useAuthStore } from "@/store/useAuthStore"; // NEW: Import Auth Store
-import { getProfile } from "@/api/profile/queryFns"; // Import profile API
+import { getProfile } from "@/features/profile/api/queryFns"; // Import profile API
 
 
 const Login: React.FC = () => {

@@ -59,7 +59,7 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
               <Icon 
                 name={item.icon as any}
                 size={18}
-                className="text-base-content opacity-60 flex-shrink-0"
+                className="text-base-content opacity-60 shrink-0"
               />
               <span className="text-sm font-normal text-base-content">
                 {item.label}
@@ -84,10 +84,10 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
             <img 
               src={userAvatar} 
               alt={userName} 
-              className="w-10 h-10 rounded-md object-cover flex-shrink-0"
+              className="w-10 h-10 rounded-xl object-cover shrink-0"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center shrink-0">
               <span className="text-primary-600 font-semibold text-sm">
                 {userName.charAt(0)}
               </span>
@@ -106,7 +106,7 @@ const SidebarProfile: React.FC<SidebarProfileProps> = ({
           name="ChevronDown"
           size={16}
           className={cn(
-            "text-base-content opacity-40 flex-shrink-0 transition-transform duration-200",
+            "text-base-content opacity-40 shrink-0 transition-transform duration-200",
             userExpanded && "rotate-180"
           )}
         />

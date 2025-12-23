@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/base/Input";
 import { Button } from "@/components/base/Button";
 import { toast } from "@/components/compound/Sonner";
-import CurrencyDisplay from "@/components/compound/CurrencyDisplay";
-import {
-  useUpdateVariantsPricingMutation,
-  useSubmitProductMutation,
-} from "./api/queryHooks";
+import { useUpdateVariantsPricingMutation, useSubmitProductMutation } from "./api/queryHooks";
 import BreakdownDialog from "./components/BreakdownDialog";
 import { useGetVariantsQuery } from "../variations/api/queryHooks";
 import { validateVariantPricingForm } from "./schemas/pricing.schema";
@@ -73,8 +68,12 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         sellingPrice: variant.sellingPrice || "",
         aavakCoinsPrice: variant.aavakCoinsPrice ? String(variant.aavakCoinsPrice) : "",
         localCost: variant.deliveryCharges?.local?.cost ? String(variant.deliveryCharges.local.cost) : "",
-        regionalCost: variant.deliveryCharges?.regional?.cost ? String(variant.deliveryCharges.regional.cost) : "",
-        nationalCost: variant.deliveryCharges?.national?.cost ? String(variant.deliveryCharges.national.cost) : "",
+        regionalCost: variant.deliveryCharges?.regional?.cost
+          ? String(variant.deliveryCharges.regional.cost)
+          : "",
+        nationalCost: variant.deliveryCharges?.national?.cost
+          ? String(variant.deliveryCharges.national.cost)
+          : "",
         length: variant.dimensions?.length ? String(variant.dimensions.length) : "",
         width: variant.dimensions?.width ? String(variant.dimensions.width) : "",
         height: variant.dimensions?.height ? String(variant.dimensions.height) : "",
@@ -93,7 +92,14 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     }
   }, [variants]);
 
+  // const hasDataChanged = useMemo(()=>{
+  //   if()
+  // }, [formData])
+
   const handleInputChange = (index: number, field: string, value: string) => {
+    if(showAllSettlements){
+      setShowAllSettlements(false)
+    }
     const newData = [...formData];
     newData[index] = { ...newData[index], [field]: value };
     setFormData(newData);
@@ -119,6 +125,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
       setExpandedVariants(newExpanded);
     } else {
       // Open and fetch pricing if not already calculated
+      console.log(!calculatedPricing[variantId])
       if (!calculatedPricing[variantId]) {
         const data = formData[index];
 
@@ -129,24 +136,26 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
           return;
         }
 
-        setLoadingVariants(prev => new Set(prev).add(variantId));
+        setLoadingVariants((prev) => new Set(prev).add(variantId));
 
         const payload = {
-          variants: [{
-            variantId: data.variantId,
-            mrp: Math.round(Number(data.mrp)),
-            sellingPrice: Math.round(Number(data.sellingPrice)),
-            aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
-            localCost: Math.round(Number(data.localCost || 0)),
-            regionalCost: Math.round(Number(data.regionalCost || 0)),
-            nationalCost: Math.round(Number(data.nationalCost || 0)),
-            dimensions: {
-              length: Number(data.length),
-              width: Number(data.width),
-              height: Number(data.height),
-              weight: Number(data.weight),
+          variants: [
+            {
+              variantId: data.variantId,
+              mrp: Math.round(Number(data.mrp)),
+              sellingPrice: Math.round(Number(data.sellingPrice)),
+              aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
+              localCost: Math.round(Number(data.localCost || 0)),
+              regionalCost: Math.round(Number(data.regionalCost || 0)),
+              nationalCost: Math.round(Number(data.nationalCost || 0)),
+              dimensions: {
+                length: Number(data.length),
+                width: Number(data.width),
+                height: Number(data.height),
+                weight: Number(data.weight),
+              },
             },
-          }]
+          ],
         };
 
         updateMutation.mutate(payload, {
@@ -155,21 +164,21 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
               const settlement = response.data.variants[0].calculatedSettlement;
               const pricing: CalculatedPricing = {
                 onLocal: settlement.vendorPayout,
-                onRegional: settlement.vendorPayout - 50, // Slight variation for demo
-                onNational: settlement.vendorPayout - 100,
-                userGets: Math.round(Number(data.aavakCoinsPrice || 0))
+                onRegional: settlement.vendorPayout - 10, // Slight variation for demo
+                onNational: settlement.vendorPayout - 20,
+                userGets: Math.round(Number(data.aavakCoinsPrice || 0)),
               };
-              setCalculatedPricing(prev => ({ ...prev, [variantId]: pricing }));
+              setCalculatedPricing((prev) => ({ ...prev, [variantId]: pricing }));
             }
-            setLoadingVariants(prev => {
+            setLoadingVariants((prev) => {
               const next = new Set(prev);
               next.delete(variantId);
               return next;
             });
-            setExpandedVariants(prev => new Set(prev).add(variantId));
+            setExpandedVariants((prev) => new Set(prev).add(variantId));
           },
           onError: () => {
-            setLoadingVariants(prev => {
+            setLoadingVariants((prev) => {
               const next = new Set(prev);
               next.delete(variantId);
               return next;
@@ -179,7 +188,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         });
       } else {
         // Already calculated, just toggle
-        setExpandedVariants(prev => new Set(prev).add(variantId));
+        setExpandedVariants((prev) => new Set(prev).add(variantId));
       }
     }
   };
@@ -237,9 +246,9 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
             if (variant.calculatedSettlement) {
               pricing[variant.id] = {
                 onLocal: variant.calculatedSettlement.vendorPayout,
-                onRegional: variant.calculatedSettlement.vendorPayout - 50,
-                onNational: variant.calculatedSettlement.vendorPayout - 100,
-                userGets: variant.aavakCoinsPrice
+                onRegional: variant.calculatedSettlement.vendorPayout - 10,
+                onNational: variant.calculatedSettlement.vendorPayout - 20,
+                userGets: variant.aavakCoinsPrice,
               };
             }
           });
@@ -309,6 +318,8 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     return <div className="shimmer h-96 w-full rounded-xl" />;
   }
 
+  const showVariantHeader = variants.length > 1;
+
   return (
     <div className="w-full bg-base-1 rounded-2xl">
       {/* Header */}
@@ -328,26 +339,32 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
           return (
             <div key={variant.id} className="px-6 pt-6">
               {/* LEVEL 1: Variant Header */}
-              <div className="mb-6">
-                <div className="flex flex-col gap-3 p-4 bg-base-2 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-body-content uppercase tracking-wide">
-                      Product Variant
-                    </span>
-                    <Button
-                      onClick={() => handleViewSettlementPrice(variant.id, index)}
-                      variant="outline"
-                      size="sm"
-                      endIcon={isExpanded ? "EyeOff" : "Eye"}
-                      endIconClassname="h-4 w-4"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Loading..." : isExpanded ? "Hide Settlement Price" : "View Settlement Price"}
-                    </Button>
+              {showVariantHeader && (
+                <div className="mb-6">
+                  <div className="flex flex-col gap-3 p-4 bg-base-2 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-body-content uppercase tracking-wide">
+                        Product Variant
+                      </span>
+                      <Button
+                        onClick={() => handleViewSettlementPrice(variant.id, index)}
+                        variant="outline"
+                        size="sm"
+                        endIcon={isExpanded ? "EyeOff" : "Eye"}
+                        endIconClassname="h-4 w-4"
+                        disabled={isLoading}
+                      >
+                        {isLoading
+                          ? "Loading..."
+                          : isExpanded
+                            ? "Hide Settlement Price"
+                            : "View Settlement Price"}
+                      </Button>
+                    </div>
+                    {renderVariantAttributes(variant.attributes)}
                   </div>
-                  {renderVariantAttributes(variant.attributes)}
                 </div>
-              </div>
+              )}
 
               {/* LEVEL 2: Input Fields (Split into Pricing Details & Shipment Data) */}
               <div className="flex gap-6 mb-6">
@@ -494,7 +511,9 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                         </div>
                         <div className="p-3 bg-base-1 rounded-lg shadow-md text-center">
                           <p className="text-xs text-body-content mb-1 font-medium">User Gets (Coins)</p>
-                          <p className="text-base font-bold text-primary w-full flex justify-center">{pricing.userGets}</p>
+                          <p className="text-base font-bold text-primary w-full flex justify-center">
+                            {pricing.userGets}
+                          </p>
                         </div>
                       </div>
                     </>
@@ -511,7 +530,13 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         <Button
           className="w-44"
           variant="outline"
-          onClick={() => navigate({ to: `/products/product-form/${productId}/variations` })}
+          onClick={() => {
+            if (variants.length === 1) {
+              navigate({ to: `/products/product-form/${productId}/basic-details` });
+            } else {
+              navigate({ to: `/products/product-form/${productId}/variations` });
+            }
+          }}
         >
           Previous
         </Button>

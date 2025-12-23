@@ -1,5 +1,5 @@
 import Icon from "@/components/base/Icon";
-import Sidebar from "@/components/base/Sidebar";
+import Sidebar from "@/components/sidebar/Sidebar";
 
 const LoginForm = () => {
   return (

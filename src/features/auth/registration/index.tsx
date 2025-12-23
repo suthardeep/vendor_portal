@@ -12,16 +12,13 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/store/useAuthStore";
 // Import API Query Hooks
 import { useSendOtpMutation, useVerifyOtpMutation, useRegisterProfileMutation } from "./api/queryHooks";
-import { getProfile } from "@/api/profile/queryFns"; // Import profile API
-import { queryClient } from "@/lib/queryClient";
-import { ROUTES } from "@/constants/routes";
-import { useQueryClient } from "@tanstack/react-query";
+import { getProfile } from "@/features/profile/api/queryFns"; // Import profile API
+
 
 
 const Registration: React.FC = () => {
   const navigate = useNavigate();
   const { setAuth, user } = useAuthStore();
-    const queryClient = useQueryClient();
 
 
   // --- Form State ---

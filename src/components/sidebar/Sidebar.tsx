@@ -1,8 +1,8 @@
 import React, { useState, forwardRef } from 'react';
 import SidebarHeader from './SidebarHeader';
 import SidebarMenu from './SidebarMenu';
-import SidebarProfile from './SidebarProfile';
 import { cn } from '@/utils/helpers';
+import SidebarProfile from './SidebarProfile';
 
 export interface SubMenuItem {
   label: string;
