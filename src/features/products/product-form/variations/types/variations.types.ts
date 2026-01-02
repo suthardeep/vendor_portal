@@ -1,3 +1,9 @@
+import { BaseResponse } from "@/api/types/response.types";
+
+// ============================================================================
+// SIZE CHART TYPES
+// ============================================================================
+
 export interface SizeChartRow {
   sizeName: string;
   values: Record<string, string>;
@@ -16,26 +22,33 @@ export interface CustomSizeChart {
   sizeObjects: SizeObject[];
 }
 
+// ============================================================================
+// VARIATION CREATION TYPES (Step 1 - Variation Selection)
+// ============================================================================
+
 export interface ColorValue {
   name: string;
   value: string;
 }
 
-export interface Variation {
+export interface VariationCreationProp {
   enabled: boolean;
   // Selected can hold strings (simple values) or objects (like sizes/colors)
   selected: (string | SizeObject | ColorValue)[];
   label: string;
   values?: (string | ColorValue)[];
   // Helper to track which custom charts are currently active/selected
-  activeCharts?: string[]; 
+  activeCharts?: string[];
 }
 
-export interface VariationsProp {
-  [key: string]: Variation;
+export interface VariationCreationState {
+  [key: string]: VariationCreationProp;
 }
 
-// Helper for combination structure
+// ============================================================================
+// COMBINATION TYPES (Generated from variations)
+// ============================================================================
+
 export interface CombinationItem {
   _id: string; // Added for reliable deletion
   [key: string]: any;
@@ -46,8 +59,39 @@ export interface VariationsApiResponse {
   combinations: CombinationItem[];
 }
 
-// New types for the variants API response
-export interface VariantPricingInfo {
+// ============================================================================
+// VARIANT TYPES (Step 2 - Individual Variant Details)
+// ============================================================================
+
+export interface VariantAttributes {
+  size?: string;
+  color?: string;
+  [key: string]: any; // For any additional attributes
+}
+
+export interface VariantDimensions {
+  width: number;
+  height: number;
+  length: number;
+  weight: number;
+}
+
+export interface VariantDeliveryCharges {
+  local: {
+    cost: number;
+    unitDelivered: number;
+  };
+  regional: {
+    cost: number;
+    unitDelivered: number;
+  };
+  national: {
+    cost: number;
+    unitDelivered: number;
+  };
+}
+
+export interface VariantCalculatedPricing {
   onLocal: number;
   onRegional: number;
   onNational: number;
@@ -57,18 +101,32 @@ export interface VariantPricingInfo {
 export interface VariantItem {
   id: string;
   aavakSku: string;
-  size?: string;
-  color?: string;
-  pricing: VariantPricingInfo;
-  [key: string]: any; // For any additional attributes
+  sellerSku: string;
+  targetAge: string;
+  targetGender: string;
+  eanUpc: string;
+  description: string;
+  mediaUrls: string[];
+  attributes: VariantAttributes;
+  mrp: string;
+  sellingPrice: string;
+  aavakCoinsPrice: number;
+  deliveryCharges: VariantDeliveryCharges;
+  dimensions: VariantDimensions;
+  calculatedPricing: VariantCalculatedPricing;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface VariantsApiResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    productId: string;
-    productName: string;
-    variants: VariantItem[];
-  };
+// ============================================================================
+// API RESPONSE TYPES
+// ============================================================================
+
+export interface VariantionApiData {
+  productId: string;
+  productName: string;
+  variants: VariantItem[];
 }
+
+export interface VariantsApiResponse extends BaseResponse<VariantionApiData> {}

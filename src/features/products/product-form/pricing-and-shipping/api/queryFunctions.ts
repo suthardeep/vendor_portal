@@ -1,37 +1,32 @@
 import apiService from "@/api/apiService";
 import { apiPaths } from "@/api/apiPaths";
-import { VariantsPricingApiResponse } from "../types/pricing.types";
+import {
+  CalculatePricingRequest,
+  CalculatePricingResponse,
+  UpdateVariantsPricingPayload,
+  UpdateVariantsPricingResponse,
+} from "../types/pricing.types";
 
-// GET: /products/:id/variants (to get pricing data with limits)
-export const getVariantsPricing = async (productId: string): Promise<VariantsPricingApiResponse> => {
+// POST: /products/variants/calculate-pricing
+export const calculatePricing = async (
+  data: CalculatePricingRequest
+): Promise<CalculatePricingResponse> => {
   return apiService({
-    method: "GET",
-    endpoint: apiPaths.variations.getVariants(productId),
+    method: "POST",
+    data,
+    endpoint: apiPaths.variations.calculatePricing,
   });
 };
 
-// PATCH: /products/:id/variants/pricing
-export const updateVariantsPricing = async (productId: string, data: any) => {
+// PATCH: /products/:id/variants/details
+export const updateVariantsPricing = async (
+  productId: string,
+  data: UpdateVariantsPricingPayload
+): Promise<UpdateVariantsPricingResponse> => {
   return apiService({
     method: "PATCH",
     data,
-    endpoint: apiPaths.variations.updateVariantPricing(productId),
-  });
-};
-
-// GET: /products/:id/variants/price-breakdown
-export const getVariantsPriceBreakdown = async (productId: string) => {
-  return apiService({
-    method: "GET",
-    endpoint: apiPaths.variations.getVariantPriceBreakdown(productId),
-  });
-};
-
-// GET: /products/variants/:variantId/price-breakdown
-export const getVariantPriceBreakdownById = async (variantId: string) => {
-  return apiService({
-    method: "GET",
-    endpoint: apiPaths.variations.getVariantPriceBreakdownById(variantId),
+    endpoint: apiPaths.variations.updateVariantPricing,
   });
 };
 

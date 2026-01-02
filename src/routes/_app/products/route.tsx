@@ -18,5 +18,7 @@ export const Route = createFileRoute("/_app/products")({
 });
 
 function RouteComponent() {
-  return <Outlet />;
+  return (
+      <Outlet />
+  );
 }

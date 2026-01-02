@@ -3,7 +3,6 @@ import { Dropdown } from "@/components/base/Dropdown";
 import { Button } from "@/components/base/Button";
 import { useSearchCatalog } from "../api/mockApi";
 import { useNavigate } from "@tanstack/react-router";
-import { Icon } from "@/components/base/Icon";
 
 export const FindInAavakCatalogTab = () => {
   const navigate = useNavigate();

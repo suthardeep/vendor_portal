@@ -1,32 +1,44 @@
 import { z } from "zod";
 import { basicDetailsSchema } from "../schemas/basicDetails.schema";
 import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
+import { BaseResponse } from "@/api/types/response.types";
 
 // Inferred from your Zod schema
 export type BasicDetailsFormValues = z.infer<typeof basicDetailsSchema>;
+
+export interface CustomField {
+  groupName: string;
+  fields: Record<string, string>;
+}
+
 
 // The shape of the data sent to the API
 export interface SaveBasicDetailsPayload {
   description: string;
   bulletPoints: string[];
-  mediaIds: string[]; // API typically expects IDs, not full objects
+  mediaUrls: string[]; // API expects URLs
   modelNumber?: string;
   modelName?: string;
   isFragile: boolean;
-  
-  targetGender?: string;
-  targetAgeGroup?: string;
-  
+
   manufacturerName?: string;
   packerDetails?: string;
   importerDetails?: string;
-  
+
   tags: string[];
-  
-  totalStockQty: number; // Converted from string
+
   hsnCode: string;
-  gstTaxSlab: string;
+  gstRate: number; // Changed from gstTaxSlab to gstRate (number)
   cessCode?: string;
+
+  // Conditional variants - only sent when hasVariants is false
+  variants?: Array<{
+    targetAge?: string;
+    targetGender?: string;
+  }>;
+
+  // Custom fields from category requirements
+  customFields?: CustomField[]
 }
 
 // The shape of the data received from the API (GET)
@@ -40,7 +52,7 @@ export interface BasicDetailsResponse {
   isFragile: boolean;
   
   targetGender: string;
-  targetAgeGroup: string;
+  targetAge: string;
   
   manufacturerName: string;
   packerDetails: string;
@@ -54,8 +66,4 @@ export interface BasicDetailsResponse {
   cessCode: string;
 }
 
-export interface BasicDetailsApiResponse {
-  statusCode: number;
-  message: string;
-  data: BasicDetailsResponse;
-}
+export interface BasicDetailsApiResponse extends BaseResponse<BasicDetailsResponse> {}

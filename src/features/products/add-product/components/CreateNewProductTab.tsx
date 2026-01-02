@@ -9,10 +9,10 @@ import { Button } from "@/components/base/Button";
 
 import { createProductSchema } from "../schemas/addProduct.schema";
 import {
-  useCategoriesQuery,
   useCreateProductMutation,
   useBrandsQuery,
 } from "../api/queryHooks";
+import { useCategoriesQuery } from "@/features/category/api/queryHooks";
 
 // Define local state interface matching the form fields
 interface CreateProductState {
@@ -139,36 +139,29 @@ export const CreateNewProductTab = () => {
 
     const validData = result.data;
 
-    // Construct categoryPath from selected names
-    const categoryPath: string[] = [];
+    // Construct categories array with id and name
+    const categories: Array<{ id: string; name: string }> = [];
     const main = mainCategoriesData?.data?.data?.find(c => c.id === formData.mainCategoryId);
-    if (main) categoryPath.push(main.name);
-    
+    if (main) categories.push({ id: main.id, name: main.name });
+
     const sub = subCategoriesData?.data?.data?.find(c => c.id === formData.subCategoryId);
-    if (sub) categoryPath.push(sub.name);
-    
+    if (sub) categories.push({ id: sub.id, name: sub.name });
+
     const child = childCategoriesData?.data?.data?.find(c => c.id === formData.childCategoryId);
-    if (child) categoryPath.push(child.name);
+    if (child) categories.push({ id: child.id, name: child.name });
 
     const selectedBrand = brandsData?.data?.brands?.find(b => b.id === formData.brandId);
-
-    // Determine the most specific category ID
-    const finalCategoryId =
-      validData.childCategoryId ||
-      validData.subCategoryId ||
-      validData.mainCategoryId;
 
     mutation.mutate(
       {
         name: validData.productName,
-        categoryId: finalCategoryId,
         externalSku: validData.externalSku,
         hasVariants: validData.hasVariants,
         hasBrand: validData.hasBrandName,
         brandId: validData.hasBrandName ? validData.brandId : undefined,
         brandName: validData.hasBrandName ? selectedBrand?.brandName ?? undefined : undefined,
         brandLogo: validData.hasBrandName ? selectedBrand?.brandLogo ?? undefined : undefined,
-        categoryPath: categoryPath,
+        categories: categories,
       },
       {
         onSuccess: (res) => {
@@ -235,6 +228,7 @@ export const CreateNewProductTab = () => {
                 placeholder="Select Sub Category"
                 required
                 fullWidth
+                error={errors.subCategoryId}
               />
             )}
 
@@ -250,6 +244,7 @@ export const CreateNewProductTab = () => {
                 placeholder="Select Child Category"
                 required
                 fullWidth
+                error={errors.childCategoryId}
               />
             )}
         </div>

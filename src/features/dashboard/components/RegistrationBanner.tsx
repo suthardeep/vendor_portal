@@ -1,8 +1,7 @@
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import { cn } from '@/utils/helpers';
-import { Button } from '@/components/base/Button';
-import Icon from '@/components/base/Icon';
+import React from "react";
+import { cn } from "@/utils/helpers";
+import { Button } from "@/components/base/Button";
+import Icon from "@/components/base/Icon";
 
 export interface RegistrationBannerProps {
   onClose?: () => void;
@@ -10,11 +9,7 @@ export interface RegistrationBannerProps {
   className?: string;
 }
 
-const RegistrationBanner: React.FC<RegistrationBannerProps> = ({
-  onClose,
-  onNavigate,
-  className
-}) => {
+const RegistrationBanner: React.FC<RegistrationBannerProps> = ({ onClose, onNavigate, className }) => {
   const handleBannerClick = () => {
     onNavigate?.();
   };
@@ -38,12 +33,12 @@ const RegistrationBanner: React.FC<RegistrationBannerProps> = ({
         Please complete the registration process to gain access to the Aavak vendor platform.
       </p>
 
-       <Button
+      <Button
         onClick={handleCloseClick}
-        className="flex-shrink-0 rounded-md bg-red-500 hover:bg-red-600 h-10 w-10 p-0!"
+        className="shrink-0 rounded-md bg-red-500 hover:bg-red-600 h-10 w-10 p-0!"
         aria-label="Close banner"
       >
-        <Icon name="CircleArrowDown"  size={23} className="rotate-[-135deg] text-white " />
+        <Icon name="CircleArrowDown" size={23} className="rotate-[-135deg] text-white " />
       </Button>
     </div>
   );

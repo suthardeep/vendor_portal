@@ -10,6 +10,7 @@ import { Button } from "@/components/base/Button";
 
 import { useUpdateVariantDetailsMutation } from "../../api/queryHooks";
 import { validateVariantDetails } from "../../schemas/variations.schema";
+import { genderOptions } from "@/constants/genderOptions";
 
 interface VariantData {
   id: string;
@@ -91,11 +92,6 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
       );
     }
   }, [variants]);
-
-  const genderOptions = [
-    { value: "Male", label: "Male" },
-    { value: "Female", label: "Female" },
-  ];
 
   const handleInputChange = (index: number, field: string, value: any) => {
     const newData = [...formData];
@@ -296,7 +292,6 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   value={data.eanUpc}
                   onChange={(e) => handleInputChange(index, "eanUpc", e.target.value)}
                   placeholder="Enter EAN/UPC"
-                  required
                   error={variantErrors.eanUpc}
                 />
               </div>
@@ -308,7 +303,6 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   onChange={(e) => handleInputChange(index, "description", e.target.value)}
                   placeholder="Product description"
                   rows={5}
-                  required
                   error={variantErrors.description}
                 />
                 <MediaPicker
@@ -323,7 +317,6 @@ const VariationStep2: React.FC<VariationStep2Props> = ({ productId, variants = [
                   containerClassName={
                     data?.mediaUrls?.length ? "p-2 border border-base-content/20 rounded-2xl" : ""
                   }
-                  iconConfig={{ size: "xs" }}
                   orientation="grid"
                   error={variantErrors.mediaUrls}
                 />

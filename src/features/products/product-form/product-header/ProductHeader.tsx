@@ -6,11 +6,12 @@ import { cn } from "@/utils/helpers";
 import { Separator } from "@/components/base/Separator";
 import ShimmerBox from "@/components/base/ShimmerBox";
 import { useProductDetailsQuery } from "./api/queryHooks";
+import { Image } from "@/components/base/Image";
 
 interface ProductHeaderProps {
   title?: string;
   showSteps?: boolean;
-  enableStepClick?: boolean;
+  // enableStepClick?: boolean;
   actionButtons?: React.ReactNode[];
   productId: string;
 }
@@ -29,7 +30,7 @@ const STEPS_WITHOUT_VARIATIONS = [
 export const ProductHeader: React.FC<ProductHeaderProps> = ({
   title = "Add Product",
   showSteps = false,
-  enableStepClick = false,
+  // enableStepClick = false,
   actionButtons,
   productId,
 }) => {
@@ -39,17 +40,27 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
   const hasVariants = product?.hasVariants ?? false;
 
   const STEPS = hasVariants ? STEPS_WITH_VARIATIONS : STEPS_WITHOUT_VARIATIONS;
-  console.log("Steps: ", STEPS)
-
+  const enableStepClick = ["approved", "rejected", "under_review"].includes(product?.status ?? "");
   const currentStepId = STEPS.find((step) => location.pathname.includes(step.id))?.id || "basic-details";
-console.log("currentStepId: ", location.pathname)
+  const currentStepNumber = STEPS.find((step) => step.id === currentStepId)?.number || 1;
+
   // Show shimmer loading state
   if (!productId || isLoading) {
     return <LoadingSkeleton />;
   }
 
-  const handleStepClick = (stepId: string) => {
-    if (enableStepClick && productId) {
+  // Check if a step is clickable based on current step
+  const isStepClickable = (stepNumber: number) => {
+    // Priority 1: If product is approved/rejected/under_review, all steps are clickable
+    if (enableStepClick) {
+      return true;
+    }
+    // Priority 2: During draft mode, allow clicking on previous steps only (progressive navigation)
+    return stepNumber < currentStepNumber;
+  };
+
+  const handleStepClick = (stepId: string, stepNumber: number) => {
+    if (isStepClickable(stepNumber) && productId) {
       navigate({ to: `/products/product-form/${productId}/${stepId}` });
     }
   };
@@ -65,15 +76,16 @@ console.log("currentStepId: ", location.pathname)
             <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-2 lg:pb-0 scrollbar-hide">
               {STEPS.map((step) => {
                 const isActive = step.id === currentStepId;
+                const stepClickable = isStepClickable(step.number);
                 return (
                   <div
                     key={step.id}
-                    onClick={() => handleStepClick(step.id)}
+                    onClick={() => handleStepClick(step.id, step.number)}
                     className={cn(
                       "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 select-none shrink-0",
-                      enableStepClick && "hover:scale-[1.02] active:scale-[0.98]",
-                      enableStepClick ? "cursor-pointer" : "cursor-default",
-                      isActive ? "bg-primary/10 shadow-sm" : "bg-base-2 hover:bg-base-2/80"
+                      stepClickable && "hover:scale-[1.02] active:scale-[0.98]",
+                      stepClickable ? "cursor-pointer" : "cursor-not-allowed ",
+                      isActive ? "bg-primary/10 " : "bg-base-2 "
                     )}
                   >
                     <span
@@ -81,15 +93,15 @@ console.log("currentStepId: ", location.pathname)
                         "flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold border transition-all duration-200",
                         isActive
                           ? "bg-primary text-primary-content border-primary"
-                          : "bg-transparent text-base-content/60 border-base-content/30"
+                          : "bg-transparent text-base-content border-base-content/30"
                       )}
                     >
                       {step.number}
                     </span>
                     <span
                       className={cn(
-                        "text-xs sm:text-sm font-medium whitespace-nowrap",
-                        isActive ? "text-primary" : "text-base-content/60"
+                        "text-xs sm:text-sm text-body-content font-medium whitespace-nowrap",
+                        // isActive ? "text-primary" : "text-base-content/60"
                       )}
                     >
                       {step.label}
@@ -105,7 +117,7 @@ console.log("currentStepId: ", location.pathname)
 
         {/* Product Details Row (Only if ID exists) */}
         {product && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 pb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
                 <h2 className="text-base sm:text-lg font-medium text-base-content">{product.name}</h2>
@@ -122,11 +134,13 @@ console.log("currentStepId: ", location.pathname)
               {/* Brand Card */}
               {product.brandName && (
                 <div className="flex items-center gap-2 sm:gap-3 px-3 py-2 bg-base-2 rounded-lg border border-base-content/10 shrink-0 w-full sm:w-auto">
-                  {product.brandLogo ? (
-                    <img
-                      src={product.brandLogo}
+                  {product.brandLogoUrl ? (
+                    <Image
+                      src={product.brandLogoUrl}
                       alt={product.brandName ?? "Brand Logo"}
-                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                      expandOnClick
+                      className="w-8 h-8 sm:w-10 sm:h-10 "
+                      objectFit="contain"
                     />
                   ) : (
                     <Icon name="Tag" className="w-4 h-4 sm:w-5 sm:h-5 text-base-content/50" />
@@ -139,15 +153,17 @@ console.log("currentStepId: ", location.pathname)
               )}
 
               {/* Categories */}
-              <div className="w-2/3 overflow-hidden ">
-                <PillPath
-                  label="Product Categories"
-                  items={product.categoryPath}
-                  showSeparator
-                  separatorClassname="xl:text-sm px-1"
-                  mainContainerClassname={cn(!product.brandName && "md:pl-0 pl-0")}
-                />
-              </div>
+              {product.categoryPath && product.categoryPath.length > 0 && (
+                <div className="w-2/3 overflow-hidden ">
+                  <PillPath
+                    label="Product Categories"
+                    items={product.categoryPath}
+                    showSeparator
+                    separatorClassname="xl:text-sm px-1"
+                    mainContainerClassname={cn(!product.brandName && "md:pl-0 pl-0")}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

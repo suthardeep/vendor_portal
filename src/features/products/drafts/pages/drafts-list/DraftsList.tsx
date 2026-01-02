@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import { Table } from "@/components/table/Table";
 import { ColumnDef, PaginationConfig, FilterConfig } from "@/components/table/table.types";
-import { useGetDraftProductsQuery, useDeleteDraftProductMutation } from '../../api/queryHooks';
-import { DraftProduct } from '../../types/draft';
+import { useGetDraftProductsQuery, useDeleteDraftProductMutation } from "../../api/queryHooks";
+import { DraftProduct } from "../../types/draft";
 import { PaginationMeta } from "@/types/baseApi";
 import Dialog from "@/components/compound/Dialog";
-import { useCategoriesQuery } from '@/features/products/add-product/api/queryHooks';
-import { Category } from '@/features/products/add-product/types/addProduct.types';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from "@tanstack/react-router";
+import { useCategoriesQuery } from "@/features/category/api/queryHooks";
+import { Category } from "@/features/category/types.category";
 
 const DraftsList: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -15,91 +15,92 @@ const DraftsList: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<DraftProduct | null>(null);
   const navigate = useNavigate();
 
-  const [params, setParams] = useState({ 
-    page: 1, 
+  const [params, setParams] = useState({
+    page: 1,
     pageSize: 10,
-    search: '',
-    status: 'draft',
-    categoryId: '',
+    search: "",
+    status: "draft",
+    categoryId: "",
   });
 
-  const { 
-    data: draftsData, 
-    isLoading, 
-    isFetching, 
-    isError 
-  } = useGetDraftProductsQuery(params);
+  const { data: draftsData, isLoading, isFetching, isError } = useGetDraftProductsQuery(params);
 
   // Fetch categories for filter dropdown
   const { data: categoriesData } = useCategoriesQuery("MAIN", undefined, true);
 
   const deleteProductMutation = useDeleteDraftProductMutation();
-  
+
   const drafts: DraftProduct[] = draftsData?.data || [];
   const meta: PaginationMeta | undefined = draftsData?.meta;
 
-  const columns: ColumnDef<DraftProduct>[] = useMemo(() => [
-    {
-      key: "externalSku", 
-      header: "SKU",
-      cellType: "text",
-      render: (row) => (
-        <span className="text-sm font-normal text-body-content">{row.externalSku}</span>
-      )
-    },
-    {
-      key: "name", 
-      header: "PRODUCT NAME",
-      cellType: "text",
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <img 
-            src={row?.thumbnailUrl || "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBoZWFkcGhvbmVzfGVufDB8fDB8fHww"} 
-            alt={row.name}
-            className="w-10 h-10 rounded-lg object-cover"
-          />
-          <div>
-            <p className="text-sm font-normal text-body-content">{row.name}</p>
-            <p className="text-xs text-base-content/60">{row.categoryPath && row.categoryPath.length > 0 ? row.categoryPath[0] : 'N/A'}</p>
+  const columns: ColumnDef<DraftProduct>[] = useMemo(
+    () => [
+      {
+        key: "externalSku",
+        header: "SKU",
+        cellType: "text",
+        render: (row) => <span className="text-sm font-normal text-body-content">{row.externalSku}</span>,
+      },
+      {
+        key: "name",
+        header: "PRODUCT NAME",
+        cellType: "text",
+        render: (row) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={
+                row?.thumbnailUrl ||
+                "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBoZWFkcGhvbmVzfGVufDB8fDB8fHww"
+              }
+              alt={row.name}
+              className="w-10 h-10 rounded-lg object-cover"
+            />
+            <div>
+              <p className="text-sm font-normal text-body-content">{row.name}</p>
+              <p className="text-xs text-base-content/60">
+                {row.categoryPath && row.categoryPath.length > 0 ? row.categoryPath[0] : "N/A"}
+              </p>
+            </div>
           </div>
-        </div>
-      )
-    },
-    {
-      key: "brandName", 
-      header: "BRAND",
-      cellType: "text",
-      render: (row) => (
-        <span className="text-sm font-normal text-body-content">{row.brandName || 'N/A'}</span>
-      )
-    },
-    {
-      key: "createdAt", 
-      header: "CREATED ON",
-      cellType: "text",
-      sortable: true,
-      render: (row) => (
-        <span className="font-light text-sm text-base-content">
-          {new Date(row.createdAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-        </span>
-      )
-    },
-  ], []);
+        ),
+      },
+      {
+        key: "brandName",
+        header: "BRAND",
+        cellType: "text",
+        render: (row) => (
+          <span className="text-sm font-normal text-body-content">{row.brandName || "N/A"}</span>
+        ),
+      },
+      {
+        key: "createdAt",
+        header: "CREATED ON",
+        cellType: "text",
+        sortable: true,
+        render: (row) => (
+          <span className="font-light text-sm text-base-content">
+            {new Date(row.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" })}
+          </span>
+        ),
+      },
+    ],
+    []
+  );
 
   const handlePageChange = (newPage: number) => {
-    const pageNumber = typeof newPage === 'string' ? parseInt(newPage, 10) : newPage;
-    setParams(prev => ({ ...prev, page: pageNumber }));
+    const pageNumber = typeof newPage === "string" ? parseInt(newPage, 10) : newPage;
+    setParams((prev) => ({ ...prev, page: pageNumber }));
   };
 
   const handleSearch = (searchTerm: string) => {
-    setParams(prev => ({ ...prev, search: searchTerm, page: 1 }));
+    setParams((prev) => ({ ...prev, search: searchTerm, page: 1 }));
   };
 
   const handleCategoryFilter = (categoryId: string) => {
-    setParams(prev => ({ 
-      ...prev, 
-      categoryId: categoryId === 'all' ? '' : categoryId, 
-      page: 1 
+    setParams((prev) => ({
+      ...prev,
+      categoryId: categoryId === "all" ? "" : categoryId,
+      page: 1,
     }));
   };
 
@@ -116,8 +117,8 @@ const DraftsList: React.FC = () => {
           setProductToDelete(null);
         },
         onError: (error) => {
-          console.error('Failed to delete draft product:', error);
-        }
+          console.error("Failed to delete draft product:", error);
+        },
       });
     }
   };
@@ -131,62 +132,65 @@ const DraftsList: React.FC = () => {
     return <div className="p-4 text-error">Failed to load draft products data.</div>;
   }
 
-  const pagination: PaginationConfig | undefined = meta ? {
-    meta: meta,
-    onPageChange: handlePageChange,
-    showTotal: true
-  } : undefined;
+  const pagination: PaginationConfig | undefined = meta
+    ? {
+        meta: meta,
+        onPageChange: handlePageChange,
+        showTotal: true,
+      }
+    : undefined;
 
   // Create category filter options
   const categoryOptions = useMemo(() => {
     const categories = categoriesData?.data?.data || [];
     return [
-      { label: 'All Categories', value: 'all' },
+      { label: "All Categories", value: "all" },
       ...categories.map((category: Category) => ({
         label: category.name,
-        value: category.id
-      }))
+        value: category.id,
+      })),
     ];
   }, [categoriesData]);
 
   // Create filters array
-  const filters: FilterConfig[] = useMemo(() => [
-    {
-      key: 'category',
-      type: 'dropdown',
-      label: 'Category',
-      value: params.categoryId || 'all',
-      options: categoryOptions,
-      onChange: handleCategoryFilter,
-    }
-  ], [categoryOptions, params.categoryId]);
+  const filters: FilterConfig[] = useMemo(
+    () => [
+      {
+        key: "category",
+        type: "dropdown",
+        label: "Category",
+        value: params.categoryId || "all",
+        options: categoryOptions,
+        onChange: handleCategoryFilter,
+      },
+    ],
+    [categoryOptions, params.categoryId]
+  );
 
   return (
     <>
       <Table<DraftProduct>
-        title="Draft Products"
-        data={drafts} 
+        // title="Draft Products"
+        data={drafts}
         columns={columns}
         searchable
-        searchPlaceholder="Search draft products..."
-        onSearch={handleSearch} 
+        onSearch={handleSearch}
         filters={filters}
         rowKey="id"
         selectedRows={selectedRows}
-        onSelectionChange={(set) =>
-          setSelectedRows(new Set(set as Set<string>))
-        }
-        maxHeight="calc(100vh - 198px)"
+        onSelectionChange={(set) => setSelectedRows(new Set(set as Set<string>))}
+        // maxHeight="calc(100vh - 198px)"
+        // classNameConfig={{table:{ tableContainer: "h-[80dvh] bg-red-100" }}}
         actions={[]}
         hoverable
-        loading={isLoading || isFetching} 
+        loading={isLoading || isFetching}
         pagination={pagination}
         rowActions={[
           {
             label: "Edit",
             icon: "Edit2",
             onClick: (row) => {
-              navigate({to: `/products/product-form/${row.id}/basic-details`})
+              navigate({ to: `/products/product-form/${row.id}/basic-details` });
             },
           },
           {
@@ -196,7 +200,7 @@ const DraftsList: React.FC = () => {
             variant: "danger",
           },
         ]}
-        className='flex-1'
+        className="flex-1"
         emptyMessage="No draft products found"
         emptyIcon="Package"
       />

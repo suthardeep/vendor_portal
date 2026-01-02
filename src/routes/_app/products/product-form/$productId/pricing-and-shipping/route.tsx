@@ -3,7 +3,7 @@ import PricingAndShipping from "@/features/products/product-form/pricing-and-shi
 
 export const Route = createFileRoute("/_app/products/product-form/$productId/pricing-and-shipping")({
   staticData: {
-    pageTitle: "Pricing & Shipping",
+    title: "Pricing & Shipping",
   },
   component: () => {
     const { productId } = Route.useParams();

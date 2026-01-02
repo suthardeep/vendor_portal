@@ -5,15 +5,13 @@ export const Route = createFileRoute("/_app/products/active-products")({
   component: RouteComponent,
   staticData:{
     breadcrumb: {
-      label: "Active Product",
+      label: "Active Products",
     }
   }
 });
 
 function RouteComponent() {
   return (
-    <div className="h-full">
       <ActiveProductsList />
-    </div>
   );
 }

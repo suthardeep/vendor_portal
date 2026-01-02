@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { RegistrationSchema, RegistrationFormData } from "./schemas/registration.schema";
 import { Input } from "@/components/base/Input";
 import { Checkbox } from "@/components/base/Checkbox";
 import { Button } from "@/components/base/Button";
 import Logo from "@/components/base/Logo";
-import { OTPInput } from "@/components/base/OTPInput";
+import { OTPInput, OTPInputRef } from "@/components/base/OTPInput";
 import { Icon } from "@/components/base/Icon";
 import { toast } from "@/components/toast/Sonner";
 import { useNavigate } from "@tanstack/react-router";
@@ -14,12 +14,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useSendOtpMutation, useVerifyOtpMutation, useRegisterProfileMutation } from "./api/queryHooks";
 import { getProfile } from "@/features/profile/api/queryFns"; // Import profile API
 
-
-
 const Registration: React.FC = () => {
   const navigate = useNavigate();
   const { setAuth, user } = useAuthStore();
-
 
   // --- Form State ---
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -30,7 +27,8 @@ const Registration: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  
+  const otpRef = useRef<OTPInputRef>(null);
+
   // --- TanStack Query Mutations ---
   const sendOtpMutation = useSendOtpMutation();
   const resendOtpMutation = useSendOtpMutation(); // NEW: Separate instance for resend
@@ -39,8 +37,11 @@ const Registration: React.FC = () => {
 
   // Determine the overall "busy" state to disable unrelated actions
   // UPDATED: Include resendOtpMutation.isPending in isPending
-  const isPending = sendOtpMutation.isPending || resendOtpMutation.isPending || verifyOtpMutation.isPending || registerMutation.isPending;
-
+  const isPending =
+    sendOtpMutation.isPending ||
+    resendOtpMutation.isPending ||
+    verifyOtpMutation.isPending ||
+    registerMutation.isPending;
 
   // --- OTP Modal State ---
   const [otpState, setOtpState] = useState({
@@ -49,7 +50,13 @@ const Registration: React.FC = () => {
     error: "",
     // isResendingOtp removed as loading state is managed by resendOtpMutation.isPending
   });
-  
+
+  useEffect(() => {
+    if (otpRef.current && otpState.isOpen && !otpState.value) {
+      otpRef.current?.focus();
+    }
+  }, [otpState.isOpen, otpRef.current]);
+
   // Handlers
   const handleInputChange = (field: keyof RegistrationFormData, value: any) => {
     // Edge Case: If email is changed after verification, revoke verification
@@ -78,42 +85,43 @@ const Registration: React.FC = () => {
     }
 
     setErrors({});
-    
+
     // 2. API Call: useSendOtpMutation
     sendOtpMutation.mutate(
-        { email: formData.email }, 
-        {
-            onSuccess: (data) => {
-                toast.success(data.message || "OTP sent successfully");
-                // Open Modal on success
-                setOtpState({
-                    isOpen: true,
-                    value: "",
-                    error: "",
-                });
-            },
-            onError: (error) => {
-                const errorMessage = (error as { message?: string })?.message || "Failed to send OTP. Please try again.";
-                toast.error(errorMessage);
-            },
-        }
+      { email: formData.email },
+      {
+        onSuccess: (data) => {
+          toast.success(data.message || "OTP sent successfully");
+          // Open Modal on success
+          setOtpState({
+            isOpen: true,
+            value: "",
+            error: "",
+          });
+        },
+        onError: (error) => {
+          const errorMessage =
+            (error as { message?: string })?.message || "Failed to send OTP. Please try again.";
+          toast.error(errorMessage);
+        },
+      }
     );
   };
 
   const handleResendOtp = () => {
-    
     // API Call: useSendOtpMutation via resendOtpMutation instance
     resendOtpMutation.mutate(
-        { email: formData.email }, 
-        {
-            onSuccess: (data) => {
-                toast.success(data.message || "OTP resent successfully");
-            },
-            onError: (error) => {
-                const errorMessage = (error as { message?: string })?.message || "Failed to resend OTP. Please try again.";
-                toast.error(errorMessage);
-            },
-        }
+      { email: formData.email },
+      {
+        onSuccess: (data) => {
+          toast.success(data.message || "OTP resent successfully");
+        },
+        onError: (error) => {
+          const errorMessage =
+            (error as { message?: string })?.message || "Failed to resend OTP. Please try again.";
+          toast.error(errorMessage);
+        },
+      }
     );
   };
 
@@ -124,37 +132,37 @@ const Registration: React.FC = () => {
 
   const handleVerifyOtp = async (otpValue: string) => {
     setOtpState((prev) => ({ ...prev, error: "" }));
-    
+
     // API Call: useVerifyOtpMutation
     verifyOtpMutation.mutate(
-        { email: formData.email, otp: otpValue }, 
-        {
-            onSuccess: (res) => {
-                if (res.data?.verified) {
-                    setIsEmailVerified(true);
-                    setOtpState((prev) => ({ ...prev, isOpen: false })); // Close modal
-                    toast.success("Email verified successfully!");
+      { email: formData.email, otp: otpValue },
+      {
+        onSuccess: (res) => {
+          if (res.data?.verified) {
+            setIsEmailVerified(true);
+            setOtpState((prev) => ({ ...prev, isOpen: false })); // Close modal
+            toast.success("Email verified successfully!");
 
-                    // Clear any previous email errors
-                    setErrors((prev) => {
-                      const newErr = { ...prev };
-                      delete newErr.email;
-                      return newErr;
-                    });
-                } else {
-                    setOtpState((prev) => ({ ...prev, error: res.message || "Verification failed." }));
-                }
-            },
-            onError: (error) => {
-                // Catch specific error thrown by the API service (e.g., "Invalid OTP...")
-                // const errorMessage = (error as { message?: string })?.message || "Verification failed. Please try again.";
-                // setOtpState((prev) => ({ ...prev, error: errorMessage }));
+            // Clear any previous email errors
+            setErrors((prev) => {
+              const newErr = { ...prev };
+              delete newErr.email;
+              return newErr;
+            });
+          } else {
+            setOtpState((prev) => ({ ...prev, error: res.message || "Verification failed." }));
+          }
+        },
+        onError: (error) => {
+          // Catch specific error thrown by the API service (e.g., "Invalid OTP...")
+          // const errorMessage = (error as { message?: string })?.message || "Verification failed. Please try again.";
+          // setOtpState((prev) => ({ ...prev, error: errorMessage }));
 
-                 setIsEmailVerified(true);
-                    setOtpState((prev) => ({ ...prev, isOpen: false })); // Close modal
-                    toast.success("Email verified successfully!");
-            },
-        }
+          setIsEmailVerified(true);
+          setOtpState((prev) => ({ ...prev, isOpen: false })); // Close modal
+          toast.success("Email verified successfully!");
+        },
+      }
     );
   };
 
@@ -175,60 +183,58 @@ const Registration: React.FC = () => {
       const registrationPayload = {
         fullName: formData.fullName,
         acceptedTC: formData.agreed,
-        email:formData.email
+        email: formData.email,
       };
 
       registerMutation.mutate(registrationPayload, {
         onSuccess: async (res) => {
-            try {
-              console.log("✅ [REGISTRATION] Registration successful, payload sent:", registrationPayload);
-              
-              toast.success("Registration Successful");
-              
-              // Set flag to prevent AppInitializer from interfering with navigation
-              sessionStorage.setItem('justRegistered', 'true');
-              
-              // Immediately call profile API to get complete user data with onboarding info
-              console.log("🔍 [REGISTRATION] Fetching complete profile data...");
-              const profileResponse = await getProfile();
-              
-              if (profileResponse?.data) {
-                const completeUserData = profileResponse.data;
-                console.log("👤 [REGISTRATION] Complete user data received:", completeUserData);
-                
-                // Store complete user data in store
-                setAuth(completeUserData);
-                
-                // After registration, always go to business registration step 1
-                console.log("🧭 [REGISTRATION] Navigating to business registration step 1");
-                navigate({ to: "/business-registration", search: { step: 1 } });
-                
-              } else {
-                throw new Error("Profile API returned no data");
-              }
-              
-            } catch (profileError) {
-              console.error("🚫 [REGISTRATION] Failed to fetch profile after registration:", profileError);
-              // If profile fetch fails, still navigate but with basic user data
-              setAuth({
-                ...user!,
-                email: formData.email,
-                fullName: formData.fullName,
-                emailVerified: true,
-              });
-              
-              toast.warning("Registration successful but failed to load complete profile. Continuing...");
+          try {
+            console.log("✅ [REGISTRATION] Registration successful, payload sent:", registrationPayload);
+
+            toast.success("Registration Successful");
+
+            // Set flag to prevent AppInitializer from interfering with navigation
+            sessionStorage.setItem("justRegistered", "true");
+
+            // Immediately call profile API to get complete user data with onboarding info
+            console.log("🔍 [REGISTRATION] Fetching complete profile data...");
+            const profileResponse = await getProfile();
+
+            if (profileResponse?.data) {
+              const completeUserData = profileResponse.data;
+              console.log("👤 [REGISTRATION] Complete user data received:", completeUserData);
+
+              // Store complete user data in store
+              setAuth(completeUserData);
+
+              // After registration, always go to business registration step 1
+              console.log("🧭 [REGISTRATION] Navigating to business registration step 1");
               navigate({ to: "/business-registration", search: { step: 1 } });
+            } else {
+              throw new Error("Profile API returned no data");
             }
+          } catch (profileError) {
+            console.error("🚫 [REGISTRATION] Failed to fetch profile after registration:", profileError);
+            // If profile fetch fails, still navigate but with basic user data
+            setAuth({
+              ...user!,
+              email: formData.email,
+              fullName: formData.fullName,
+              emailVerified: true,
+            });
+
+            toast.warning("Registration successful but failed to load complete profile. Continuing...");
+            navigate({ to: "/business-registration", search: { step: 1 } });
+          }
         },
         onError: (error) => {
-            const errorMessage = (error as { message?: string })?.message || "Registration failed. Please try again.";
-            toast.error(errorMessage);
+          const errorMessage =
+            (error as { message?: string })?.message || "Registration failed. Please try again.";
+          toast.error(errorMessage);
 
-            toast.error(errorMessage);
+          toast.error(errorMessage);
         },
       });
-
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -243,7 +249,6 @@ const Registration: React.FC = () => {
 
   const isSubmitting = registerMutation.isPending;
 
-
   return (
     <>
       <div className="w-full px-5 py-6 sm:px-6 md:px-8 lg:px-10 flex flex-col">
@@ -254,7 +259,9 @@ const Registration: React.FC = () => {
           </div>
           <div>
             <div className="flex justify-between items-center">
-              <h1 className="mb-1 text-base-content text-2xl font-semibold sm:text-4xl">Complete Your Profile</h1>
+              <h1 className="mb-1 text-base-content text-2xl font-semibold sm:text-4xl">
+                Complete Your Profile
+              </h1>
             </div>
             <p className="text-sm sm:text-base font-normal text-body-content/80">
               Establish your business and connect with millions throughout India.
@@ -356,9 +363,9 @@ const Registration: React.FC = () => {
               </div>
               <button
                 onClick={() => setOtpState((prev) => ({ ...prev, isOpen: false }))}
-                className="text-base-content/50 hover:text-base-content"
+                className="p-2 hover:bg-base-3/80 rounded-lg"
               >
-                <Icon name="X" size={24} />
+                <Icon name="X" size={24} className="text-body-content" />
               </button>
             </div>
 
@@ -371,6 +378,8 @@ const Registration: React.FC = () => {
                 error={otpState.error}
                 disabled={verifyOtpMutation.isPending}
                 boxClassName="border-base-content/20"
+                ref={otpRef}
+                // containerClassName="mr-12 w-[26dvw]"
               />
             </div>
 

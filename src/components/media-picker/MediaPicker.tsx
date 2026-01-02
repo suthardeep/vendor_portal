@@ -1,6 +1,6 @@
 // MediaPicker.tsx
 import React, { useState } from "react";
-import { File, FileText, Plus, Video, X, RefreshCw } from "lucide-react";
+import { File, FileText, Plus, Video, X, RefreshCw, ImagePlus } from "lucide-react";
 import { getMediaPickerValue, MediaValue } from "./utils/getMediaPickerValue";
 import { MediaItem, MinimalMediaProps } from "./types/media.types";
 import { cn, getFileType } from "@/utils/helpers";
@@ -42,21 +42,21 @@ interface IconConfig {
 }
 
 interface TextConfig {
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: "xxs" | "xs" | "sm" | "md" | "lg";
   customSize?: string;
   show?: boolean;
 }
 
 // CVA Variants
-const iconVariants = cva("transition-all duration-300", {
+const crossIconVariants = cva("transition-all duration-300", {
   variants: {
     size: {
-      xs: "w-3 h-3",
-      sm: "w-4 h-4",
-      md: "w-5 h-5",
-      lg: "w-6 h-6",
-      xl: "w-8 h-8",
-      auto: "w-6 h-6",
+      xs: "w-2 h-2",
+      sm: "w-3 h-3",
+      md: "w-4 h-4",
+      lg: "w-5 h-5",
+      xl: "w-6 h-6",
+      auto: "w-5 h-5",
     },
   },
   defaultVariants: {
@@ -64,14 +64,30 @@ const iconVariants = cva("transition-all duration-300", {
   },
 });
 
-const textVariants = cva("font-semibold tracking-wide", {
+const centerIconVariants = cva("transition-all duration-300", {
   variants: {
     size: {
-      xs: "text-[9px]",
-      sm: "text-xs",
-      md: "text-sm",
-      lg: "text-base",
-      xl: "text-lg",
+      xs: "w-7 h-7",
+      sm: "w-8 h-8",
+      md: "w-9 h-9",
+      lg: "w-10 h-10",
+      xl: "w-11 h-11",
+      auto: "w-10 h-10",
+    },
+  },
+  defaultVariants: {
+    size: "auto",
+  },
+});
+
+const textVariants = cva("font-medium tracking-wide", {
+  variants: {
+    size: {
+      xxs: "text-[9px]",
+      xs: "text-xs",
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg",
     },
   },
   defaultVariants: {
@@ -99,7 +115,7 @@ const aspectRatioVariants = cva("", {
 interface MediaPickerProps {
   label?: string;
   value?: MinimalMediaProps[];
-  ids: MediaValue;
+  ids?: MediaValue;
   urls: MediaValue;
   onChange: (items: MinimalMediaProps[]) => void;
 
@@ -114,7 +130,8 @@ interface MediaPickerProps {
   itemSizeConfig?: SizeConfig;
 
   // Icon & Text Configuration
-  iconConfig?: IconConfig;
+  crossIconConfig?: IconConfig;
+  centerIconConfig?: IconConfig;
   textConfig?: TextConfig;
 
   // Existing Props
@@ -152,7 +169,10 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   },
 
   // Icon & Text defaults
-  iconConfig = {
+  crossIconConfig = {
+    size: "auto",
+  },
+  centerIconConfig = {
     size: "auto",
   },
   textConfig = {
@@ -169,7 +189,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   error,
 }) => {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const cleanedValue = value.length > 0 ? value : getMediaPickerValue(ids, urls);
+  const cleanedValue = value.length > 0 ? value : getMediaPickerValue(urls);
   const mediaDialog = useMediaDialogStore();
 
   const handleRemove = (s3Url: string) => {
@@ -180,8 +200,8 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
     e.stopPropagation();
     if (!item.s3Url) return;
     // find index of clicked item among displayItems (only files when inside folder)
-    const files = (value as MinimalMediaProps[]).filter((i) => !!i && (i as any).id);
-    const idx = files.findIndex((f) => f.id === item.id);
+    const files = (value as MinimalMediaProps[]).filter((i) => !!i && (i as any).s3Url);
+    const idx = files.findIndex((f) => f.s3Url === item.s3Url);
 
     const fileType = getFileType(item.s3Url);
 
@@ -217,7 +237,6 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
 
   const handleConfirm = (newItems: MediaItem[]) => {
     const existingUrls = new Set(cleanedValue.map((v) => v.s3Url));
-    console.log("exisrting urls", existingUrls);
     const uniqueNew = newItems.filter((i) => !existingUrls.has(i.s3Url));
     const combinedItems = [...cleanedValue, ...uniqueNew];
     const limitedItems = maxFiles !== Infinity ? combinedItems.slice(0, maxFiles) : combinedItems;
@@ -288,15 +307,20 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
   };
 
   // Get icon classes
-  const getIconClasses = (defaultSize?: string): string => {
-    if (iconConfig.customSize) return iconConfig.customSize;
-    return iconVariants({ size: iconConfig.size || "auto" });
+  const getCrossIconClasses = (defaultSize?: string): string => {
+    if (crossIconConfig.customSize) return crossIconConfig.customSize;
+    return crossIconVariants({ size: crossIconConfig.size || "auto" });
+  };
+
+  const getCenterIconClasses = (defaultSize?: string): string => {
+    if (centerIconConfig.customSize) return centerIconConfig.customSize;
+    return centerIconVariants({ size: centerIconConfig.size || "auto" });
   };
 
   // Get text classes
   const getTextClasses = (): string => {
     if (textConfig.customSize) return textConfig.customSize;
-    return textVariants({ size: textConfig.size || "sm" });
+    return textVariants({ size: textConfig.size || "md" });
   };
 
   // Container wrapper class
@@ -331,9 +355,11 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
         className="w-full h-full rounded-2xl flex flex-col items-center justify-center p-4 text-center bg-linear-to-br from-gray-100 via-gray-50 to-gray-100"
       >
         <div className="w-16 h-16 rounded-xl bg-linear-to-br from-white to-gray-200 flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
-          {fileType === "video" && <Video className={cn(getIconClasses(), "text-primary")} />}
-          {fileType === "pdf" && <FileText className={cn(getIconClasses(), "text-red-500")} />}
-          {(!fileType || fileType === "other") && <File className={cn(getIconClasses(), "text-gray-400")} />}
+          {fileType === "video" && <Video className={cn(getCenterIconClasses(), "text-primary")} />}
+          {fileType === "pdf" && <FileText className={cn(getCenterIconClasses(), "text-red-500")} />}
+          {(!fileType || fileType === "other") && (
+            <File className={cn(getCenterIconClasses(), "text-gray-400")} />
+          )}
         </div>
         {textConfig.show && (
           <span
@@ -435,7 +461,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
             {cleanedValue.map((item) => {
               return (
                 <div
-                  key={item.id}
+                  key={item.s3Url}
                   className={cn(
                     "relative group rounded-2xl overflow-hidden border border-gray-300 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-xl ",
                     "h-[20dvh]",
@@ -452,7 +478,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                     className="absolute top-2 right-2 p-0.5 bg-white/95 backdrop-blur-sm text-red-100 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-red-100 hover:text-white active:scale-95"
                     aria-label="Remove item"
                   >
-                    <X className={cn("group-hover:text-error", getIconClasses())} />
+                    <X className={cn("group-hover:text-error", getCrossIconClasses())} />
                   </Button>
                 </div>
               );
@@ -464,7 +490,10 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 type="button"
                 onClick={() => setIsGalleryOpen(true)}
                 className={cn(
-                  "rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-primary hover:bg-primary-50 transition-all duration-300 text-gray-500 hover:text-primary cursor-pointer bg-linear-to-br from-gray-50 via-white to-gray-50 group hover:shadow-lg active:scale-95",
+                  "rounded-2xl flex flex-col items-center justify-center cursor-pointer group",
+                  "border-2 border-dashed border-base-content/40",
+                  "hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow-lg active:scale-95",
+                  "bg-linear-to-br from-gray-50 via-white to-gray-50 transition-all duration-300",
                   "h-[20dvh]",
                   error ? "border-error hover:border-error" : "",
                   buildSizeClasses(itemSizeConfig),
@@ -475,10 +504,16 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                   orientation === "vertical" && !itemSizeConfig.height && "shrink-0"
                 )}
               >
-                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-200 transition-all duration-300">
-                  <Plus className={cn(getIconClasses(), "text-primary")} />
-                </div>
-                {textConfig.show && <span className={getTextClasses()}>Add Media</span>}
+                {/* <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-200 transition-all duration-300"> */}
+                <ImagePlus
+                  className={cn("group-hover:text-primary text-body-content", getCenterIconClasses())}
+                />
+                {/* </div> */}
+                {(textConfig.show ?? true) && (
+                  <span className={cn("group-hover:text-primary text-disabled-content", getTextClasses())}>
+                    Add Media
+                  </span>
+                )}
               </button>
             )}
           </div>

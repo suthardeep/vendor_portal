@@ -247,9 +247,9 @@ const ProductDetails = ({ productId }: {productId:string}) => {
           {product.hasBrand && product.brandName && (
             <SectionCard>
               <div className="flex items-start gap-3">
-                {product.brandLogo ? (
+                {product.brandLogoUrl ? (
                   <img 
-                    src={product.brandLogo} 
+                    src={product.brandLogoUrl} 
                     alt={product.brandName}
                     className="w-12 h-12 rounded-lg object-cover"
                   />

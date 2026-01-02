@@ -6,6 +6,7 @@ import { cn } from "@/utils/helpers";
 import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CustomSizeChart, SizeChartRow } from "../../../types/variations.types";
+import { Button } from "@/components/base/Button";
 
 interface CustomSizeChartDialogProps {
   isOpen: boolean;
@@ -212,7 +213,8 @@ const CustomSizeChartDialog = ({
               placeholder="e.g. Mens Summer Collection"
             />
           </div>
-          <div className="flex gap-2">
+          {/* INCH/CM */}
+          {/* <div className="flex gap-2">
             <button
               onClick={() => setUnit("inch")}
               className={cn(
@@ -231,7 +233,7 @@ const CustomSizeChartDialog = ({
             >
               cm
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="overflow-x-auto mb-6">
@@ -249,17 +251,28 @@ const CustomSizeChartDialog = ({
                         className="bg-transparent border-none text-body-content focus:outline-none w-24"
                       />
                       {columns.length > 1 && (
-                        <button onClick={() => removeColumn(idx)} className="text-error hover:text-error/80">
-                          <Minus size={16} />
-                        </button>
+                        <Button
+                        onClick={() => removeColumn(idx)}
+                        className="p-1"
+                        disabled={rows.length <= 1}
+                        variant="text"
+                        startIcon="Minus"
+                        startIconClassname="hover:text-error/80"
+                      >
+                      </Button>
                       )}
                     </div>
                   </th>
                 ))}
                 <th className="p-3 w-12">
-                  <button onClick={addColumn} className="text-primary hover:text-primary/80">
-                    <Plus size={20} />
-                  </button>
+                  <Button
+                    onClick={addColumn}
+                    className="p-1"
+                    disabled={columns.length >= 10}
+                    variant="text"
+                    startIcon="Plus"
+                    startIconClassname="hover:text-primary/90"
+                  ></Button>
                 </th>
               </tr>
             </thead>
@@ -268,13 +281,14 @@ const CustomSizeChartDialog = ({
                 <tr key={rowIdx} className="border-b border-input-border/50">
                   <td className="p-3">
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
                         onClick={() => removeRow(rowIdx)}
-                        className="text-error hover:text-error/80"
+                        className="p-1"
                         disabled={rows.length <= 1}
-                      >
-                        <Minus size={16} />
-                      </button>
+                        variant="text"
+                        startIcon="Minus"
+                        startIconClassname="hover:text-error/80"
+                      ></Button>
                       <input
                         type="text"
                         value={row.sizeName}
@@ -298,12 +312,15 @@ const CustomSizeChartDialog = ({
               ))}
               <tr>
                 <td colSpan={columns.length + 2} className="p-3">
-                  <button
+                  <Button
                     onClick={addRow}
-                    className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-medium"
+                    disabled={rows.length >= 10}
+                    variant="outline"
+                    size="xs"
+                    startIcon="Plus"
                   >
-                    <Plus size={16} /> Add Row
-                  </button>
+                    Add row
+                  </Button>
                 </td>
               </tr>
             </tbody>
@@ -313,28 +330,19 @@ const CustomSizeChartDialog = ({
         <div className="flex justify-between gap-3">
           <div>
             {existingChart && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 text-error border border-error/20 rounded-lg hover:bg-error/10 transition-colors"
-              >
-                <Trash2 size={16} /> Delete Chart
-              </button>
+              <Button onClick={handleDelete} variant="outline" color="danger" startIcon="Trash2">
+                Delete Chart
+              </Button>
             )}
           </div>
 
           <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 border border-input-border rounded-lg text-body-content hover:bg-base-2 transition-colors"
-            >
+            <Button onClick={onClose} className="px-10" variant="outline">
               Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            >
+            </Button>
+            <Button onClick={handleSave} className="px-10">
               {existingChart ? "Update" : "Create"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

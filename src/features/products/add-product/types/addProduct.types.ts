@@ -16,52 +16,21 @@ export interface CategoryOption {
   name: string;
 }
 
-// API Responses based on your provided JSON
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  level: "MAIN" | "SUB" | "CHILD";
-  parentId?: string;
-  subcategoryCount: number;
-  childCategoryCount: number;
-  isActive: boolean;
-}
-
-export interface CategoryApiResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    data: Category[];
-    meta: {
-      currentPage: string;
-      totalPages: number;
-      totalRows: number;
-    };
-  };
-}
-
 export interface CreateProductPayload {
   name: string;
-  categoryId: string;
   externalSku: string;
   hasVariants: boolean;
   hasBrand: boolean;
   brandName?: string;
   brandLogo?: string;
-  categoryPath: string[]; // Parent -> Sub -> Child names
+  categories: Array<{ id: string; name: string }>; // Category hierarchy with id and name
   brandId?: string;
 }
 
 export interface CreateProductResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    status: string;
-    // ... other fields matching API doc
-  };
+  id: string;
+  name: string;
+  status: string;
 }
 
 // Updated Brand interface to match new response fields

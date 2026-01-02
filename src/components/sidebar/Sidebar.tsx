@@ -1,8 +1,8 @@
-import React, { useState, forwardRef } from 'react';
-import SidebarHeader from './SidebarHeader';
-import SidebarMenu from './SidebarMenu';
-import { cn } from '@/utils/helpers';
-import SidebarProfile from './SidebarProfile';
+import React, { useState, forwardRef, useEffect } from "react";
+import SidebarHeader from "./SidebarHeader";
+import SidebarMenu from "./SidebarMenu";
+import { cn } from "@/utils/helpers";
+import SidebarProfile from "./SidebarProfile";
 
 export interface SubMenuItem {
   label: string;
@@ -36,9 +36,9 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
   (
     {
       logo,
-      logoAlt = "Logo",
+      logoAlt = "Aavak Logo",
       userRole = "Vendor",
-      userName = "Jeel Thumar",
+      userName = "Aavak vendor",
       userAvatar,
       menuItems,
       activePath,
@@ -52,20 +52,20 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
   ) => {
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const [userExpanded, setUserExpanded] = useState(false);
-    const [internalActivePath, setInternalActivePath] = useState(activePath || '');
+    const [internalActivePath, setInternalActivePath] = useState(activePath || "");
 
     // Auto-expand parent items when their children are active
-    React.useEffect(() => {
+    useEffect(() => {
       const itemsToExpand: string[] = [];
-      menuItems.forEach(item => {
-        if (item.subItems?.some(sub => sub.path === internalActivePath)) {
+      menuItems.forEach((item) => {
+        if (item.subItems?.some((sub) => sub.path === internalActivePath)) {
           itemsToExpand.push(item.label);
         }
       });
       if (itemsToExpand.length > 0) {
-        setExpandedItems(prev => {
+        setExpandedItems((prev) => {
           const newExpanded = [...prev];
-          itemsToExpand.forEach(label => {
+          itemsToExpand.forEach((label) => {
             if (!newExpanded.includes(label)) {
               newExpanded.push(label);
             }
@@ -75,19 +75,15 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       }
     }, [internalActivePath, menuItems]);
 
-    console.log("uservatar" , userAvatar)
-
-    React.useEffect(() => {
+    useEffect(() => {
       if (activePath !== undefined) {
         setInternalActivePath(activePath);
       }
     }, [activePath]);
 
     const toggleExpand = (label: string) => {
-      setExpandedItems(prev =>
-        prev.includes(label)
-          ? prev.filter(item => item !== label)
-          : [...prev, label]
+      setExpandedItems((prev) =>
+        prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
       );
     };
 
@@ -96,27 +92,21 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       onNavigate?.(path);
     };
 
-   return (
-      <div className={cn(
-        "sidebar w-75 flex flex-col h-[96%] rounded-lg overflow-hidden bg-base-1 fixed",
-        "shadow-card",
-        containerClassName
-      )}>
+    return (
+      <div
+        className={cn(
+          "sidebar w-75 flex flex-col h-[96%] rounded-lg overflow-hidden bg-base-1 fixed",
+          "shadow-card",
+          containerClassName
+        )}
+      >
         {/* Header - NOT blurred */}
-        <div className={cn(showOverlay && "relative z-[1001]")}>
-          <SidebarHeader 
-            logo={logo}
-            logoAlt={logoAlt}
-            userRole={userRole}
-            className={className}
-          />
+        <div className={cn(showOverlay && "relative z-1001")}>
+          <SidebarHeader logo={logo} logoAlt={logoAlt} userRole={userRole} className={className} />
         </div>
 
         {/* Menu - BLURRED */}
-        <div className={cn(
-          "flex-1",
-  showOverlay && "blur-sm pointer-events-none"
-        )}>
+        <div className={cn("flex-1", showOverlay && "blur-sm pointer-events-none")}>
           <SidebarMenu
             menuItems={menuItems}
             expandedItems={expandedItems}
@@ -127,7 +117,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         </div>
 
         {/* Profile - NOT blurred */}
-        <div className={cn(showOverlay && "relative z-[1001]")}>
+        <div className={cn(showOverlay && "relative z-1001")}>
           <SidebarProfile
             userName={userName}
             userRole={userRole}
@@ -138,7 +128,6 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         </div>
       </div>
     );
- 
   }
 );
 

@@ -6,14 +6,13 @@ export const Route = createFileRoute('/_app/products/under-approval/')({
   staticData:{
     breadcrumb: {
       label: "Under Approval",
-    }
+    },
+    title: "Products Under Approval "
   }
 })
 
 function RouteComponent() {
   return (
-    <div className='h-full'>
       <ProductsUnderApprovalList />
-    </div>
   )
 }

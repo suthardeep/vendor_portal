@@ -1,5 +1,5 @@
 import React from "react";
-import { ColumnDef, ActionMenuItem, ExpandedRowConfig } from "./table.types";
+import { ColumnDef, ActionMenuItem, ExpandedRowConfig, ClassNameConfig } from "./table.types";
 import { TableRow } from "./TableRow";
 import Icon from "../base/Icon";
 import { IconName } from "demaze-ui-lib/components";
@@ -18,12 +18,14 @@ interface TableBodyProps<T> {
   emptyMessage?: string;
   emptyIcon?: string;
   actions?: ActionMenuItem[];
-  singleIcon?: {  
+  singleIcon?: {
     name: string;
     onClick: (row: T) => void;
     tooltip?: string;
   };
   expandedRowConfig?: ExpandedRowConfig<T>;
+  bodyClassNameConfig?: ClassNameConfig["tableBody"];
+  rowClassNameConfig?: ClassNameConfig["tableBody"];
 }
 
 export const TableBody = <T,>({
@@ -41,7 +43,9 @@ export const TableBody = <T,>({
   emptyIcon = "Inbox" as IconName,
   actions,
   singleIcon,
-  expandedRowConfig
+  expandedRowConfig,
+  bodyClassNameConfig,
+  rowClassNameConfig,
 }: TableBodyProps<T>) => {
   const getRowKey = (row: T): string | number => {
     if (typeof rowKey === "function") {
@@ -54,21 +58,23 @@ export const TableBody = <T,>({
   if (loading) {
     return (
       <tbody>
-        {[...Array(5)].map((_, idx) => (
+        {[...Array(12)].map((_, idx) => (
           <tr key={idx} className="border-b border-base-3">
             {selectable && (
               <td className="px-2 py-1.5">
-                <div className="w-3.5 h-3.5 bg-base-3 rounded animate-pulse" />
+                <div className="w-8 h-8 bg-base-3 rounded-xl shimmer" />
               </td>
             )}
             {columns.map((col) => (
               <td key={col.key} className="px-3 py-1.5">
-                <div className="h-3 bg-base-3 rounded animate-pulse" />
+                <div className="h-10 bg-base-3 rounded-xl shimmer" />
               </td>
             ))}
-            <td className="px-2 py-1.5">
-              <div className="h-3 w-3 bg-base-3 rounded animate-pulse mx-auto" />
-            </td>
+            {actions?.length && (
+              <td className="px-2 py-1.5">
+                <div className="h-10 w-10 bg-base-3 rounded-xl shimmer mx-auto" />
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
@@ -80,10 +86,7 @@ export const TableBody = <T,>({
     return (
       <tbody>
         <tr>
-          <td
-            colSpan={columns.length + (selectable ? 1 : 0) + 1}
-            className="px-3 py-8 text-center"
-          >
+          <td colSpan={columns.length + (selectable ? 1 : 0) + 1} className="px-3 py-8 text-center">
             <div className="flex flex-col items-center justify-center gap-2">
               <Icon name={emptyIcon as IconName} size={36} className="text-disabled-content" />
               <p className="text-xs text-body-content">{emptyMessage}</p>
@@ -95,7 +98,7 @@ export const TableBody = <T,>({
   }
 
   return (
-    <tbody className="bg-white">
+    <tbody className={bodyClassNameConfig?.container}>
       {data.map((row, index) => {
         const key = getRowKey(row);
         const isSelected = selectedRows?.has(key);
@@ -114,6 +117,7 @@ export const TableBody = <T,>({
             actions={actions}
             singleIcon={singleIcon}
             expandedRowConfig={expandedRowConfig}
+            classNameConfig={rowClassNameConfig}
           />
         );
       })}

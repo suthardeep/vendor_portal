@@ -31,7 +31,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
   width,
   height,
   aspectRatio,
-  className = "",
+  className ,
   objectFit = "cover",
   rounded = false,
   loading = "lazy",
@@ -93,7 +93,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
         onLoad={handleImageLoad}
         onError={handleImageError}
         className={`
-          w-full h-full object-${objectFit} ${roundedClass} ${className}
+          object-${objectFit} ${roundedClass} ${className}
           transition-all duration-300
           ${fadeIn ? (isLoading ? 'opacity-0' : 'opacity-100') : ''}
           ${scaleOnHover ? 'hover:scale-105' : ''}
@@ -110,7 +110,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(({
 
       {hasError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 p-4">
-          <p className="text-sm text-gray-600 text-center">Failed to load image</p>
+          <p className="text-[10%] text-gray-600 text-center">Failed to load image</p>
         </div>
       )}
     </div>

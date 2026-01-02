@@ -1,13 +1,13 @@
 import { Trash2 } from "lucide-react";
 import { Separator } from "@/components/base/Separator";
-import { VariationsProp, CombinationItem } from "../../../types/variations.types";
+import { VariationCreationState, CombinationItem } from "../../../types/variations.types";
 
 // ============================================================================
 // COMBINATIONS PREVIEW COMPONENT
 // ============================================================================
 
 interface CombinationsPreviewProps {
-  variations: VariationsProp;
+  variations: VariationCreationState;
   combinations: CombinationItem[];
   onRemoveCombination: (id: string) => void;
 }

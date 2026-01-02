@@ -1,4 +1,4 @@
-import Dashboard from "@/AnaylyticsDashboard";
+import Dashboard from "@/features/dashboard";
 import { IssueDetailsRow } from "@/components/base/IssueDetailRow";
 import { Table } from "@/components/table/Table";
 import { ColumnDef } from "@/components/table/table.types";

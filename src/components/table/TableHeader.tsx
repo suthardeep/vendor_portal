@@ -2,9 +2,10 @@ import { cn } from "@/utils/helpers";
 import React, { useState, useEffect, useMemo } from "react";
 import Icon, { IconName } from "../base/Icon";
 import { Button } from "../base/Button";
-import { ActionButton, BreadcrumbConfig, FilterConfig, FilterChip } from "./table.types";
+import { ActionButton, BreadcrumbConfig, FilterConfig, FilterChip, ClassNameConfig } from "./table.types";
 import { FilterSidebar } from "../base/FilterSidebar";
 import { FilterRenderer } from "./FilterRendered";
+import { Input } from "../base/Input";
 
 interface TableHeaderProps {
   title?: string;
@@ -15,36 +16,37 @@ interface TableHeaderProps {
   filters?: FilterConfig[];
   filterChips?: FilterChip[];
   actions?: ActionButton[];
+  classNameConfig?: ClassNameConfig["tableHeader"];
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
   title,
   breadcrumbs,
+
   searchable,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = "Search",
   onSearch,
   filters = [],
   filterChips = [],
   actions,
+  classNameConfig,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pendingFilters, setPendingFilters] = useState<Record<string, any>>({});
   const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>({});
-  
-  const defaultActiveChips = useMemo(() => 
-    filterChips.filter(chip => chip.defaultActive).map(chip => chip.key),
+
+  const defaultActiveChips = useMemo(
+    () => filterChips.filter((chip) => chip.defaultActive).map((chip) => chip.key),
     [filterChips]
   );
-  
-  const [activeChips, setActiveChips] = useState<Set<string>>(
-    new Set(defaultActiveChips)
-  );
+
+  const [activeChips, setActiveChips] = useState<Set<string>>(new Set(defaultActiveChips));
 
   const hasBreadcrumbs = breadcrumbs && breadcrumbs.items.length > 0;
 
   const itemCount = (searchable ? 1 : 0) + (actions?.length || 0);
-  
+
   let headerFilters: FilterConfig[] = [];
   let sidebarFilters: FilterConfig[] = [];
   let shouldShowFilterButton = false;
@@ -69,17 +71,13 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     }
   }
 
-  const filterKeys = useMemo(() => 
-    filters.map(filter => filter.key).join(','), 
-    [filters]
-  );
+  const filterKeys = useMemo(() => filters.map((filter) => filter.key).join(","), [filters]);
 
   useEffect(() => {
     const initial: Record<string, any> = {};
     filters.forEach((filter) => {
-      initial[filter.key] = appliedFilters[filter.key] !== undefined 
-        ? appliedFilters[filter.key] 
-        : filter.value;
+      initial[filter.key] =
+        appliedFilters[filter.key] !== undefined ? appliedFilters[filter.key] : filter.value;
     });
     setPendingFilters(initial);
   }, [appliedFilters, filterKeys]);
@@ -116,7 +114,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   const handleResetFilters = () => {
     const resetValues: Record<string, any> = {};
     filters.forEach((filter) => {
-      if (filter.type === 'daterange') {
+      if (filter.type === "daterange") {
         resetValues[filter.key] = { start: null, end: null };
       } else {
         resetValues[filter.key] = "";
@@ -129,14 +127,14 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
   const handleChipToggle = (chipKey: string) => {
     const newActiveChips = new Set(activeChips);
-    const chip = filterChips.find(c => c.key === chipKey);
-    
+    const chip = filterChips.find((c) => c.key === chipKey);
+
     if (newActiveChips.has(chipKey)) {
       newActiveChips.delete(chipKey);
     } else {
       newActiveChips.add(chipKey);
     }
-    
+
     setActiveChips(newActiveChips);
     chip?.onChange?.(newActiveChips.has(chipKey));
   };
@@ -145,93 +143,113 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     return filters.filter((filter) => {
       const value = appliedFilters[filter.key];
       if (!value) return false;
-      
-      if (filter.type === 'daterange') {
+
+      if (filter.type === "daterange") {
         return value.start || value.end;
       }
       return value !== "";
     }).length;
   };
 
-  const renderControls = (isBreadcrumbLayout: boolean) => {
+  const renderControls = (isBreadcrumbLayout: boolean = !!Object.keys(breadcrumbs || {}).length) => {
+    // LOGIC:
+    // 1. If Title Exists: We push everything to the Right (justify-end / ml-auto).
+    // 2. If No Title: We keep everything on the Left (justify-start / ml-0).
+    // This satisfies "Title on left most side, rest right" and "No Title -> Search left, rest left".
+
     const containerClass = isBreadcrumbLayout
-      ? "flex flex-wrap gap-2 items-center w-full lg:w-auto lg:ml-auto"
-      : "flex flex-col sm:flex-row gap-2 items-center w-full lg:w-auto";
+      ? cn(
+          "flex flex-wrap gap-2 items-center w-full lg:w-auto",
+          title ? "lg:ml-auto" : "" // Only push to right if title exists
+        )
+      : cn(
+          "flex flex-col sm:flex-row gap-2 items-center w-full",
+          title ? "justify-end" : "justify-between" // Right if title, Left if no title
+        );
 
     return (
       <div className={containerClass}>
-        {/* Search - h-8 consistent */}
+        {/* Search - Always first. 
+            Added sm:w-auto so it doesn't stretch full width on desktop when left aligned 
+        */}
         {searchable && (
-          <div className="relative shrink-0">
-            <Icon
-              name="Search"
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/50"
-            />
-            <input
+          <div className="relative shrink-0 w-full sm:w-auto">
+            <Input
               type="text"
+              title={searchPlaceholder}
               value={searchValue}
               onChange={handleSearchChange}
               placeholder={searchPlaceholder}
-              className="w-48 h-8 pl-8 pr-3 text-xs bg-transparent border border-base-content/20 rounded-md outline-none focus:border-primary transition-all"
+              showClearAll
+              leftElement={<Icon name="Search" className="w-4 h-4 text-disabled-content" />}
+              className="w-full sm:w-48 h-8 py-0.5 rounded-md truncate"
             />
           </div>
         )}
 
-        {/* Inline Filters - h-8 consistent */}
-        {headerFilters.map((filter) => (
-          <div key={filter.key} className="flex-shrink-0">
-            <FilterRenderer
-              filter={filter}
-              value={appliedFilters[filter.key] !== undefined 
-                ? appliedFilters[filter.key] 
-                : filter.value}
-              onChange={(value) => handleHeaderFilterChange(filter.key, value)}
-              size="sm"
-              variant="outlined"
-            />
-          </div>
-        ))}
+        {/* Wrapper for Filters & Actions 
+            Ensures they sit next to search without breaking flow 
+        */}
+        <div className="flex items-center gap-2 shrink-0 no-scrollbar">
+          {/* Inline Filters */}
+          {
+            headerFilters.map((filter) => (
+              <div key={filter.key} className="shrink-0">
+                <FilterRenderer
+                  filter={filter}
+                  value={
+                    appliedFilters[filter.key] !== undefined
+                      ? appliedFilters[filter.key]
+                      : filter.value
+                  }
+                  onChange={(value) => handleHeaderFilterChange(filter.key, value)}
+                  size="sm"
+                  variant="outlined"
+                />
+              </div>
+            ))}
 
-        {/* Filters Button - h-8 consistent */}
-        {shouldShowFilterButton && (
-          <div className="relative flex-shrink-0">
-            <Button
-              onClick={() => setIsSidebarOpen(true)}
-              variant="outline"
-              color="primary"
-              size="sm"
-              startIcon="SlidersHorizontal"
-              className="whitespace-nowrap border border-base-content/20 text-xs h-8 px-3"
-            >
-              Filters
-            </Button>
-            {getActiveFilterCount() > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-semibold">
-                {getActiveFilterCount()}
-              </span>
-            )}
-          </div>
-        )}
+          {/* Filters Button */}
+          {shouldShowFilterButton && (
+            <div className="relative shrink-0">
+              <Button
+                onClick={() => setIsSidebarOpen(true)}
+                variant="outline"
+                color="primary"
+                size="sm"
+                startIcon="SlidersHorizontal"
+                className="whitespace-nowrap border border-base-content/20 text-xs h-8 px-3"
+              >
+                Filters
+              </Button>
+              {getActiveFilterCount() > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-semibold">
+                  {getActiveFilterCount()}
+                </span>
+              )}
+            </div>
+          )}
 
-        {/* Actions - h-8 consistent */}
-        {actions && actions.length > 0 && actions?.map((action, idx) => (
-          <Button
-            key={idx}
-            onClick={action.onClick}
-            variant={action.variant === "primary" ? "filled" : "outline"}
-            color="primary"
-            size="sm"
-            startIcon={action.icon as IconName}
-            className={cn(
-              "whitespace-nowrap flex-shrink-0 text-xs h-8 px-3",
-              action.variant === "outlined",
-              action.className
-            )}
-          >
-            {action.label}
-          </Button>
-        ))}
+          {/* Actions */}
+          {actions &&
+            actions.length > 0 &&
+            actions.map((action, idx) => (
+              <Button
+                key={idx}
+                onClick={action.onClick}
+                variant={action.variant}
+                color="primary"
+                size="sm"
+                startIcon={action.icon as IconName}
+                className={cn(
+                  "whitespace-nowrap text-sm shrink-0 h-8 px-3",
+                  action.className
+                )}
+              >
+                {action.label}
+              </Button>
+            ))}
+        </div>
       </div>
     );
   };
@@ -247,27 +265,19 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
     return (
       <>
-        <div className="py-3 px-4 bg-white border-b border-base-content/10">
+        <div className={cn("py-3 px-4", classNameConfig?.container)}>
           <div className="space-y-2">
-            {title && (
-              <p className="text-base font-semibold text-base-content">
-                {title}
-              </p>
-            )}
+            {title && <p className="text-base font-semibold text-base-content w-full">{title}</p>}
 
             {breadcrumbs?.heading && (
-              <p className="text-xs text-base-content/60 font-medium tracking-wide">
-                {breadcrumbs.heading}
-              </p>
+              <p className="text-xs text-base-content/60 font-medium tracking-wide">{breadcrumbs.heading}</p>
             )}
 
             <div className="flex flex-col lg:flex-row gap-2 items-start lg:items-center justify-between">
               <div className="flex items-center gap-2 flex-wrap">
                 {breadcrumbs.items.map((item, index) => {
                   const colorClass = colorClasses[index % colorClasses.length];
-                  const showArrow =
-                    breadcrumbs.showSeparator &&
-                    index < breadcrumbs.items.length - 1;
+                  const showArrow = breadcrumbs.showSeparator && index < breadcrumbs.items.length - 1;
 
                   return (
                     <React.Fragment key={index}>
@@ -281,23 +291,19 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                       >
                         {item}
                       </button>
-                      {showArrow && (
-                        <span className="text-base-content/60 text-xs select-none">
-                          ›
-                        </span>
-                      )}
+                      {showArrow && <span className="text-base-content/60 text-xs select-none">›</span>}
                     </React.Fragment>
                   );
                 })}
               </div>
 
-              {renderControls(true)}
+              {renderControls()}
             </div>
           </div>
         </div>
 
         {filterChips.length > 0 && (
-          <div className="py-2 px-4 border-b border-base-content/10">
+          <div className="py-2 px-4 border-t border-base-content/10">
             <div className="flex items-center justify-end gap-2 flex-wrap">
               {filterChips.map((chip) => {
                 const isActive = activeChips.has(chip.key);
@@ -307,8 +313,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                     onClick={() => handleChipToggle(chip.key)}
                     className={cn(
                       "px-2.5 py-1 text-xs font-medium rounded cursor-pointer transition-colors",
-                      isActive 
-                        ? "bg-base-content/10 text-base-content/70 hover:bg-base-content/15" 
+                      isActive
+                        ? "bg-base-content/10 text-base-content/70 hover:bg-base-content/15"
                         : "bg-base-content/80 text-white"
                     )}
                   >
@@ -337,20 +343,22 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
   return (
     <>
-      <div className="py-3 px-4 bg-white border-b border-base-content/10">
+      <div className={cn("py-3 px-4", classNameConfig?.container)}>
         <div className="flex flex-col lg:flex-row gap-2 items-start lg:items-center justify-between">
+          {/* Title - Renders on Left */}
           {title && (
-            <p className="text-lg font-semibold text-base-content ">
+            <span className={cn("text-lg font-semibold text-base-content w-full whitespace-nowrap lg:w-auto", classNameConfig?.title)}>
               {title}
-            </p>
+            </span>
           )}
 
-          {renderControls(false)}
+          {/* Controls - Renders on Right (if title exists) or Left (if no title) */}
+          {renderControls()}
         </div>
       </div>
 
       {filterChips.length > 0 && (
-        <div className="py-2 px-4 border-b border-base-content/10">
+        <div className="py-2 px-4 border-t border-base-content/10">
           <div className="flex items-center justify-end gap-2 flex-wrap">
             {filterChips.map((chip) => {
               const isActive = activeChips.has(chip.key);
@@ -360,8 +368,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
                   onClick={() => handleChipToggle(chip.key)}
                   className={cn(
                     "px-2.5 py-1 text-xs font-normal rounded cursor-pointer transition-colors",
-                    isActive 
-                      ? "bg-secondary-500/30 text-base-content/80" 
+                    isActive
+                      ? "bg-secondary-500/30 text-base-content/80"
                       : "bg-secondary-500/10 text-base-content/80"
                   )}
                 >

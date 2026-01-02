@@ -4,16 +4,17 @@ import { MediaPicker } from "@/components/media-picker/MediaPicker";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
 
 const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
-  const handlePincodeBlur = async () => {
-    const result = await getCityStateFromPincode(data.pinCode);
+  const handleAreaDetectionFromPincode = async (value: string) => {
+    if (value.length !== 6) return;
+
+    const result = await getCityStateFromPincode(value);
     if (result?.city && result?.state) {
-      onChange({ ...data, city: result.city, state: result.state });
+      onChange({ ...data, pinCode: value, city: result.city, state: result.state });
     }
   };
 
   return (
     <div className="bg-base-1 rounded-lg flex flex-col md:grid md:grid-cols-2 gap-y-4 gap-x-2 ">
-      {/* <h4 className="font-semibold text-base-content">Business Information</h4> */}
       <Input
         label="Business Name"
         placeholder="Enter your business name"
@@ -44,8 +45,10 @@ const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
         placeholder="Enter your pin code"
         type="number"
         value={data.pinCode || ""}
-        onChange={(e) => onChange({ ...data, pinCode: e.target.value })}
-        onBlur={handlePincodeBlur}
+        onChange={(e) => {
+          handleAreaDetectionFromPincode(e.target.value);
+          onChange({ ...data, pinCode: e.target.value });
+        }}
         error={errors.pinCode}
         required
       />
@@ -67,43 +70,35 @@ const BusinessDetailsSection: React.FC<BusinessDetailsStepProps> = ({ data, onCh
       />
 
       <MediaPicker
-        // value={[{id: data.panCardId ?? '', s3Url: data.panCard ?? ''}]}
         label="PAN Card"
-        ids={data.panCardId}
         urls={data.panCard}
         onChange={(items) => {
           const selectedItem = items.length > 0 ? items[items.length - 1] : null;
           onChange({
             ...data,
-            panCardId: selectedItem?.id || "",
             panCard: selectedItem?.s3Url || "",
           });
         }}
         maxFiles={1}
-        itemClassName="max-h-[20dvh] w-full"
-        orientation="vertical"
+        itemClassName="w-full"
         required
-        error={errors.panCardId}
+        error={errors.panCard}
       />
 
       <MediaPicker
-        // value={[{id: data.registrationCertificateId ?? '', s3Url: data.registrationCertificate ?? ''}]}
         label="Business Registration"
-        ids={data.registrationCertificateId}
         urls={data.registrationCertificate}
         onChange={(items) => {
           const selectedItem = items.length > 0 ? items[items.length - 1] : null;
           onChange({
             ...data,
-            registrationCertificateId: selectedItem?.id || "",
             registrationCertificate: selectedItem?.s3Url || "",
           });
         }}
         maxFiles={1}
-        itemClassName="max-h-[20dvh] w-full"
-        orientation="vertical"
+        itemClassName="w-full"
         required
-        error={errors.registrationCertificateId}
+        error={errors.registrationCertificate}
       />
     </div>
   );

@@ -19,6 +19,9 @@ import { MinimalMediaProps } from "@/components/media-picker/types/media.types";
 import { useGetBasicDetailsQuery, useSaveBasicDetailsMutation } from "./api/queryHooks";
 import { BasicDetailsFormValues } from "./types/basicDetails.types";
 import { useProductDetailsQuery } from "../product-header/api/queryHooks";
+import { useGetCategoryRequirementsQuery } from "@/features/category/api/queryHooks";
+import { cn } from "@/utils/helpers";
+import { genderOptions } from "@/constants/genderOptions";
 
 // --- Constants ---
 const TAX_SLABS = [
@@ -37,11 +40,7 @@ const MOCK_TAGS = [
   { id: "women", name: "Women Fashion", color: "#FFEAA7" },
 ];
 
-const GENDER_OPTIONS = [
-  { label: "Male", value: "Male" },
-  { label: "Female", value: "Female" },
-  { label: "Other", value: "Other" },
-];
+const GENDER_OPTIONS = genderOptions
 
 interface Props {
   productId: string;
@@ -56,15 +55,18 @@ interface BasicDetailsState {
   modelName: string;
   isFragile: boolean;
   targetGender: string;
-  targetAgeGroup: string;
+  targetAge: string;
   manufacturerName: string;
   packerDetails: string;
   importerDetails: string;
   tags: string[];
-  totalStockQty: string; // Kept as string for Input handling
   hsnCode: string;
   gstTaxSlab: string;
   cessCode: string;
+  customFields: Array<{
+    groupName: string;
+    fields: Record<string, string>;
+  }>;
 }
 
 export const BasicProductDetails = ({ productId }: Props) => {
@@ -72,10 +74,12 @@ export const BasicProductDetails = ({ productId }: Props) => {
   const STORAGE_KEY = `basic_details_draft_${productId}`;
 
   // 1. API Hooks
-  // const { data: apiData, isLoading } = useGetBasicDetailsQuery(productId);
   const { data: apiData, isLoading } = useProductDetailsQuery(productId);
-  console.log("Api data :", apiData);
-  const hasVariants = apiData?.hasVariants ?? false
+  const hasVariants = apiData?.hasVariants ?? false;
+
+  // Fetch category requirements for mandatory fields
+  const categoryId = apiData?.categories?.[0]?.id;
+  const { data: categoryRequirements } = useGetCategoryRequirementsQuery(categoryId ? [categoryId] : []);
 
   const saveMutation = useSaveBasicDetailsMutation(productId);
 
@@ -88,23 +92,31 @@ export const BasicProductDetails = ({ productId }: Props) => {
     modelName: "",
     isFragile: false,
     targetGender: "",
-    targetAgeGroup: "",
+    targetAge: "",
     manufacturerName: "",
     packerDetails: "",
     importerDetails: "",
     tags: [],
-    totalStockQty: "",
     hsnCode: "",
     gstTaxSlab: "",
     cessCode: "",
+    customFields: [],
   });
 
   const [bulletInput, setBulletInput] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // 3. Prefill Logic
+  // 3. Prefill Logic - handle both new products and existing products
   useEffect(() => {
     if (apiData) {
+      // Transform customFields from API format to form format
+      const transformedCustomFields = apiData.customFields
+        ? apiData.customFields.map((group) => ({
+            groupName: group.groupName,
+            fields: group?.fields,
+          }))
+        : [];
+
       setFormData({
         description: apiData.description || "",
         bulletPoints: apiData.bulletPoints || [],
@@ -112,19 +124,36 @@ export const BasicProductDetails = ({ productId }: Props) => {
         modelNumber: apiData.modelNumber || "",
         modelName: apiData.modelName || "",
         isFragile: apiData.isFragile || false,
-        targetGender: apiData.targetGender || "",
-        targetAgeGroup: apiData.targetAge || "",
+        targetGender: apiData.variants?.[0]?.targetGender || "",
+        targetAge: apiData.variants?.[0]?.targetAge || "",
         manufacturerName: apiData.manufacturerName || "",
         packerDetails: apiData.packerDetails || "",
         importerDetails: apiData.importerDetails || "",
         tags: apiData.tags || [],
-        totalStockQty: apiData.quantity ? String(apiData.quantity) : "",
         hsnCode: apiData.hsnCode || "",
         gstTaxSlab: apiData.gstRate?.toString() ?? "",
         cessCode: apiData.cessCode || "",
+        customFields: transformedCustomFields,
       });
     }
   }, [apiData]);
+
+  // 4. Initialize customFields structure when category requirements are fetched (for new products)
+  useEffect(() => {
+    if (categoryRequirements?.mandatoryProductFields && !apiData?.customFields) {
+      const initialCustomFields = categoryRequirements.mandatoryProductFields.map((group) => ({
+        groupName: group.groupName,
+        fields: group.fieldNames.reduce(
+          (acc, fieldName) => {
+            acc[fieldName] = "";
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
+      }));
+      setFormData((prev) => ({ ...prev, customFields: initialCustomFields }));
+    }
+  }, [categoryRequirements?.mandatoryProductFields, apiData?.customFields]);
 
   // 3. Prefill Logic with Session Storage check
   // useEffect(() => {
@@ -150,7 +179,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
   //       modelName: apiData.modelName || "",
   //       isFragile: apiData.isFragile || false,
   //       targetGender: apiData.targetGender || "",
-  //       targetAgeGroup: apiData.targetAgeGroup || "",
+  //       targetAge: apiData.targetAge || "",
   //       manufacturerName: apiData.manufacturerName || "",
   //       packerDetails: apiData.packerDetails || "",
   //       importerDetails: apiData.importerDetails || "",
@@ -233,7 +262,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
     const payload: any = {
       description: validData.description,
       bulletPoints: validData.bulletPoints,
-      mediaUrls: validData.mediaUrls, // Use URLs as per doc
+      mediaUrls: validData.mediaUrls,
       modelNumber: validData.modelNumber,
       modelName: validData.modelName,
       isFragile: validData.isFragile,
@@ -242,19 +271,31 @@ export const BasicProductDetails = ({ productId }: Props) => {
       importerDetails: validData.importerDetails,
       tags: validData.tags,
       hsnCode: validData.hsnCode,
-      gstRate: Number(validData?.gstTaxSlab?.replace("%", "")), // Map string slab to number
+      gstRate: Number(validData?.gstTaxSlab?.replace("%", "") || 0),
       cessCode: validData.cessCode || "",
-      targetAge: validData.targetAgeGroup,
-      targetGender: validData.targetGender,
-      quantity: Number(validData.totalStockQty),
     };
+
+    // Add variants array only if hasVariants is false
+    if (!hasVariants) {
+      payload.variants = [
+        {
+          targetAge: validData.targetAge,
+          targetGender: validData.targetGender,
+        },
+      ];
+    }
+
+    // Add customFields if present
+    if (validData.customFields && validData.customFields.length > 0) {
+      payload.customFields = validData.customFields;
+    }
 
     saveMutation.mutate(payload, {
       onSuccess: () => {
         toast.success("Product details saved successfully");
-        if(hasVariants){
+        if (hasVariants) {
           navigate({ to: `/products/product-form/${productId}/variations` });
-        }else{
+        } else {
           navigate({ to: `/products/product-form/${productId}/pricing-and-shipping` });
         }
       },
@@ -267,7 +308,7 @@ export const BasicProductDetails = ({ productId }: Props) => {
   if (isLoading) return <div className="p-10 text-center">Loading details...</div>;
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
       {/* --- LEFT COLUMN (General Info) --- */}
       <div className="lg:col-span-2 space-y-6">
         {/* General Details Box */}
@@ -329,11 +370,11 @@ export const BasicProductDetails = ({ productId }: Props) => {
                       className="flex items-center gap-2 text-sm bg-base-2 p-2 rounded-lg animate-in fade-in"
                     >
                       <span className="text-primary">•</span>
-                      <span className="flex-1 text-body-content/80">{point}</span>
+                      <span className="flex-1 text-xs text-base-content/80">{point}</span>
                       <button
                         type="button"
                         onClick={() => removeBulletPoint(index)}
-                        className="text-error hover:text-error/80 p-1"
+                        className="text-error hover:text-error/80 hover:bg-error/10 rounded-md hover:cursor-pointer p-1"
                       >
                         <Icon name="X" size={14} />
                       </button>
@@ -360,7 +401,6 @@ export const BasicProductDetails = ({ productId }: Props) => {
               containerClassName={
                 formData.mediaUrls.length > 0 ? "p-2 border border-body-content/20 rounded-2xl" : ""
               }
-              iconConfig={{ size: "xs" }}
               orientation="grid"
               // gridConfig={{ cols: 3, gap: "gap-4" }}
               error={errors.mediaUrls}
@@ -428,30 +468,32 @@ export const BasicProductDetails = ({ productId }: Props) => {
       {/* --- RIGHT COLUMN (Tags, Audience, Legal) --- */}
       <div className="lg:col-span-1 space-y-6">
         {/* Target Audience */}
-        <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Target Audience</h3>
-          <Separator className="p-0 m-0" />
-          <div className="p-5 space-y-4">
-            <Dropdown
-              label="Target Gender"
-              options={GENDER_OPTIONS}
-              value={formData.targetGender}
-              onChange={(val) => handleValueChange("targetGender", val)}
-              placeholder="Select Gender"
-              fullWidth
-              error={errors.targetGender}
-            />
-            <Input
-              name="targetAgeGroup"
-              label="Target Age Group"
-              placeholder="e.g. 18-35"
-              value={formData.targetAgeGroup}
-              onChange={handleInputChange}
-              fullWidth
-              error={errors.targetAgeGroup}
-            />
+        {!hasVariants && (
+          <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+            <h3 className="p-5 font-semibold text-base text-base-content">Target Audience</h3>
+            <Separator className="p-0 m-0" />
+            <div className="p-5 space-y-4">
+              <Dropdown
+                label="Target Gender"
+                options={GENDER_OPTIONS}
+                value={formData.targetGender}
+                onChange={(val) => handleValueChange("targetGender", val)}
+                placeholder="Select Gender"
+                fullWidth
+                error={errors.targetGender}
+              />
+              <Input
+                name="targetAge"
+                label="Target Age"
+                placeholder="e.g. 18-35"
+                value={formData.targetAge}
+                onChange={handleInputChange}
+                fullWidth
+                error={errors.targetAge}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tags */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
@@ -471,25 +513,12 @@ export const BasicProductDetails = ({ productId }: Props) => {
           </div>
         </div>
 
-        {/* Inventory & Legal */}
+        {/* Legal Information */}
         <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
-          <h3 className="p-5 font-semibold text-base text-base-content">Inventory & Legal</h3>
+          <h3 className="p-5 font-semibold text-base text-base-content">Legal Information</h3>
           <Separator className="p-0 m-0" />
 
           <div className="p-5 space-y-4">
-            <Input
-              name="totalStockQty"
-              label="Total Stock Quantity"
-              type="number"
-              value={formData.totalStockQty}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              error={errors.totalStockQty}
-            />
-
-            <Separator />
-
             <Input
               name="hsnCode"
               label="HSN Code"
@@ -508,7 +537,6 @@ export const BasicProductDetails = ({ productId }: Props) => {
               onChange={(val) => handleValueChange("gstTaxSlab", val)}
               placeholder="Select Slab"
               fullWidth
-              // required
               error={errors.gstTaxSlab}
             />
 
@@ -521,6 +549,43 @@ export const BasicProductDetails = ({ productId }: Props) => {
             />
           </div>
         </div>
+
+        {/* --- CUSTOM FIELDS SECTION (Full Width) --- */}
+        {categoryRequirements?.mandatoryProductFields &&
+          categoryRequirements.mandatoryProductFields.length > 0 && (
+            <div className="bg-base-1 rounded-xl shadow-sm border border-base-content/10">
+              <h3 className="p-5 font-semibold text-base text-base-content">Additional Mandatory Fields</h3>
+              <Separator className="p-0 m-0" />
+
+              <div className={cn("p-5 space-y-6 overflow-y-auto", hasVariants ? "max-h[45dvh]" : "max-h-[70dvh]")}>
+                {formData.customFields.map((group, groupIndex) => (
+                  <div key={groupIndex} className="space-y-4">
+                    <h4 className="font-semibold text-sm text-base-content bg-base-2 p-2 rounded-md border-l-4 border-primary">
+                      {group.groupName}
+                    </h4>
+                    <div className="space-y-4">
+                      {Object.keys(group.fields).map((fieldName) => (
+                        <Input
+                          key={fieldName}
+                          label={fieldName}
+                          placeholder={`Enter ${fieldName}`}
+                          value={group.fields[fieldName]}
+                          onChange={(e) => {
+                            const newCustomFields = [...formData.customFields];
+                            newCustomFields[groupIndex].fields[fieldName] = e.target.value;
+                            setFormData((prev) => ({ ...prev, customFields: newCustomFields }));
+                          }}
+                          fullWidth
+                          required
+                          error={errors[`customFields.${groupIndex}.fields.${fieldName}`]}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
       </div>
 
       {/* --- FOOTER ACTION --- */}

@@ -11,6 +11,7 @@ interface LogoutProps {
 
 const LogoutDialog: React.FC<LogoutProps> = (props) => {
   const { close, isOpen } = props;
+  const {clearAuth} = useAuthStore();
 
   // const loginFail = useAuthStore((s) => s.loginFail);
   // const clearUser = useAuthStore((s) => s.clearUser);
@@ -18,6 +19,7 @@ const LogoutDialog: React.FC<LogoutProps> = (props) => {
 
   const handleLogout = () => {
     TokenUtil.removeToken();
+    clearAuth();
     // clearUser();
     // loginFail();
     router.navigate({ to: ROUTES.LOGIN });

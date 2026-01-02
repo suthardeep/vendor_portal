@@ -1,5 +1,5 @@
 import { cn } from "@/utils/helpers";
-import React, { forwardRef, type InputHTMLAttributes, ReactNode, useState } from "react";
+import React, { forwardRef, type InputHTMLAttributes, ReactNode, useEffect, useState } from "react";
 import { Label } from "./Label";
 import { ErrorText } from "./ErrorText";
 import { Icon, IconName } from "./Icon";
@@ -28,6 +28,8 @@ export interface InputProps extends InputHTMLAttributesWithoutConflicts {
   formProps?: any;
   numericOnly?: boolean;
   maxLength?: number;
+
+  showClearAll?: boolean;
 
   tooltip?: string | ReactNode;
   tooltipIcon?: IconName;
@@ -62,8 +64,7 @@ const backgroundClasses = {
   transparent: "bg-transparent",
 };
 
-const disabledClasses =
-  " disabled:text-disabled-content disabled:cursor-not-allowed disabled:opacity-70";
+const disabledClasses = " disabled:text-disabled-content disabled:cursor-not-allowed disabled:opacity-70";
 
 const toggleButtonClasses =
   "cursor-pointer transition-colors duration-200 focus:outline-none text-body-content hover:text-base-content";
@@ -95,6 +96,7 @@ const Input = forwardRef<InputRef, InputProps>(
       formProps,
       numericOnly = false,
       maxLength,
+      showClearAll = false,
       extraLabel,
       extraLabelPosition = "top-right",
       extraLabelClassName,
@@ -111,6 +113,13 @@ const Input = forwardRef<InputRef, InputProps>(
     ref
   ) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [hasValue, setHasValue] = useState(() => !!props.value || !!props.defaultValue);
+
+    useEffect(() => {
+      if (props.value !== undefined) {
+        setHasValue(!!props.value);
+      }
+    }, [props.value]);
 
     const inputType = type === "password" && showPassword ? "text" : type;
 
@@ -151,6 +160,29 @@ const Input = forwardRef<InputRef, InputProps>(
       setShowPassword((prev) => !prev);
     };
 
+    const handleClear = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Logic to clear input reliably for both Controlled, Uncontrolled and RHF forms
+      const inputWrapper = e.currentTarget.closest("div");
+      const input = inputWrapper?.parentElement?.querySelector("input");
+
+      if (input) {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value"
+        )?.set;
+        nativeInputValueSetter?.call(input, "");
+
+        const event = new Event("input", { bubbles: true });
+        input.dispatchEvent(event);
+        input.focus();
+      }
+
+      setHasValue(false);
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       let value = e.target.value;
 
@@ -165,6 +197,7 @@ const Input = forwardRef<InputRef, InputProps>(
         e.target.value = value;
       }
 
+      setHasValue(!!value);
       onChange?.(e);
     };
 
@@ -210,6 +243,7 @@ const Input = forwardRef<InputRef, InputProps>(
               ref={ref}
               name={name}
               type={inputType}
+              onWheel={(e) => e.currentTarget.blur()}
               inputMode={numericOnly || type === "tel" ? "numeric" : undefined}
               className={cn(
                 "appearance-none w-full bg-transparent transition-colors outline-none read-only:cursor-default",
@@ -230,8 +264,25 @@ const Input = forwardRef<InputRef, InputProps>(
             />
             {(rightElement ||
               (togglePassword && type === "password") ||
-              (isVerified && showStatus && !error)) && (
+              (isVerified && showStatus && !error) ||
+              (showClearAll && hasValue && !disabled)) && (
               <div className={cn("flex items-center pr-2", rightElementClassname)}>
+                {showClearAll && hasValue && !disabled && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    color="text-body-content"
+                    className={cn("cursor-pointer p-1 hover:bg-primary-50 rounded-md", rightElementClassname)} // Add margin if there are other right elements
+                    tabIndex={-1}
+                    aria-label="Clear input"
+                  >
+                    <Icon
+                      name="X"
+                      className="text-body-content"
+                      size={inputSize === "sm" ? 14 : inputSize === "md" ? 16 : 20}
+                    />
+                  </button>
+                )}
                 {togglePassword && type === "password" ? (
                   <button
                     type="button"

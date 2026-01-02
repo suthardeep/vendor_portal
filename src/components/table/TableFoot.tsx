@@ -1,16 +1,16 @@
 import React from "react";
 import { cn } from "@/utils/helpers";
 import { Button } from "../base/Button";
-import { ActionButton } from "./table.types";
+import { ActionButton, ClassNameConfig } from "./table.types";
 
 interface TableFooterProps {
   actions?: ActionButton[];
-  className?: string;
+  classNameConfig?: ClassNameConfig["tableFooter"];
 }
 
 export const TableFooter: React.FC<TableFooterProps> = ({
   actions,
-  className,
+  classNameConfig,
 }) => {
   if (!actions || actions.length === 0) return null;
 
@@ -18,7 +18,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
     <div
       className={cn(
         "px-4 py-2 border-t border-base-content/10 bg-base-1",
-        className
+        classNameConfig?.container
       )}
     >
       <div className="flex w-full justify-end">
@@ -27,7 +27,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
             <Button
               key={idx}
               onClick={action.onClick}
-              variant={action.variant === "primary" ? "filled" : "outline"}
+              variant={action.variant}
               color="primary"
               size="xs"
               startIcon={
@@ -36,8 +36,9 @@ export const TableFooter: React.FC<TableFooterProps> = ({
                   : action.icon
               }
               className={cn(
-                "whitespace-nowrap text-[11px] h-7 px-2.5 flex-shrink-0",
-                action.variant === "outlined" && "border border-base-content/20"
+                "whitespace-nowrap text-[11px] h-7 px-2.5 shrink-0",
+                action.variant === "outline" && "border border-base-content/20",
+                classNameConfig?.action
               )}
             >
               {action.label}

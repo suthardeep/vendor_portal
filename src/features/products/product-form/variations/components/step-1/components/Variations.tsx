@@ -11,7 +11,7 @@ import { ADDITIONAL_VARIATIONS, DEFAULT_SIZES } from "../../../constants/staticD
 import { Switch } from "@/components/base/Switch";
 import { Separator } from "@/components/base/Separator";
 import { Button } from "@/components/base/Button";
-import { CustomSizeChart, VariationsProp, ColorValue, SizeObject } from "../../../types/variations.types";
+import { CustomSizeChart, VariationCreationState, ColorValue, SizeObject } from "../../../types/variations.types";
 
 const Chip = ({
   children,
@@ -54,8 +54,8 @@ const Chip = ({
 };
 
 interface VariationsProps {
-    variations: VariationsProp;
-    onUpdate: (val: VariationsProp) => void;
+    variations: VariationCreationState;
+    onUpdate: (val: VariationCreationState) => void;
 }
 
 const Variations = ({ variations, onUpdate }: VariationsProps) => {

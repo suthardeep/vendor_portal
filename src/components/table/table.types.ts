@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { IconName } from '../base/Icon';
 import { ChipColor } from "../base/Chip";
 import { PaginationMeta } from '@/types/baseApi';
+import { ButtonProps } from '../base/Button';
 
 
 export interface SubColumnDef<T = any> {
@@ -14,6 +15,7 @@ export interface SubColumnDef<T = any> {
   cellClassName?: string;
   subColumns?: SubColumnDef<T>[];
   render?: (row: T, index: number) => ReactNode;
+  valueFormatter?: (value: any, row: T, index: number) => string;
   cellType?: 'text' | 'image' | 'badge' | 'rating' | 'input' | 'custom';
   imageConfig?: ImageCellConfig;
   badgeConfig?: BadgeCellConfig;
@@ -30,6 +32,7 @@ export interface ColumnDef<T = any> {
   cellClassName?: string;
   subColumns?: SubColumnDef<T>[];
   render?: (row: T, index: number) => ReactNode;
+  valueFormatter?: (value: any, row: T, index: number) => string;
   cellType?: 'text' | 'image' | 'badge' | 'rating' | 'input' | 'custom';
   imageConfig?: ImageCellConfig;
   badgeConfig?: BadgeCellConfig;
@@ -42,7 +45,10 @@ export interface ImageCellConfig {
   altKey?: string;
   size?: 'sm' | 'md' | 'lg';
   fallback?: string;
+  className?: string;
   rounded?: boolean;
+  align?: 'left' | 'center' | 'right';
+  expandOnClick?: boolean;
 }
 
 export interface BadgeCellConfig {
@@ -130,10 +136,9 @@ export type FilterConfig =
   | NumberFilterConfig;
 
 
-export interface ActionButton {
+export interface ActionButton extends ButtonProps {
   label: string;
   icon?: string;
-  variant?: 'primary' | 'secondary' | 'outlined';
   onClick?: () => void;
   className?:string
 }
@@ -150,7 +155,7 @@ export interface BreadcrumbConfig {
 
 export interface ActionMenuItem {
   label: string;
-  icon?: IconName;
+  icon?: string;
   onClick?: (row: any) => void;
   variant?: 'default' | 'danger';
 }
@@ -160,6 +165,40 @@ export interface ExpandedRowConfig<T> {
   render: (row: T) => ReactNode;
 }
 
+export interface ClassNameConfig {
+  table?: {
+    mainContainer?: string;
+    tableContainer?: string;
+    table?: string;
+  };
+  tableHeader?: {
+    container?: string;
+    title?: string;
+  };
+  tableHead?:{
+    text?: string;
+    container?:string;
+  };
+  tableRow?:{
+    cellText?: string;
+    container?:string;
+    cell?:string;
+  };
+  tableBody?:{
+    container?:string;
+  };
+  tablePagination?:{
+    container?: string;
+    text?: string;
+    box?:string;
+  };
+  tableFooter?:{
+    container?: string;
+    action?: string;
+  }
+}
+
+export type SortDirection = "asc" | "desc" | "default"
 
 export interface TableProps<T = any> {
   data: T[];
@@ -181,7 +220,7 @@ export interface TableProps<T = any> {
   rowActions?: ActionMenuItem[];
   
   sortable?: boolean;
-  onSort?: (key: string, direction: 'asc' | 'desc') => void;
+  onSort?: (key: string | null, direction: SortDirection) => void;
   
   
   striped?: boolean;
@@ -209,4 +248,6 @@ export interface TableProps<T = any> {
   stickyPagination?: boolean;
 
   maxHeight?: string;
+
+  classNameConfig?: ClassNameConfig;
 }

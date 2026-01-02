@@ -54,9 +54,11 @@ onboarding:{
     update: (productId: string) => `products/${productId}/variations`, // PUT
     getVariants: (productId: string) => `products/${productId}/variants`, // GET
     updateVariantDetails: (productId: string) => `products/variants/details`, // PATCH
-    updateVariantPricing: (productId: string) => `products/variants/pricing`, // PATCH
-    getVariantPriceBreakdown: (productId: string) => `products/${productId}/variants/price-breakdown`, // GET
-    getVariantPriceBreakdownById: (variantId: string) => `products/variants/${variantId}/price-breakdown`, // GET
+    updateVariantPricing: `products/variants/pricing`, // PATCH
+    calculatePricing: "products/variants/calculate-pricing", // POST
+  },
+  category :{
+    fetchRequirements: () => "categories/requirements"
   }
 
 } as const;

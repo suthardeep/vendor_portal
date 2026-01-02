@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useRef, useEffect } from "react";
+import React, { forwardRef, useState, useRef, useEffect, useMemo } from "react";
 import { cn } from "@/utils/helpers";
 import { Label } from "./Label";
 import { ErrorText } from "./ErrorText";
@@ -328,6 +328,20 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
     }
   };
 
+  const hasSpaceBelow = useMemo(() => {
+        if (!isOpen || !containerRef.current) return true;
+  
+        const rect = containerRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+  
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+  
+        const DROPDOWN_HEIGHT = 300; // px (or dynamic)
+  
+        return spaceBelow >= DROPDOWN_HEIGHT || spaceBelow >= spaceAbove;
+      }, [isOpen]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -412,7 +426,7 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
             <div
               key={chip}
               className={cn(
-                "flex items-center gap-1.5 rounded-md bg-primary-100 text-body-content",
+                "flex items-center gap-1.5 rounded-md bg-base-3 text-body-content",
                 chipSizeClasses[currentChipSize],
                 chipClassName
               )}
@@ -422,9 +436,9 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
                 <button
                   type="button"
                   onClick={() => handleRemoveChip(chip)}
-                  className="hover:text-error transition-colors"
+                  className="group transition-colors p-0.5 hover:cursor-pointer rounded-md"
                 >
-                  <Icon name="X" size={14} />
+                  <Icon name="X" size={14} className="text-body-content group-hover:text-error" />
                 </button>
               )}
             </div>
@@ -443,7 +457,7 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
           placeholder={value.length === 0 ? placeholder : ""}
           disabled={disabled || (maxChips ? value.length >= maxChips : false)}
           className={cn(
-            "flex-1 min-w-[120px] bg-transparent outline-none text-body-content placeholder:text-base-content/30",
+            "flex-1 min-w-[120px] bg-transparent outline-none text-body-content placeholder:text-disabled-content",
             sizeClasses[inputSize],
             "p-0"
           )}
@@ -454,9 +468,9 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
           <button
             type="button"
             onClick={handleClearAll}
-            className="ml-auto p-1 hover:text-error transition-colors"
+            className="ml-auto p-0.5 hover:cursor-pointer hover:bg-error/10 rounded-md group transition-colors"
           >
-            <Icon name="X" size={16} />
+            <Icon name="X" size={16} className="text-body-content group-hover:text-error" />
           </button>
         )}
       </div>
@@ -465,12 +479,12 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
       {shouldShowDropdown && (
         <div
           className={cn(
-            "absolute z-50 w-full mt-1 border border-base-content/40 rounded-lg shadow-lg bg-base-1",
-            "top-full"
+            "absolute z-50 mt-1 border border-base-content/10 w-full min-w-44 p-1.5 rounded-lg shadow-lg bg-base-1",
+            hasSpaceBelow ? "top-full mt-1" : "bottom-full -mb-4 "
           )}
           style={{ maxHeight }}
         >
-          <div className="overflow-y-auto" style={{ maxHeight }}>
+          <div className="overflow-y-auto flex flex-col gap-1" style={{ maxHeight }}>
             {(fetchLoading || isLoading) && availableOptions.length === 0 ? (
               <div className="p-4 text-center text-base-content/40 text-sm">
                 Loading...
@@ -504,14 +518,15 @@ const DropdownWithChips = forwardRef<HTMLDivElement, DropdownWithChipsProps>(({
                       onClick={() => handleAddChip(option)}
                       className={cn(
                         "flex items-center justify-between px-3 py-2 cursor-pointer transition-colors",
-                        "hover:bg-primary-100 text-body-content",
-                        index === 0 && "rounded-t-lg",
-                        index === availableOptions.length - 1 && !hasMore && "rounded-b-lg"
+                        "rounded-md",
+                        "hover:bg-base-3/80",
+                        // index === 0 && "rounded-t-lg",
+                        // index === availableOptions.length - 1 && !hasMore && "rounded-b-lg"
                       )}
                     >
-                      <span className="text-sm">{option}</span>
+                      <span className="text-sm text-body-content">{option}</span>
                       {isSelected && (
-                        <Icon name="Check" size={16} className="text-success" />
+                        <Icon name="Check" size={16} className="text-base-content" />
                       )}
                     </div>
                   );

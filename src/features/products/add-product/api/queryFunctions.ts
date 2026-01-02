@@ -1,21 +1,11 @@
 import apiService from "@/api/apiService";
-import { 
-  CategoryApiResponse, 
-  CreateProductPayload, 
-  CreateProductResponse, 
-  BrandsDataResponse 
-} from "../types/addProduct.types";
+import { CreateProductPayload, CreateProductResponse, BrandsDataResponse } from "../types/addProduct.types";
 import { apiPaths } from "@/api/apiPaths";
+import { BaseResponse } from "@/api/types/response.types";
 
-export const getCategories = async (level: string, parentId?: string): Promise<CategoryApiResponse> => {
-  return apiService({
-    method: "GET",
-    endpoint: apiPaths.products.categories,
-    params: { level, parentId },
-  });
-};
-
-export const createProduct = async (data: CreateProductPayload): Promise<CreateProductResponse> => {
+export const createProduct = async (
+  data: CreateProductPayload
+): Promise<BaseResponse<CreateProductResponse>> => {
   return apiService({
     method: "POST",
     data,
@@ -23,9 +13,9 @@ export const createProduct = async (data: CreateProductPayload): Promise<CreateP
   });
 };
 
-export const getBrands = async () => {
+export const getBrands = async (): Promise<BrandsDataResponse> => {
   return apiService({
     method: "GET",
     endpoint: apiPaths.products.brands,
-  }) as Promise<BrandsDataResponse>;
+  });
 };

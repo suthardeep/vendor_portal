@@ -6,6 +6,7 @@ module.exports = {
       boxShadow: {
         card: '0px 2px 4px -2px rgba(0,0,0,0.06), 0px 4px 6px -1px rgba(0,0,0,0.1)',
       },
+      
       keyframes: {
         slideIn: {
           "0%": { transform: "translateY(100%)" },

@@ -1,21 +1,19 @@
 import { Input } from "@/components/base/Input";
-import { BusinessDetailsType } from "../../../schemas/registration.schema";
 import { MobileNumberInput } from "@/components/base/MobileNumberInput";
 import { Checkbox } from "@/components/base/Checkbox";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useState } from "react";
 import { MediaPicker } from "@/components/media-picker/MediaPicker";
 import { BusinessDetailsStepProps } from "../../../types/registration.types";
-import { MediaItem } from "@/components/media-picker/types/media.types";
 
 const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onChange, errors }) => {
   // Fetch user object from the global store
   const { user } = useAuthStore();
-  console.log("User: ", user)
   const [isSameAsBeforeChecked, setIsSameAsBeforeChecked] = useState(false);
 
   const handleSameAsBeforeClick = (checked: boolean) => {
     setIsSameAsBeforeChecked(checked);
+
     if (checked) {
       // Map user details from the store (user is optional, fields can be null)
       onChange({
@@ -28,9 +26,9 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
     } else {
       onChange({
         ...data,
-        authorisedPersonName: "",
-        authorisedPersonEmail: "",
-        authorisedPersonPhoneNumber: "",
+        authorisedPersonName: user?.authorisedPersonDetails?.name ??  "",
+        authorisedPersonEmail: user?.authorisedPersonDetails?.email ??  "",
+        authorisedPersonPhoneNumber: user?.authorisedPersonDetails?.mobileNumber.replace("+91", "")  ??  "",
       });
     }
   };
@@ -41,7 +39,6 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         label="Same as before"
         onChange={handleSameAsBeforeClick}
         checked={isSameAsBeforeChecked}
-        // containerClassName="col-span-2"
         required
       />
       <Input
@@ -78,15 +75,12 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
       />
 
       <MediaPicker
-        // value={[{id: data.authorisedPersonPanCardId ?? '', s3Url: data.authorisedPersonPanCard ?? ''}]}
         label="Upload PAN Card"
-        ids={data.authorisedPersonPanCardId}
         urls={data.authorisedPersonPanCard}
         onChange={(items) => {
           const selectedItem = items.length > 0 ? items[items.length - 1] : null;
           onChange({
             ...data,
-            authorisedPersonPanCardId: selectedItem?.id || "",
             authorisedPersonPanCard: selectedItem?.s3Url || "",
           });
         }}
@@ -94,21 +88,16 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         itemClassName="max-h-[20dvh] w-full"
         orientation="vertical"
         required
-        error={errors.authorisedPersonPanCardId}
-        // iconConfig={{size:"xs"}}
-        // gridConfig={}
+        error={errors.authorisedPersonPanCard}
       />
 
       <MediaPicker
-        // value={[{id: data.authorisedPersonAadharCardId ?? '', s3Url: data.authorisedPersonAadharCard ?? ''}]}
         label="Upload Aadhar Card"
-        ids={data.authorisedPersonAadharCardId}
         urls={data.authorisedPersonAadharCard}
         onChange={(items) => {
           const selectedItem = items.length > 0 ? items[items.length - 1] : null;
           onChange({
             ...data,
-            authorisedPersonAadharCardId: selectedItem?.id || "",
             authorisedPersonAadharCard: selectedItem?.s3Url || "",
           });
         }}
@@ -116,7 +105,7 @@ const AuthorisedPersonSection: React.FC<BusinessDetailsStepProps> = ({ data, onC
         itemClassName="max-h-[20dvh] w-full"
         orientation="vertical"
         required
-        error={errors.authorisedPersonAadharCardId}
+        error={errors.authorisedPersonAadharCard}
       />
     </div>
   );

@@ -34,45 +34,58 @@ const Header: FC<HeaderProps> = ({
 
   const matches = useMatches();
 
-  const breadcrumbs: BreadcrumbMeta[] = matches.map((m) => (m.staticData as any).breadcrumb).filter(Boolean);
+  const breadcrumbs: (BreadcrumbMeta | undefined)[] = matches.map((m) => m.staticData.breadcrumb).filter(Boolean);
+
+  const title =
+    [...matches].reverse().find((m) => m.staticData?.title)?.staticData?.title ??
+    [...matches].reverse().find((m) => m.staticData?.breadcrumb?.label)?.staticData?.breadcrumb?.label ??
+    "Dashboard";
+
+  const isDashboard = breadcrumbs?.length === 1 && title === "Dashboard";
 
   // Get user data from store
   const userName = user?.fullName || user?.businessName || "Vendor User";
-  const userAvatar = "profile.jpg"; // Default avatar since no avatar field in vendor user type
 
   return (
     <header className="">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div className="flex flex-col gap-0.5">
-          {breadcrumbs.length > 0 && (
-            <nav className="flex items-center gap-1 text-xl">
-              {" "}
-              {/* Increased gap and text size */}
-              {breadcrumbs.map((crumb, index) => (
-                <React.Fragment key={index}>
-                  {index > 0 && <Icon name="ChevronRight" size={20} className="text-base-content" />}
-                  <span
-                    className={cn(
-                      "transition-opacity text-base",
-                      index === breadcrumbs.length - 1 ? "font-light" : "cursor-pointer font-light"
-                    )}
-                    style={{
-                      opacity: index === breadcrumbs.length - 1 ? 1 : 0.6,
-                    }}
-                    onClick={() => {
-                      if (index !== breadcrumbs.length - 1 && crumb.to) {
-                        navigate({ to: crumb.to });
-                      }
-                    }}
-                    onMouseEnter={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.8")}
-                    onMouseLeave={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.6")}
-                  >
-                    {crumb.label}
-                  </span>
-                </React.Fragment>
-              ))}
-            </nav>
-          )}
+          {/* Title And Breadcrumbs */}
+
+          <div className="flex flex-col gap-1 justify-between">
+            <div className={cn("text-base-content font-semibold", isDashboard ? "text-2xl" : "text-xl")}>
+              {title}
+            </div>
+
+            {breadcrumbs.length > 1 && (
+              <nav className="flex items-center gap-1">
+                {/* Increased gap and text size */}
+                {breadcrumbs.map((crumb, index) => (
+                  <React.Fragment key={index}>
+                    {index > 0 && <Icon name="ChevronRight" size={20} className="text-base-content" />}
+                    <span
+                      className={cn(
+                        "transition-opacity text-sm",
+                        index === breadcrumbs.length - 1 ? "font-light" : "cursor-pointer font-light"
+                      )}
+                      style={{
+                        opacity: index === breadcrumbs.length - 1 ? 1 : 0.6,
+                      }}
+                      onClick={() => {
+                        if (index !== breadcrumbs.length - 1 && crumb?.to) {
+                          navigate({ to: crumb.to });
+                        }
+                      }}
+                      onMouseEnter={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.8")}
+                      onMouseLeave={(e) => index !== breadcrumbs.length - 1 && setOpacity(e, "0.6")}
+                    >
+                      {crumb?.label}
+                    </span>
+                  </React.Fragment>
+                ))}
+              </nav>
+            )}
+          </div>
 
           {showBack && (
             <button
@@ -132,11 +145,12 @@ const Header: FC<HeaderProps> = ({
             </div>
           )}
 
-          <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center shrink-0">
-              <span className="text-primary-600 font-semibold text-sm">
-                {userName.charAt(0)}
-              </span>
-            </div>
+          <div
+            onClick={() => navigate({ to: "/profile" })}
+            className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center hover:cursor-pointer shrink-0"
+          >
+            <span className="text-primary-600 font-semibold text-sm">{userName.charAt(0)}</span>
+          </div>
         </div>
       </div>
     </header>

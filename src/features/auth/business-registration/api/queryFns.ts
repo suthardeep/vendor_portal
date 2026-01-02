@@ -15,25 +15,20 @@ export const businessRegistration = (data: BusinessDetailsType) => {
             city: processedData.city,
             state: processedData.state,
             panCard: processedData.panCard,
-            panCardId: processedData.panCardId,
             registrationCertificate: processedData.registrationCertificate,
-            registrationCertificateId: processedData.registrationCertificateId,
         },
         authorisedPersonDetails: {
             name: processedData.authorisedPersonName,
             mobileNumber: processedData.authorisedPersonPhoneNumber,
             email: processedData.authorisedPersonEmail,
             panCard: processedData.authorisedPersonPanCard,
-            panCardId: processedData.authorisedPersonPanCardId,
             aadharCard: processedData.authorisedPersonAadharCard,
-            aadharCardId: processedData.authorisedPersonAadharCardId,
         },
     };
     
     if (processedData.hasGST) {
         payload.gstNumber = processedData.gstNumber;
         payload.gstCertificate = processedData.gstCertificate;
-        payload.gstCertificateId = processedData.gstCertificateId;
         payload.selfDeclared = false;
     } else {
         payload.selfDeclared = processedData.selfDeclared;

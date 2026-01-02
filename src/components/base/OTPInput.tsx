@@ -223,7 +223,7 @@ const OTPInput = forwardRef<OTPInputRef, OTPInputProps>(
               aria-label={`OTP digit ${index + 1}`}
               aria-invalid={!!error}
               style={{ 
-                maxWidth: `calc((100% - ${(length - 1) * 0.5}rem) / ${length})`
+                maxWidth: `calc((100% - ${(length - 1) * 0.75}rem) / ${length})`
               }}
               className={cn(
                 otpBoxVariants({ state, size }),

@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState } from "react";
+import React, { forwardRef, useRef, useState, useEffect, useCallback } from "react";
 import {Label} from "./Label";
 import { cn } from "@/utils/helpers";
 import {ErrorText} from "./ErrorText";
@@ -61,7 +61,63 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
     const [uploadedFiles, setUploadedFiles] = useState<File[]>(value);
     const [dragActive, setDragActive] = useState(false);
     const [fileErrors, setFileErrors] = useState<string[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<Map<File, string>>(new Map());
     const inputRef = useRef<HTMLInputElement>(null);
+    const urlsRef = useRef<Map<File, string>>(new Map());
+
+    // Sync with external value prop
+    useEffect(() => {
+      setUploadedFiles(value);
+    }, [value]);
+
+    // Create and manage blob URLs for image previews
+    useEffect(() => {
+      const currentUrls = urlsRef.current;
+      const newUrlsMap = new Map<File, string>();
+
+      // Create URLs for new files that don't have them
+      uploadedFiles.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const existingUrl = currentUrls.get(file);
+          if (existingUrl) {
+            // Reuse existing URL
+            newUrlsMap.set(file, existingUrl);
+          } else {
+            // Create new URL for new file
+            const newUrl = URL.createObjectURL(file);
+            newUrlsMap.set(file, newUrl);
+            currentUrls.set(file, newUrl);
+          }
+        }
+      });
+
+      // Find and revoke URLs for removed files
+      currentUrls.forEach((url, file) => {
+        if (!uploadedFiles.includes(file)) {
+          URL.revokeObjectURL(url);
+          currentUrls.delete(file);
+        }
+      });
+
+      setPreviewUrls(newUrlsMap);
+
+      // Only cleanup on unmount, not on every render
+      return () => {
+        // This only runs when component unmounts
+        if (uploadedFiles.length === 0) {
+          currentUrls.forEach(url => URL.revokeObjectURL(url));
+          currentUrls.clear();
+        }
+      };
+    }, [uploadedFiles]);
+
+    // Cleanup all URLs on unmount
+    useEffect(() => {
+      return () => {
+        urlsRef.current.forEach(url => URL.revokeObjectURL(url));
+        urlsRef.current.clear();
+      };
+    }, []);
 
     const getFileIcon = (fileType: string) => {
       if (fileType.startsWith('image/')) return <Icon name="Image" className="w-8 h-8 text-body-content" />;
@@ -98,7 +154,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       return null;
     };
 
-    const handleFiles = (files: FileList | null) => {
+    const handleFiles = useCallback((files: FileList | null) => {
       if (!files || files.length === 0) return;
 
       const newFiles: File[] = [];
@@ -135,7 +191,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       }
 
       setFileErrors(errors);
-    };
+    }, [uploadedFiles, multiple, maxFiles, onChange]);
 
     const handleDrag = (e: React.DragEvent) => {
       e.preventDefault();
@@ -161,7 +217,16 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       handleFiles(e.target.files);
     };
 
-    const handleRemoveFile = (index: number) => {
+    const handleRemoveFile = useCallback((index: number) => {
+      const fileToRemove = uploadedFiles[index];
+      
+      // Revoke blob URL if exists
+      const url = urlsRef.current.get(fileToRemove);
+      if (url) {
+        URL.revokeObjectURL(url);
+        urlsRef.current.delete(fileToRemove);
+      }
+
       const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
       setUploadedFiles(updatedFiles);
       onChange?.(updatedFiles);
@@ -171,7 +236,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       if (inputRef.current) {
         inputRef.current.value = '';
       }
-    };
+    }, [uploadedFiles, onChange, onFileRemove]);
 
     const handleClick = () => {
       if (!disabled) {
@@ -187,10 +252,6 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
       return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     };
 
-    const getImagePreview = (file: File): string => {
-      return URL.createObjectURL(file);
-    };
-
     const gridColsClass = {
       1: 'grid-cols-1',
       2: 'grid-cols-2',
@@ -201,7 +262,7 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
     }[filesPerRow] || 'grid-cols-4';
 
     return (
-      <div className={cn("space-y-2 flex flex-col", fullWidth && "w-full", containerClassName)}>
+      <div className={cn("space-y-2 flex flex-col pb-6", fullWidth && "w-full", containerClassName)}>
         {label && (
           <Label title={label} required={required} className={cn("text-base-content", labelClassName)}>
               {label}
@@ -272,54 +333,64 @@ const FileUploadField = forwardRef<HTMLInputElement, FileUploadFieldProps>(
               "grid gap-4 mt-4",
               gridColsClass,
               "sm:grid-cols-2",
-              `md:${gridColsClass}`,
+              "md:grid-cols-4",
               previewContainerClassName
             )}
           >
-            {uploadedFiles.map((file, index) => (
-              <div
-                key={index}
-                className="relative group border border-input-border rounded-lg overflow-hidden bg-base-1"
-                style={{ height: previewHeight }}
-              >
-                {/* Remove Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveFile(index);
-                  }}
-                  className="absolute top-2 right-2 z-10 bg-error/60 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-error/90"
-                  disabled={disabled}
+            {uploadedFiles.map((file, index) => {
+              const previewUrl = previewUrls.get(file);
+              
+              return (
+                <div
+                  key={`${file.name}-${index}-${file.size}`}
+                  className="relative group border shadow-md border-input-border/30 rounded-lg overflow-hidden bg-base-1"
+                  style={{ height: previewHeight }}
                 >
-                  <Icon name="X" className="w-4 h-4 text-base-1" /> 
-                </button>
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveFile(index);
+                    }}
+                    className="absolute top-2 right-2 z-10 rounded-md p-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:bg-error/30 hover:scale-105"
+                    disabled={disabled}
+                  >
+                    <Icon name="X" className="w-4 h-4 text-error" /> 
+                  </button>
 
-                {/* Preview Content */}
-                <div className="w-full h-full flex flex-col items-center justify-center p-3">
-                  {file.type.startsWith('image/') ? (
-                    <img
-                      src={getImagePreview(file)}
-                      alt={file.name}
-                      className="max-w-full max-h-[70%] object-contain rounded"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-base-content">
-                      {getFileIcon(file.type)}
+                  {/* Preview Content */}
+                  <div className="w-full h-full flex flex-col items-center justify-center p-3">
+                    {file.type.startsWith('image/') && previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt={file.name}
+                        className="max-w-full max-h-[70%] object-contain rounded"
+                        loading="lazy"
+                        onError={(e) => {
+                          console.error('Image failed to load:', file.name, previewUrl);
+                          // Fallback to icon if image fails
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-base-content">
+                        {getFileIcon(file.type)}
+                      </div>
+                    )}
+                    
+                    <div className="mt-2 text-center w-full">
+                      <p className="text-xs font-medium text-base-content truncate px-2">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-base-content opacity-60 mt-0.5">
+                        {formatFileSize(file.size)}
+                      </p>
                     </div>
-                  )}
-                  
-                  <div className="mt-2 text-center w-full">
-                    <p className="text-xs font-medium text-base-content truncate px-2">
-                      {file.name}
-                    </p>
-                    <p className="text-xs text-base-content opacity-60 mt-0.5">
-                      {formatFileSize(file.size)}
-                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

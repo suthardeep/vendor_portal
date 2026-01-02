@@ -78,7 +78,7 @@ export interface User {
   selfDeclared?: boolean;
   taxId?: string | null;
   panNumber?: string | null;
-  brands?: BrandDetailsType[];
+  brands?: BrandDetailsType;
   bankDetails?: BankDetails;
   businessAddress?: string | null;
   verificationStatus?: string;

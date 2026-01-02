@@ -321,13 +321,13 @@ export const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, Bu
 
     // Determine which icons to use
     const startIconElement = startIcon ? (
-      <span className={cn("mr-1.5 shrink-0 md:mr-2")}>
+      <span className={cn("shrink-0", children ? "mr-2" : "" )}>
         <Icon name={startIcon} className={cn(iconClasses,startIconClassname)} size={size} />
       </span>
     ) : null;
 
     const endIconElement = endIcon ? (
-      <span className={cn("ml-1.5 shrink-0 md:ml-2")}>
+      <span className={cn("shrink-0", children ? "ml-2" : "")}>
         <Icon name={endIcon} className={cn(iconClasses, endIconClassname)} size={size} />
       </span>
     ) : null;

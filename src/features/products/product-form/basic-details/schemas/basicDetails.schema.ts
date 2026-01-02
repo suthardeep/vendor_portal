@@ -1,3 +1,4 @@
+import { genderSchema } from "@/schema/genderSchema";
 import { z } from "zod";
 
 export const basicDetailsSchema = z.object({
@@ -20,20 +21,8 @@ export const basicDetailsSchema = z.object({
   tags: z.array(z.string()),
 
   // New Fields
-  targetGender: z.preprocess(
-    (value) => {
-      if (value === "" || value === undefined || value === null) {
-        return undefined;
-      }
-      return value;
-    },
-    z.enum(["Male", "Female", "Other"]).optional()
-  ),
-  targetAgeGroup: z.string().optional(),
-
-  totalStockQty: z.string().refine((val) => !isNaN(Number(val)) && val !== "", {
-    message: "Must be a valid number",
-  }),
+  targetGender: genderSchema(),
+  targetAge: z.string().optional(),
 
   hsnCode: z
     .string()
@@ -43,4 +32,12 @@ export const basicDetailsSchema = z.object({
     .regex(/^\d+$/, "HSN Code must contain only digits"),
   gstTaxSlab: z.string().optional(),
   cessCode: z.string().optional(),
+
+  // Custom fields from category requirements
+  customFields: z.array(
+    z.object({
+      groupName: z.string(),
+      fields: z.record(z.string(), z.string().min(1, "This field is required")),
+    })
+  ).optional(),
 });

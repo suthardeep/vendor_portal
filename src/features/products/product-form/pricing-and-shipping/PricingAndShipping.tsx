@@ -1,38 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Input } from "@/components/base/Input";
 import { Button } from "@/components/base/Button";
 import { toast } from "@/components/compound/Sonner";
-import { useUpdateVariantsPricingMutation, useSubmitProductMutation } from "./api/queryHooks";
+import { useUpdateVariantsPricingMutation, useSubmitProductMutation, useCalculatePricingMutation } from "./api/queryHooks";
 import BreakdownDialog from "./components/BreakdownDialog";
 import { useGetVariantsQuery } from "../variations/api/queryHooks";
-import { validateVariantPricingForm } from "./schemas/pricing.schema";
+import { validateVariantPricingForm, validateSettlementPrice } from "./schemas/pricing.schema";
 import { Separator } from "@/components/base/Separator";
 import { formatCurrencyINR } from "@/utils/helpers";
+import type { VariantFormData, VariantItem, VariantSettlementData } from "./types/pricing.types";
 
 interface PricingAndShippingProps {
   productId: string;
-}
-
-interface VariantFormData {
-  variantId: string;
-  mrp: string;
-  sellingPrice: string;
-  aavakCoinsPrice: string;
-  localCost: string;
-  regionalCost: string;
-  nationalCost: string;
-  length: string;
-  width: string;
-  height: string;
-  weight: string;
-}
-
-interface CalculatedPricing {
-  onLocal: number;
-  onRegional: number;
-  onNational: number;
-  userGets: number;
 }
 
 const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) => {
@@ -42,16 +22,19 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
   const { data: variantsData, isLoading } = useGetVariantsQuery(productId);
   const updateMutation = useUpdateVariantsPricingMutation(productId);
   const submitMutation = useSubmitProductMutation(productId);
+  const calculatePricingMutation = useCalculatePricingMutation();
 
   const variants = variantsData?.data?.variants || [];
+  // const submitDirectly = 
 
   // Form state
   const [formData, setFormData] = useState<VariantFormData[]>([]);
   const [errors, setErrors] = useState<{ [variantIndex: number]: { [field: string]: string } }>({});
   const [expandedVariants, setExpandedVariants] = useState<Set<string>>(new Set());
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set());
-  const [calculatedPricing, setCalculatedPricing] = useState<Record<string, CalculatedPricing>>({});
-  const [showAllSettlements, setShowAllSettlements] = useState(false);
+  const [settlementData, setSettlementData] = useState<Record<string, VariantSettlementData>>({});
+  const [dirtyVariants, setDirtyVariants] = useState<Set<string>>(new Set()); // Track variants with unsaved changes
+  const [savedOnce, setSavedOnce] = useState(false); // Track if save has been called successfully
 
   // Dialog state
   const [breakdownDialog, setBreakdownDialog] = useState<{
@@ -81,28 +64,35 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
       }));
       setFormData(initialFormData);
 
-      // Initialize calculated pricing from existing data
-      const pricing: Record<string, CalculatedPricing> = {};
-      variants.forEach((variant: any) => {
-        if (variant.calculatedPricing) {
-          pricing[variant.id] = variant.calculatedPricing;
-        }
-      });
-      setCalculatedPricing(pricing);
+      // Initialize settlement data from existing API data if available
+      // const settlement: Record<string, VariantSettlementData> = {};
+      // variants.forEach((variant: any) => {
+      //   if (variant.calculatedPricing) {
+      //     settlement[variant.id] = {
+      //       pricing: variant.calculatedPricing,
+      //       detailedTable: variant.detailedTable || null,
+      //     };
+      //   }
+      // });
+      // setSettlementData(settlement);
     }
   }, [variants]);
 
-  // const hasDataChanged = useMemo(()=>{
-  //   if()
-  // }, [formData])
-
   const handleInputChange = (index: number, field: string, value: string) => {
-    if(showAllSettlements){
-      setShowAllSettlements(false)
-    }
     const newData = [...formData];
+    const variantId = newData[index].variantId;
     newData[index] = { ...newData[index], [field]: value };
     setFormData(newData);
+
+    // Mark variant as dirty if it has settlement data (needs refresh)
+    if (settlementData[variantId]) {
+      setDirtyVariants((prev) => new Set(prev).add(variantId));
+    }
+
+    // Reset savedOnce flag when any field changes after save
+    if (savedOnce) {
+      setSavedOnce(false);
+    }
 
     // Clear field-specific error
     if (errors[index]?.[field]) {
@@ -117,79 +107,77 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
 
   const handleViewSettlementPrice = async (variantId: string, index: number) => {
     const isExpanded = expandedVariants.has(variantId);
+    const isDirty = dirtyVariants.has(variantId);
 
-    if (isExpanded) {
-      // Close the settlement section
+    if (isExpanded && !isDirty) {
+      // Hide settlement section
       const newExpanded = new Set(expandedVariants);
       newExpanded.delete(variantId);
       setExpandedVariants(newExpanded);
     } else {
-      // Open and fetch pricing if not already calculated
-      console.log(!calculatedPricing[variantId])
-      if (!calculatedPricing[variantId]) {
-        const data = formData[index];
+      // View or Refresh settlement price
+      const data = formData[index];
 
-        // Validate before making API call
-        const validation = validateVariantPricingForm(data);
-        if (!validation.success) {
-          toast.error("Please fill all required fields before viewing settlement price");
-          return;
-        }
+      // Validate before making API call - only MRP and Selling Price are required for settlement calculation
+      const validation = validateSettlementPrice(data);
+      if (!validation.success) {
+        toast.error("Please fill MRP and Selling Price to view settlement price");
+        return;
+      }
 
-        setLoadingVariants((prev) => new Set(prev).add(variantId));
+      setLoadingVariants((prev) => new Set(prev).add(variantId));
 
-        const payload = {
-          variants: [
-            {
-              variantId: data.variantId,
-              mrp: Math.round(Number(data.mrp)),
-              sellingPrice: Math.round(Number(data.sellingPrice)),
-              aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
-              localCost: Math.round(Number(data.localCost || 0)),
-              regionalCost: Math.round(Number(data.regionalCost || 0)),
-              nationalCost: Math.round(Number(data.nationalCost || 0)),
-              dimensions: {
-                length: Number(data.length),
-                width: Number(data.width),
-                height: Number(data.height),
-                weight: Number(data.weight),
+      const payload = {
+        variantId: data.variantId,
+        mrp: Number(data.mrp),
+        sellingPrice: Number(data.sellingPrice),
+        aavakCoinsPrice: Number(data.aavakCoinsPrice || 0),
+        localCost: Number(data.localCost || 0),
+        regionalCost: Number(data.regionalCost || 0),
+        nationalCost: Number(data.nationalCost || 0),
+        dimensions: {
+          length: Number(data.length),
+          width: Number(data.width),
+          height: Number(data.height),
+          weight: Number(data.weight),
+        },
+      };
+
+      calculatePricingMutation.mutate(payload, {
+        onSuccess: (response: any) => {
+          if (response?.data) {
+            const apiData = response.data;
+            setSettlementData((prev) => ({
+              ...prev,
+              [variantId]: {
+                pricing: apiData.calculatedPrices,
+                detailedTable: apiData.detailedTable,
               },
-            },
-          ],
-        };
+            }));
 
-        updateMutation.mutate(payload, {
-          onSuccess: (response: any) => {
-            if (response?.data?.variants?.[0]?.calculatedSettlement) {
-              const settlement = response.data.variants[0].calculatedSettlement;
-              const pricing: CalculatedPricing = {
-                onLocal: settlement.vendorPayout,
-                onRegional: settlement.vendorPayout - 10, // Slight variation for demo
-                onNational: settlement.vendorPayout - 20,
-                userGets: Math.round(Number(data.aavakCoinsPrice || 0)),
-              };
-              setCalculatedPricing((prev) => ({ ...prev, [variantId]: pricing }));
-            }
-            setLoadingVariants((prev) => {
+            // Remove from dirty set and expand
+            setDirtyVariants((prev) => {
               const next = new Set(prev);
               next.delete(variantId);
               return next;
             });
             setExpandedVariants((prev) => new Set(prev).add(variantId));
-          },
-          onError: () => {
-            setLoadingVariants((prev) => {
-              const next = new Set(prev);
-              next.delete(variantId);
-              return next;
-            });
-            toast.error("Failed to calculate settlement price");
-          },
-        });
-      } else {
-        // Already calculated, just toggle
-        setExpandedVariants((prev) => new Set(prev).add(variantId));
-      }
+          }
+          setLoadingVariants((prev) => {
+            const next = new Set(prev);
+            next.delete(variantId);
+            return next;
+          });
+        },
+        onError: () => {
+          setLoadingVariants((prev) => {
+            const next = new Set(prev);
+            next.delete(variantId);
+            return next;
+          });
+          toast.error("Failed to calculate settlement price");
+        },
+      });
     }
   };
 
@@ -220,12 +208,12 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
     const payload = {
       variants: formData.map((data) => ({
         variantId: data.variantId,
-        mrp: Math.round(Number(data.mrp)),
-        sellingPrice: Math.round(Number(data.sellingPrice)),
-        aavakCoinsPrice: Math.round(Number(data.aavakCoinsPrice || 0)),
-        localCost: Math.round(Number(data.localCost || 0)),
-        regionalCost: Math.round(Number(data.regionalCost || 0)),
-        nationalCost: Math.round(Number(data.nationalCost || 0)),
+        mrp: Number(data.mrp),
+        sellingPrice: Number(data.sellingPrice),
+        aavakCoinsPrice: Number(data.aavakCoinsPrice || 0),
+        localCost: Number(data.localCost || 0),
+        regionalCost: Number(data.regionalCost || 0),
+        nationalCost: Number(data.nationalCost || 0),
         dimensions: {
           length: Number(data.length),
           width: Number(data.width),
@@ -239,26 +227,35 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
       onSuccess: (response: any) => {
         toast.success("Pricing and shipping details saved successfully");
 
-        // Update calculated pricing for all variants
+        // Update settlement data for all variants from response
         if (response?.data?.variants) {
-          const pricing: Record<string, CalculatedPricing> = {};
-          response.data.variants.forEach((variant: any) => {
-            if (variant.calculatedSettlement) {
-              pricing[variant.id] = {
-                onLocal: variant.calculatedSettlement.vendorPayout,
-                onRegional: variant.calculatedSettlement.vendorPayout - 10,
-                onNational: variant.calculatedSettlement.vendorPayout - 20,
-                userGets: variant.aavakCoinsPrice,
-              };
+          const newSettlementData: Record<string, VariantSettlementData> = {};
+          response.data.variants.forEach((responseVariant: any) => {
+            if (responseVariant.breakdown) {
+              // Find the matching variant from the variants array to get the correct ID
+              const matchingVariant = variants.find((v: any) => v.id === responseVariant.variantId);
+              if (matchingVariant) {
+                newSettlementData[matchingVariant.id] = {
+                  pricing: responseVariant.breakdown.calculatedPrices,
+                  detailedTable: responseVariant.breakdown.detailedTable,
+                };
+              }
             }
           });
-          setCalculatedPricing(pricing);
-        }
+          // Merge with existing settlement data instead of replacing
+          setSettlementData((prev) => ({
+            ...prev,
+            ...newSettlementData,
+          }));
 
-        // Show all settlements
-        setShowAllSettlements(true);
-        const allVariantIds = new Set(variants.map((v: any) => v.id));
-        setExpandedVariants(allVariantIds);
+          // Auto-expand all settlement prices
+          const allVariantIds = new Set(variants.map((v: any) => v.id));
+          setExpandedVariants(allVariantIds);
+
+          // Clear dirty variants and mark as saved
+          setDirtyVariants(new Set());
+          setSavedOnce(true);
+        }
       },
       onError: (error: any) => {
         toast.error(error.message || "Failed to save pricing details");
@@ -329,12 +326,26 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
 
       {/* Variants List */}
       <div className="divide-y divide-body-content/80">
-        {variants.map((variant: any, index: number) => {
+        {variants.map((variant: VariantItem, index: number) => {
           const data = formData[index] || {};
           const variantErrors = errors[index] || {};
-          const pricing = calculatedPricing[variant.id];
+          const settlement = settlementData[variant.id];
+          const pricing = settlement?.pricing;
           const isExpanded = expandedVariants.has(variant.id);
           const isLoading = loadingVariants.has(variant.id);
+          const isDirty = dirtyVariants.has(variant.id);
+
+          // Determine button text based on state
+          let buttonText = "View Settlement Price";
+          if (isLoading) {
+            buttonText = "Loading...";
+          } else if (isExpanded && !isDirty) {
+            buttonText = "Hide Settlement Price";
+          } else if (isExpanded && isDirty) {
+            buttonText = "Refresh Settlement Price";
+          } else if (settlement && !isExpanded) {
+            buttonText = "View Settlement Price";
+          }
 
           return (
             <div key={variant.id} className="px-6 pt-6">
@@ -350,15 +361,11 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
                         onClick={() => handleViewSettlementPrice(variant.id, index)}
                         variant="outline"
                         size="sm"
-                        endIcon={isExpanded ? "EyeOff" : "Eye"}
+                        endIcon={isExpanded && !isDirty ? "EyeOff" : "Eye"}
                         endIconClassname="h-4 w-4"
                         disabled={isLoading}
                       >
-                        {isLoading
-                          ? "Loading..."
-                          : isExpanded
-                            ? "Hide Settlement Price"
-                            : "View Settlement Price"}
+                        {buttonText}
                       </Button>
                     </div>
                     {renderVariantAttributes(variant.attributes)}
@@ -542,10 +549,10 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         </Button>
         <Button
           className="w-44"
-          onClick={showAllSettlements ? handleSubmitForApproval : handleSaveAndNext}
-          isLoading={showAllSettlements ? submitMutation.isPending : updateMutation.isPending}
+          onClick={savedOnce ? handleSubmitForApproval : handleSaveAndNext}
+          isLoading={savedOnce ? submitMutation.isPending : updateMutation.isPending}
         >
-          {showAllSettlements ? "Submit for Approval" : "Save & Next"}
+          {savedOnce ? "Submit for Approval" : "Save & Next"}
         </Button>
       </div>
 
@@ -554,6 +561,7 @@ const PricingAndShipping: React.FC<PricingAndShippingProps> = ({ productId }) =>
         isOpen={breakdownDialog.isOpen}
         onClose={() => setBreakdownDialog({ isOpen: false })}
         title="Price Breakdown"
+        detailedTable={breakdownDialog.variantId ? settlementData[breakdownDialog.variantId]?.detailedTable : undefined}
       />
     </div>
   );

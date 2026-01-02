@@ -1,10 +1,10 @@
 // src/routes/_app/route.tsx
 import Header from "@/components/header/Header";
 import Sidebar from "@/components/sidebar/Sidebar";
-import RegistrationBanner from "@/features/dashboard/components/BusinessRegistration";
+import RegistrationBanner from "@/features/dashboard/components/RegistrationBanner";
 import { StatusCard } from "@/components/base/StatusCard";
-import { sidebarMenuItems } from "@/utils/sidebarMenuItems";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { sidebarMenuItems } from "@/components/sidebar/sidebarMenuItems";
+import { Outlet, createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import logo from "@/assets/Logo.svg";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
   const [showOverlay, setShowOverlay] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -77,9 +78,9 @@ function AppLayout() {
   };
 
   return (
-    <div className="relative h-screen w-screen">
+    <div className="relative p-4 overflow-y-auto">
       {/* Main Layout - gets blurred when verification modal is active */}
-      <div className={`flex p-4 gap-4 h-full ${showVerificationModal ? "blur-sm" : ""}`}>
+      <div className={`flex gap-4 h-full ${showVerificationModal ? "blur-sm" : ""}`}>
         {/* Sidebar - with spacing all around */}
         {/* add - hidden xl:block for responsiveness , consider an alternative later */}
         <div className="hidden xl:block w-75">
@@ -87,12 +88,13 @@ function AppLayout() {
             menuItems={sidebarMenuItems}
             logo={logo}
             showOverlay={showOverlay}
+            activePath={location.pathname}
             onNavigate={(path) => navigate({ to: path })}
           />
         </div>
 
         {/* Main Content Area - flex column */}
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-2 h-full ">
           {/* Header - white background - NOT blurred */}
           <div className={showOverlay ? "relative z-1001" : ""}>
             <Header />
@@ -108,7 +110,7 @@ function AppLayout() {
           {/* Outlet/Main Content - white background, fills remaining space - BLURRED when overlay active */}
           <div
             className={cn(
-              "flex-1 pb-4",
+              "flex-1 h-full",
               showOverlay ? "blur-sm pointer-events-none" : "",
               // "shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.06),0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
             )}

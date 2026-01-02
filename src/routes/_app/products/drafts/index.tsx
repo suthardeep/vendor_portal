@@ -6,14 +6,13 @@ export const Route = createFileRoute('/_app/products/drafts/')({
   staticData:{
     breadcrumb: {
       label: "Drafts",
-    }
+    },
+    title: "Draft Products"
   }
 })
 
 function RouteComponent() {
   return (
-    <div className='h-full'>
-      <DraftsList />
-    </div>
+            <DraftsList />
   )
 }

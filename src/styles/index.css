@@ -353,18 +353,6 @@ input[type="number"]::-webkit-outer-spin-button {
   text-shadow: none;
 }
 
-/* .dark ::selection {
-  background: var(--primary-700);
-  color: var(--secondary-50);
-  text-shadow: none;
-}
-
-.dark ::-moz-selection {
-  background: var(--primary-700);
-  color: var(--secondary-50);
-  text-shadow: none;
-} */
-
 /* Shimmer Animation */
 
 @keyframes shimmer {
@@ -384,7 +372,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .shimmer {
-  background: var(--primary-content-100);
+  background: var(--base-300);
   position: relative;
   overflow: hidden;
   border-radius: 8px;
@@ -399,23 +387,10 @@ input[type="number"]::-webkit-outer-spin-button {
   height: 100%;
   background: linear-gradient(90deg,
       transparent 0%,
-      var(--primary-content-200),
+      var(--base-300),
       transparent 100%);
   animation: shimmer 1.5s ease-in-out infinite;
 }
-
-/* .dark .shimmer {
-  background: var(--secondary-800);
-}
-
-.dark .shimmer::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--secondary-700),
-    transparent 100%
-  );
-} */
 
 input[type="time"]::-webkit-calendar-picker-indicator {
   display: none;

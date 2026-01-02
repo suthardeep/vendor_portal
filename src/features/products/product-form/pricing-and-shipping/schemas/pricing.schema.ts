@@ -57,10 +57,36 @@ export const variantPricingFormSchema = z.object({
   path: ["sellingPrice"],
 });
 
+// Settlement price validation schema (only requires MRP and Selling Price)
+export const settlementPriceSchema = z.object({
+  variantId: z.string().min(1, "Variant ID is required"),
+  mrp: z.string().min(1, "MRP is required").refine((val) => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num > 0;
+  }, "MRP must be a positive number"),
+  sellingPrice: z.string().min(1, "Selling Price is required").refine((val) => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num > 0;
+  }, "Selling Price must be a positive number"),
+}).refine((data) => {
+  // Custom validation: Selling price should not be greater than MRP
+  const mrp = parseFloat(data.mrp);
+  const sellingPrice = parseFloat(data.sellingPrice);
+  return sellingPrice <= mrp;
+}, {
+  message: "Selling Price cannot be greater than MRP",
+  path: ["sellingPrice"],
+});
+
 // Type exports
 export type VariantPricingFormData = z.infer<typeof variantPricingFormSchema>;
+export type SettlementPriceData = z.infer<typeof settlementPriceSchema>;
 
-// Validation function
+// Validation functions
 export const validateVariantPricingForm = (data: unknown) => {
   return variantPricingFormSchema.safeParse(data);
+};
+
+export const validateSettlementPrice = (data: unknown) => {
+  return settlementPriceSchema.safeParse(data);
 };

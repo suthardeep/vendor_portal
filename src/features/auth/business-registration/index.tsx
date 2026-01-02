@@ -30,6 +30,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { prefillFormFromProfile } from "./utils/prefillFormData";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { ROUTES } from "@/constants/routes";
+import { setNestedError } from "./utils/setNestedError";
 
 
 const BASE_STEPS: SidebarStep[] = [
@@ -115,7 +116,7 @@ const BusinessRegistrationForm: React.FC = () => {
 
   // Initialize form data - prefill from profile if available
   const [formData, setFormData] = useState<FormData>(() => {
-    if (user && user.businessDetails) {
+    if (user) {
       return prefillFormFromProfile(user);
     }
     
@@ -123,7 +124,6 @@ const BusinessRegistrationForm: React.FC = () => {
       businessDetails: {
         hasGST: true,
         gstNumber: "",
-        gstCertificateId: "",
         gstCertificate: "",
         businessName: "",
         addressLine1: "",
@@ -133,14 +133,11 @@ const BusinessRegistrationForm: React.FC = () => {
         state: "",
         panCardId: "",
         panCard: "",
-        registrationCertificateId: "",
         registrationCertificate: "",
         authorisedPersonName: "",
         authorisedPersonEmail: "",
         authorisedPersonPhoneNumber: "",
-        authorisedPersonPanCardId: "",
         authorisedPersonPanCard: "",
-        authorisedPersonAadharCardId: "",
         authorisedPersonAadharCard: "",
         selfDeclared: false,
       },
@@ -149,8 +146,7 @@ const BusinessRegistrationForm: React.FC = () => {
         accountNumber: "",
         ifscCode: "",
         accountHolderName: "",
-        bankProofDocumentId: "",
-        bankProofDocument: "",
+        bankProof: "",
       },
       declaration: {
         agreed: false,
@@ -220,19 +216,19 @@ const BusinessRegistrationForm: React.FC = () => {
         error.issues.forEach((err) => {
           const path = err.path;
 
-          // Handling Array errors (Brand Details)
-          if (step === 2 && typeof path[0] === "number") {
-            const index = path[0];
-            const field = path[1];
-            if (!stepErrors[index]) stepErrors[index] = {};
-            stepErrors[index][field] = err.message;
+          // Handling complex nested errors for Brand Details (Step 2)
+          if (step === 2 && path.length > 0 && typeof path[0] === "number") {
+            // Use helper to set deeply nested error
+            // e.g., path: [0, "brandDocuments", 1, "documents", 2, "url"]
+            // creates: stepErrors[0].brandDocuments[1].documents[2].url = err.message
+            setNestedError(stepErrors, path, err.message);
           } else {
-            // Flat object errors
+            // Flat object errors for other steps
             const fieldName = path.join(".");
             stepErrors[fieldName] = err.message;
           }
         });
-
+        console.log("Errors: ", stepErrors)
         setErrors((prev) => ({ ...prev, [`step${step}`]: stepErrors }));
 
         showValidationErrors(stepErrors);
@@ -337,18 +333,14 @@ const BusinessRegistrationForm: React.FC = () => {
             city: businessDetails.city,
             state: businessDetails.state,
             panCard: businessDetails.panCard,
-            panCardId: businessDetails.panCardId,
             registrationCertificate: businessDetails.registrationCertificate,
-            registrationCertificateId: businessDetails.registrationCertificateId,
           },
           authorisedPersonDetails: {
             name: businessDetails.authorisedPersonName,
             mobileNumber: businessDetails.authorisedPersonPhoneNumber,
             email: businessDetails.authorisedPersonEmail,
             panCard: businessDetails.authorisedPersonPanCard,
-            panCardId: businessDetails.authorisedPersonPanCardId,
             aadharCard: businessDetails.authorisedPersonAadharCard,
-            aadharCardId: businessDetails.authorisedPersonAadharCardId,
           },
           // You would typically include other steps' data here as well:
           // brandDetails: formData.brandDetails,
@@ -360,7 +352,6 @@ const BusinessRegistrationForm: React.FC = () => {
         if (businessDetails.hasGST) {
           backendPayload.gstNumber = businessDetails.gstNumber;
           backendPayload.gstCertificate = businessDetails.gstCertificate;
-          backendPayload.gstCertificateId = businessDetails.gstCertificateId;
         } else {
           // Include selfDeclared only for non-GST flow
           backendPayload.selfDeclared = businessDetails.selfDeclared;

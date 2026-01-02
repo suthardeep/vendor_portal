@@ -44,23 +44,19 @@ const BankDetailsStep: React.FC<BankDetailsStepProps> = ({ data, onChange, error
         />
 
         <MediaPicker
-          // value={[{id:data.bankProofDocumentId ?? "", s3Url: data.bankProofDocument ?? "" }]}
           label="Upload cancelled cheque/bank proof"
-          ids={data.bankProofDocumentId}
-          urls={data.bankProofDocument}
+          urls={data.bankProof}
           onChange={(items) => {
             const selectedItem = items.length > 0 ? items[items.length - 1] : null;
             onChange({
               ...data,
-              bankProofDocumentId: selectedItem?.id || "",
-              bankProofDocument: selectedItem?.s3Url || "",
+              bankProof: selectedItem?.s3Url || "",
             });
           }}
           maxFiles={1}
-          itemClassName="max-h-[20dvh] w-full"
-          orientation="vertical"
+          itemClassName="w-full"
           required
-          error={errors.bankProofDocumentId}
+          error={errors.bankProof}
         />
 
         {/* A visual indicator that bank is verified (Static for demo) */}

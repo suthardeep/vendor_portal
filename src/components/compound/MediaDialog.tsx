@@ -4,7 +4,8 @@
 
 import { useMediaDialogStore } from "@/store/useMediaDialogStore";
 import { useEffect, useState } from "react";
-import {Icon} from "../base/Icon";
+import { Icon } from "../base/Icon";
+import { Button } from "../base/Button";
 
 export const MediaDialog = () => {
   const { isOpen, files, currentIndex, closeDialog, nextFile, prevFile } = useMediaDialogStore();
@@ -24,12 +25,14 @@ export const MediaDialog = () => {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
       setIsLoading(true);
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen, currentIndex]);
 
   if (!isOpen || files.length === 0) return null;
@@ -37,9 +40,9 @@ export const MediaDialog = () => {
   const currentFile = files[currentIndex];
 
   const handleDownload = () => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = currentFile.src;
-    link.download = currentFile.title || currentFile.alt || 'download';
+    link.download = currentFile.title || currentFile.alt || "download";
     link.click();
   };
 
@@ -50,7 +53,7 @@ export const MediaDialog = () => {
           <div className="relative w-full h-full flex items-center justify-center">
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <Icon name="Loader2" className="h-12 w-12 animate-spin text-white" />   
+                <Icon name="Loader2" className="h-12 w-12 animate-spin text-white" />
               </div>
             )}
             <img
@@ -64,51 +67,46 @@ export const MediaDialog = () => {
         );
       case "pdf":
         return (
-          <iframe
-            src={currentFile.src}
-            className="w-[90vw] h-[80vh]"
-            title={currentFile.title || "PDF"}
-          />
+          <iframe src={currentFile.src} className="w-[90vw] h-[80vh]" title={currentFile.title || "PDF"} />
         );
       case "video":
-        return (
-          <video
-            src={currentFile.src}
-            controls
-            autoPlay
-            className="max-w-[90vw] max-h-[80vh]"
-          />
-        );
+        return <video src={currentFile.src} controls autoPlay className="max-w-[90vw] max-h-[80vh]" />;
       default:
         return <p className="text-white">Unsupported file type</p>;
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-9999 bg-black/50 flex items-center justify-center"
-      onClick={closeDialog}
-    >
-      <div className="relative w-full h-full flex flex-col items-center justify-center" >
+    <div className="fixed inset-0 z-9999 bg-black/50 flex items-center justify-center" onClick={closeDialog}>
+      <div className="relative w-full h-full flex flex-col items-center justify-center">
         {/* Close button */}
-        <button
+        <Button
           onClick={closeDialog}
-          className="absolute top-4 right-4 z-10 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+          className="absolute top-4 right-4 z-10 p-3 rounded-full"
+          startIcon="X"
+          startIconClassname="text-white w-6 h-6"
+          // variant="text"
         >
-          <Icon name="X" className="w-6 h-6" />
-        </button>
+          {/* <Icon name="X" className="text-white w-6 h-6" /> */}
+        </Button>
 
         {/* Navigation arrows */}
         {files.length > 1 && (
           <>
             <button
-              onClick={(e:any) => {e.stopPropagation(); prevFile();}}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                prevFile();
+              }}
               className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
-              <Icon name="ChevronLeft" className="w-8 h-8" />   
+              <Icon name="ChevronLeft" className="w-8 h-8" />
             </button>
             <button
-              onClick={(e:any) => {e.stopPropagation(); nextFile();}}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                nextFile();
+              }}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <Icon name="ChevronRight" className="w-8 h-8" />
@@ -122,20 +120,20 @@ export const MediaDialog = () => {
         </div>
 
         {/* Bottom controls */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
-          {files.length > 1 && (
+        {files.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
             <span className="text-white text-sm">
               {currentIndex + 1} / {files.length}
             </span>
-          )}
-          {/* <button
+          </div>
+        )}
+        {/* <button
             onClick={handleDownload}
             className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors"
           >
             <Icon name="Download" className="w-5 h-5" />
             <span className="text-sm">Download</span>
           </button> */}
-        </div>
       </div>
     </div>
   );

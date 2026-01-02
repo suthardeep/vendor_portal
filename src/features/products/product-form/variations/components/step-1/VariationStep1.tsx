@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CombinationItem, VariationsProp, ColorValue } from "../../types/variations.types";
+import { CombinationItem, VariationCreationState, ColorValue } from "../../types/variations.types";
 import { ADDITIONAL_VARIATIONS, DEFAULT_COLORS } from "../../constants/staticData";
 import Variations from "./components/Variations";
 import CombinationsPreview from "./components/CombinationsPreview";
@@ -17,8 +17,8 @@ interface Props {
 
 export default function VariationStep1({ productId, onSuccess }: Props) {
   const mutation = useGenerateCombinationsMutation(productId);
-  const [variations, setVariations] = useState<VariationsProp>(() => {
-    const initialState: VariationsProp = {
+  const [variations, setVariations] = useState<VariationCreationState>(() => {
+    const initialState: VariationCreationState = {
       size: {
         enabled: true,
         selected: [],

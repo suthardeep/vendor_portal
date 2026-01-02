@@ -1,3 +1,6 @@
+import { Category, CategoryRequirementField } from "@/features/category/types.category";
+import { CustomField } from "../../basic-details/types/basicDetails.types";
+
 export interface ProductVariant {
   id: string;
   aavakSku: string;
@@ -60,9 +63,12 @@ export interface ProductData {
 
   brandName: string | null;
   brandId: string | null;
-  brandLogo: string | null;
+  brandLogoUrl: string | null;
 
   categoryPath: string[];
+  categories: Pick<Category , "id" | "name">[]
+
+  customFields: CustomField[] | null;
 
   vendorId: string;
 
@@ -89,6 +95,14 @@ export interface ProductData {
   gstRate: number | null;
   cessCode: string | null;
 
+  minPrice: string;
+  maxPrice: string;
+  avgRating: string;
+
+  reviewCount: number;
+  viewCount: number;
+  soldCount: number;
+
   approvedAt: string | null;
   approvedBy: string | null;
 
@@ -99,11 +113,7 @@ export interface ProductData {
 
   adminNotes: string | null;
 
-  status: "draft" | "approved" | "rejected";
-
-  targetAge?: string;
-  targetGender?: string;
-  quantity?: number;
+  status: "draft" | "approved" | "rejected" | "under_review";
 
   variants?: ProductVariant[];
 

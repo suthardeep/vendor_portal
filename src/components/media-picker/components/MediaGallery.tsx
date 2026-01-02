@@ -237,7 +237,6 @@ export const MediaGallery = ({
   const isUploading = uploadFilesMutation.isPending;
   const isLoading = currentFolder ? loadingFiles : loadingFolders;
   const showLoadMore = currentFolder ? hasNextFiles : hasNextFolders;
-  console.log("showLoadMore", showLoadMore, hasNextFiles, hasNextFolders)
   const isFetchingMore = currentFolder ? isFetchingNextFiles : isFetchingNextFolders;
 
   const handleLoadMore = () => {

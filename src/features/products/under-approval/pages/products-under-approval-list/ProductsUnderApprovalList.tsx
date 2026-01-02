@@ -5,10 +5,11 @@ import { useGetApprovalProductsQuery, useDeleteApprovalProductMutation } from '.
 import { ApprovalProduct } from '../../types/approvalProduct';
 import { PaginationMeta } from "@/types/baseApi";
 import Dialog from "@/components/compound/Dialog";
-import { useCategoriesQuery } from '@/features/products/add-product/api/queryHooks';
-import { Category } from '@/features/products/add-product/types/addProduct.types';
 import { BadgeCell } from '@/components/table/cells/BadgeCell';
 import { useNavigate } from '@tanstack/react-router';
+import { useCategoriesQuery } from '@/features/category/api/queryHooks';
+import { Category } from '@/features/category/types.category';
+import { Image } from '@/components/base/Image';
 
 const ProductsUnderApprovalList: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -55,11 +56,12 @@ const ProductsUnderApprovalList: React.FC = () => {
       header: "PRODUCT",
       cellType: "text",
       render: (row) => (
-        <div className="flex items-center gap-3">
-          <img 
+        <div className="flex items-center gap-3 shrink-0 w-auto">
+          <Image 
             src={row.thumbnailUrl || "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBoZWFkcGhvbmVzfGVufDB8fDB8fHww"} 
             alt={row.name}
-            className="w-10 h-10 rounded-lg object-cover"
+            expandOnClick
+            className="w-10 h-10 rounded-lg"
           />
           <div>
             <p className="text-sm font-normal text-body-content">{row.name}</p>
@@ -225,11 +227,10 @@ const ProductsUnderApprovalList: React.FC = () => {
   return (
     <>
       <Table<ApprovalProduct>
-        title="Products Under Approval"
+        // title="Products Under Approval"
         data={approvalProducts} 
         columns={columns}
         searchable
-        searchPlaceholder="Search products under approval..."
         onSearch={handleSearch} 
         filters={filters}
         filterChips={filterChips}

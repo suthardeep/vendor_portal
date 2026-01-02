@@ -1,6 +1,6 @@
 import { cn } from "@/utils/helpers";
 import React, { useState, useMemo } from "react";
-import { TableProps } from "./table.types";
+import { SortDirection, TableProps } from "./table.types";
 import { TableHeader } from "./TableHeader";
 import { TableHead } from "./TableHead";
 import { TableBody } from "./TableBody";
@@ -40,12 +40,15 @@ export const Table = <T extends Record<string, any>>({
   filterChips = [],
   containsAction,
   stickyPagination = true, // NEW: Control sticky pagination
-  maxHeight, // NEW: Optional max height for scrollable content
+  maxHeight , // NEW: Optional max height for scrollable content
+
+  classNameConfig = undefined,
 }: TableProps<T>) => {
   const [internalSelectedRows, setInternalSelectedRows] = useState<Set<any>>(new Set());
   const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [currentPage, setCurrentPage] = useState(pagination?.meta?.currentPage || 1);
+  const shouldShowHeader = !!title || !!searchable || !!filters || !!actions;
 
   const selectedRows = controlledSelectedRows || internalSelectedRows;
   const setSelectedRows = onSelectionChange || setInternalSelectedRows;
@@ -79,15 +82,21 @@ export const Table = <T extends Record<string, any>>({
   const handleSort = (key: string) => {
     if (!sortable) return;
 
-    let newDirection: 'asc' | 'desc' = 'asc';
-    
+    let newDirection: "asc" | "desc" | "default" = "asc";
+
     if (sortColumn === key) {
-      newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      newDirection = sortDirection === "asc" ? "desc" : sortDirection === "desc" ? "default" : "asc";
     }
 
-    setSortColumn(key);
-    setSortDirection(newDirection);
-    onSort?.(key, newDirection);
+    if (newDirection === "default") {
+      setSortColumn(null);
+      setSortDirection("asc");
+      onSort?.(null, "asc");
+    } else {
+      setSortColumn(key);
+      setSortDirection(newDirection);
+      onSort?.(key, newDirection);
+    }
   };
 
   const sortedData = useMemo(() => {
@@ -97,8 +106,8 @@ export const Table = <T extends Record<string, any>>({
       const aVal = (a as any)[sortColumn];
       const bVal = (b as any)[sortColumn];
 
-      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
 
@@ -118,9 +127,15 @@ export const Table = <T extends Record<string, any>>({
   const allSelected = data.length > 0 && selectedRows.size === data.length;
 
   return (
-    <div className={cn("w-full flex flex-col", className)}>
+    <div
+      className={cn(
+        "w-full flex flex-col shadow-sm bg-base-1 rounded-lg",
+        className,
+        classNameConfig?.table?.mainContainer
+      )}
+    >
       {/* Header */}
-      {(title || searchable || filters || actions) && (
+      {shouldShowHeader && (
         <TableHeader
           title={title}
           searchable={searchable}
@@ -130,19 +145,21 @@ export const Table = <T extends Record<string, any>>({
           actions={actions}
           breadcrumbs={breadcrumbs}
           filterChips={filterChips}
+          classNameConfig={classNameConfig?.tableHeader}
         />
       )}
 
       {/* Table Container with optional max height */}
-    <div 
-  className={cn(
-    "relative flex-1 min-h-0", // min-h-0 is key for nested flex scrolling
-    maxHeight ? "overflow-y-auto" : "overflow-visible",
-    "scrollbar-thin scrollbar-thumb-gray-300" // Optional: makes scrollbar less intrusive
-  )}
-  style={maxHeight ? { maxHeight } : undefined}
->
-  <table className="w-full border-separate border-spacing-0">
+      <div
+        className={cn(
+          "relative flex-1 min-h-0 ", // min-h-0 is key for nested flex scrolling
+          maxHeight ? "overflow-y-auto" : "overflow-visible",
+          "scrollbar-thin scrollbar-thumb-gray-300", // Optional: makes scrollbar less intrusive
+          classNameConfig?.table?.tableContainer
+        )}
+        style={maxHeight ? { maxHeight } : undefined}
+      >
+        <table className={cn("w-full h-full border-separate border-spacing-0", classNameConfig?.table?.table)}>
           <TableHead
             columns={columns}
             selectable={selectable}
@@ -152,6 +169,8 @@ export const Table = <T extends Record<string, any>>({
             sortDirection={sortDirection}
             onSort={handleSort}
             containsAction={containsAction}
+            classNameConfig={classNameConfig?.tableHead}
+            hasMainHeader={shouldShowHeader}
           />
 
           <TableBody
@@ -170,17 +189,20 @@ export const Table = <T extends Record<string, any>>({
             actions={rowActions}
             singleIcon={typeof singleIcon === "string" ? { name: singleIcon, onClick: () => {} } : singleIcon}
             expandedRowConfig={expandedRowConfig}
+            bodyClassNameConfig={classNameConfig?.tableBody}
+            rowClassNameConfig={classNameConfig?.tableRow}
           />
         </table>
       </div>
 
       {/* Pagination - Now with sticky support */}
       {pagination && (
-        <TablePagination 
-          meta={pagination.meta} 
+        <TablePagination
+          meta={pagination.meta}
           onPageChange={pagination.onPageChange}
           showTotal={pagination.showTotal}
           sticky={stickyPagination}
+          classNameConfig={classNameConfig?.tablePagination}
         />
       )}
 
